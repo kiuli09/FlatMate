@@ -27,3 +27,7 @@ For scheduling our main consideration is that we have four sprints to complete o
  
 
 Our sprints will be broken down as follows. The first sprint is devoted to ideation, planning, feasibility and the development of user story’s. The second sprint will mainly be involved with setting up our project and completing a minimum viable product. Our third sprint will be where the bulk of our extra features like our dashboard and stats will be completed. The fourth and final sprint will focus on refining features and the style of the website and deployment. 
+
+Resource Considerations 
+
+We have a lot of recources at our disposal that we will be making full use of. Firstly, we all have our own laptops that will allow us to work on our project when we are not on campus. We also have access to lab machines when on site. As for software we will be using free and open-source software's such as ollama, VScode, postgress etc. This will allow us to keep our  costs low. All of our team members have a strong background in COSC papers and have developed many applications throughout our time at university. We will also be using taiga to manage our project. 
