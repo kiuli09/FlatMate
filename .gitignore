@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+Server/node_modules/
+Client/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.*
+
+# Build folders
+dist/
+build/
+
+# Vite
+Client/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Optional: package lock (keep if you want consistency)
+# package-lock.json
