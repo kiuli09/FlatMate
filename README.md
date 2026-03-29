@@ -2,21 +2,7 @@ Feasibility Study
 
 Technical Considerations 
 
-FlatMate is a web-based application designed to help flatmates manage shared household responsibilities such as groceries, expenses, and pantry inventory and for flat notices. The system will consist of a frontend interface for users to interact with, a backend server for handling application logic, and a database to store information related to users, expenses, grocery lists, and inventory items. 
-
- 
-
-Things that need to be confirmed: 
-
- Programming languages to use?  Javascript + Node.js ?? 
-
-For database? PostgreSQL? 
-
-For deployment? Render? AWS? 
-
- 
-
-FlatMate is technically feasible as we are able to utilize existing technologies to implement it.  
+FlatMate is a web-based application designed to help flatmates manage shared household responsibilities such as groceries, expenses, and pantry inventory and for flat notices. The system will consist of a frontend interface for users to interact with, a backend server for handling application logic, and a database to store information related to users, expenses, grocery lists, and inventory items. The technology stack that will be used includes JavaScript with React for the frontend, Node.js with Express for the backend, and PostgreSQL for the database, with deployment planned on a cloud-based platform such as Render or AWS. These technologies are commonly used and suitable for scalable web applications such as FlatMate. We already have experience working with the above tools which will reduce the learning needed to use this technology stack. Overall, FlatMate is technically feasible as it can be implemented using existing technological tools.   
 
  
 
