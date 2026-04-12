@@ -6,7 +6,7 @@ function Dashboard() {
       <header className="topbar">
         <div className="topbar-left">
           <div className="avatar-placeholder"></div>
-          <span className="flat-name">Flat Name</span>
+          <span className= "flat-name">Flat Name</span>
         </div>
 
         <h1 className="app-title">FlatMate</h1>
