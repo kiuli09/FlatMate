@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DashboardLayout from "./components/Dashboard";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -13,13 +14,7 @@ function App() {
             });
     }, []);
 
-    return (
-        <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-            <h1>FlatMate</h1>
-            <p>Your flat management web app is starting up.</p>
-            <p><strong>Backend says:</strong> {message}</p>
-        </div>
-    );
+    return <DashboardLayout message={message} />;
 }
 
 export default App;
