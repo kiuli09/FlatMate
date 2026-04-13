@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardLayout from "./components/Dashboard";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
 
 function App() {
-    const [message, setMessage] = useState("");
+    const user = JSON.parse(localStorage.getItem("user"));
 
-    useEffect(() => {
-        fetch("http://localhost:5000/api/test")
-            .then((response) => response.json())
-            .then((data) => setMessage(data.message))
-            .catch((error) => {
-                console.error("Error fetching backend:", error);
-                setMessage("Could not connect to backend");
-            });
-    }, []);
-
-    return <DashboardLayout message={message} />;
+    return (
+        <Routes>
+            <Route
+                path="/"
+                element={user ? <Dashboard user={user} /> : <Navigate to="/signin" replace />}
+            />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+        </Routes>
+    );
 }
 
 export default App;
