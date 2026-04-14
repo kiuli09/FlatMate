@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import DashboardLayout from "./components/Dashboard";
+import Dashboard from "./components/Dashboard";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 
@@ -10,7 +10,7 @@ function App() {
         <Routes>
             <Route
                 path="/"
-                element={user ? <DashboardLayout user={user} /> : <Navigate to="/signin" replace />}
+                element={user ? <Dashboard user={user} /> : <Navigate to="/signin" replace />}
             />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />

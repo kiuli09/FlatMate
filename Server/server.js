@@ -62,15 +62,18 @@ app.post("/api/auth/signup", async (req, res) => {
     try {
         const hashedPassword = await argon2.hash(password);
 
-        await pool.query(
-            "INSERT INTO users(flat_id, email, name, password) VALUES ($1, $2, $3, $4)",
+        const result = await pool.query(
+            "INSERT INTO users(flat_id, email, name, password) VALUES ($1, $2, $3, $4) RETURNING id, email, name",
             [null, email, username, hashedPassword]
         );
 
+        const newUser = result.rows[0];
+
         return res.status(201).json({
             success: true,
-            message: "Signup successful"
+            user: newUser   
         });
+
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Server error" });
