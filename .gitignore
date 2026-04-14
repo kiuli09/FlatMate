@@ -27,4 +27,5 @@ Thumbs.db
 .vscode/
 
 # Optional: package lock (keep if you want consistency)
-# package-lock.json
+package-lock.json
+package.json
