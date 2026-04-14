@@ -57,20 +57,26 @@ app.post("/api/auth/login", async (req, res) => {
 
 app.post("/api/auth/signup", async (req, res) => {
     const { username, email, password } = req.body;
-    const hashedPassword = await argon2.hash(password);
+    console.log("Signup attempt:", username, email, password);
+
     try {
-        const result = await pool.query(
-            'INSERT INTO users(flat_id,email, name, password) VALUES ($1, $2, $3, $4)',
+        const hashedPassword = await argon2.hash(password);
+
+        await pool.query(
+            "INSERT INTO users(flat_id, email, name, password) VALUES ($1, $2, $3, $4)",
             [null, email, username, hashedPassword]
         );
 
+        return res.status(201).json({
+            success: true,
+            message: "Signup successful"
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: "Server error" });
     }
-    console.log("Signup attempt:", username, email, password);
-    
 });
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
