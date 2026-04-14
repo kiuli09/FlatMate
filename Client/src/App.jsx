@@ -10,7 +10,7 @@ function App() {
         <Routes>
             <Route
                 path="/"
-                element={user ? <Dashboard user={user} /> : <Navigate to="/signin" replace />}
+                element={user ? <DashboardLayout user={user} /> : <Navigate to="/signin" replace />}
             />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />

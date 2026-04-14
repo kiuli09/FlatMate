@@ -8,4 +8,7 @@ const { Pool } = require('pg');
     database: 'FlatMate',
     password: 'postgres',
     port: 5432,
+    options: "-c search_path=public"
   });
+
+module.exports = pool;
