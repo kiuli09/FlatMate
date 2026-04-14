@@ -33,8 +33,7 @@ app.post("/api/auth/login", async (req, res) => {
 
         const user = result.rows[0];
 
-        // TEMP: plain password check (upgrade later with bcrypt)
-        if (user.password !== password) {
+        if (!(await argon2.verify(user.password, password))) {
             return res.status(401).json({ message: "Invalid password" });
         }
 
@@ -60,8 +59,8 @@ app.post("/api/auth/signup", async (req, res) => {
     const hashedPassword = await argon2.hash(password);
     try {
         const result = await pool.query(
-            'INSERT INTO users(flat_id, name, password) VALUES ($1, $2, $3)',
-            [null, username, hashedPassword]
+            'INSERT INTO users(flat_id,email, name, password) VALUES ($1, $2, $3, $4)',
+            [null, email, username, hashedPassword]
         );
 
     } catch (err) {
