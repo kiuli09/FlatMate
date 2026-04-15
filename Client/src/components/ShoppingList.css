@@ -149,13 +149,40 @@ body {
   color: #6b7280;
 }
 
-.welcome-section {
-    margin-bottom: 24px;
-    flex: auto;
+.add-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.welcome-section div {
-    border-radius: 100px;
-    background-color: #4caf50;
-    color: white;
+.add-item input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+
+.add-item button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shopping-item {
+  padding: 14px 18px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 12px;
+  font-weight: 500;
 }

@@ -1,7 +1,23 @@
 import "./ShoppingList.css";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 function ShoppingList({ user }) {
+    const [items, setItems] = useState([]);
+    const [newItem, setNewItem] = useState("");
+
+    const handleAddItem = () => {
+        if (newItem.trim() === "") return;
+
+        const item = {
+            id: Date.now(),
+            name: newItem
+        };
+
+        setItems([...items, item]);
+        setNewItem(""); // clear input
+    };
+
     return (
         <div className="dashboard-page">
             <header className="topbar">
@@ -35,11 +51,30 @@ function ShoppingList({ user }) {
                 </aside>
 
                 <main className="main-content">
-                    <div className="welcome-section">
-                        <div className="items">Item1</div>
-                        <div className="items">Item2</div>
-                        <div className="items">Item3</div>
-                        <div className="items">Item4</div>
+                    <h2>Shopping List</h2>
+
+                    {/* Add item section */}
+                    <div className="add-item">
+                        <input
+                            type="text"
+                            placeholder="Enter item..."
+                            value={newItem}
+                            onChange={(e) => setNewItem(e.target.value)}
+                        />
+                        <button onClick={handleAddItem}>Add</button>
+                    </div>
+
+                    {/* Display items */}
+                    <div className="items-list">
+                        {items.length === 0 ? (
+                            <p>No items yet</p>
+                        ) : (
+                            items.map((item) => (
+                                <div key={item.id} className="shopping-item">
+                                    {item.name}
+                                </div>
+                            ))
+                        )}
                     </div>
                 </main>
             </div>
