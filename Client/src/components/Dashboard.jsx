@@ -1,4 +1,5 @@
 import "./Dashboard.css";
+import { NavLink } from "react-router-dom";
 
 function Dashboard({ user }) {
     return (
@@ -19,10 +20,18 @@ function Dashboard({ user }) {
 
             <div className="dashboard-body">
                 <aside className="sidebar">
-                    <button className="nav-item active">Finances</button>
-                    <button className="nav-item">Shopping List</button>
-                    <button className="nav-item">Inventory</button>
-                    <button className="nav-item">Timetable</button>
+                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                        Finances
+                    </NavLink>
+                    <NavLink to="/shoppinglist" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                        Shopping List
+                    </NavLink>
+                    <NavLink to="/inventory" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                        Inventory
+                    </NavLink>
+                    <NavLink to="/timetable" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                        Timetable
+                    </NavLink>
                 </aside>
 
                 <main className="main-content">
