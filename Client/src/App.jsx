@@ -4,17 +4,28 @@ import ShoppingList from "./components/shoppinglist";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
+import HomePage from "./components/HomePage";
 
 function App() {
     const user = JSON.parse(localStorage.getItem("user"));
+
+    const flats = [
+        { id: 1, name: "Castle Street Flat", members: 5 },
+        { id: 2, name: "George Street Flat", members: 4 },
+    ];
 
     return (
         <Routes>
             <Route
                 path="/"
+                element={user ? <HomePage user={user} flats={flats} /> : <Navigate to="/signin" replace />}
+            />
+
+            <Route
+                path="/dashboard"
                 element={user ? <Dashboard user={user} /> : <Navigate to="/signin" replace />}
             />
-            
+
             <Route
                 path="/shoppinglist"
                 element={user ? <ShoppingList user={user} /> : <Navigate to="/signin" replace />}
