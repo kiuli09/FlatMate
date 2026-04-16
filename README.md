@@ -26,6 +26,10 @@ Given that the system aligns with real-life issues faced when flatting and is ea
 
 The development of FlatMate will follow an Agile approach using a series of sprints to structure progress. The team plans to complete approximately three main sprints, each focusing on key components of the system.
 
+The first sprint will focus on setting up the foundation of the project. This includes configuring the development environment, establishing the database, implementing user authentication, and creating the initial user interface design. The second sprint will focus on developing the core functionalities of the system, such as expense tracking, cost splitting, shopping list management, and inventory features. The third sprint will be dedicated to refining and polishing the application, including improving the user interface, fixing bugs, and ensuring overall usability and performance.
+
+This approach allows the team to prioritise building a strong foundation first, followed by functionality, and finally refinement. By structuring development in this way, the project timeline remains realistic and achievable while allowing flexibility for improvements throughout the process.
+
 
 
 ---
@@ -34,6 +38,6 @@ The development of FlatMate will follow an Agile approach using a series of spri
 
 Each member of our team has taken computer science courses previously, meaning we have the relevant experience required to develop this project. All team members have access to personal laptops, and additional computers are available in university labs if needed, providing sufficient hardware resources.
 
-For the project, we will be using free and open-source tools such as GitHub for version control, Visual Studio Code for development, and a cloud hosting service for deployment (to be confirmed). We will also use Trello to track tasks across each sprint, including tasks that need to be done, are in progress, and have been completed.
+For the project, we will be using free and open-source tools such as GitHub for version control, Visual Studio Code for development, and a cloud hosting service for deployment (to be confirmed). We will also use Taiga to track tasks across each sprint, including tasks that need to be done, are in progress, and have been completed.
 
 These resources are sufficient to support the development, collaboration, and deployment of FlatMate.
