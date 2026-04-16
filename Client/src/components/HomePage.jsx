@@ -1,8 +1,13 @@
 import "./HomePage.css";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function HomePage({ user, flats }) {
   const navigate = useNavigate();
+
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [flatName, setFlatName] = useState("");
+  const [members, setMembers] = useState("");
 
   const handleSelectFlat = (flat) => {
     localStorage.setItem("currentFlat", JSON.stringify(flat));
@@ -10,11 +15,28 @@ function HomePage({ user, flats }) {
   };
 
   const handleCreateFlat = () => {
-    console.log("Create flat clicked");
+    setShowCreateForm(true);
+    //console.log("Create flat clicked");
   };
 
   const handleJoinFlat = () => {
     console.log("Join flat clicked");
+  };
+
+  const handleSubmitCreateFlat = (e) => {
+    e.preventDefault();
+
+    const newFlat = {
+      id: Date.now(),
+      name: flatName,
+      members: Number(members),
+    };
+
+    console.log("New flat created:", newFlat);
+
+    setFlatName("");
+    setMembers("");
+    setShowCreateForm(false);
   };
 
   return (
@@ -33,6 +55,49 @@ function HomePage({ user, flats }) {
           <h2>Welcome back, {user?.username || "flatmate"}</h2>
           <p>Select a flat to continue or get started below.</p>
         </section>
+
+        {showCreateForm && (
+          <section className="create-flat-section">
+            <h3>Create a New Flat</h3>
+            <form className="create-flat-form" onSubmit={handleSubmitCreateFlat}>
+              <div className="form-group">
+                <label htmlFor="flatName">Flat Name</label>
+                <input
+                  id="flatName"
+                  type="text"
+                  value={flatName}
+                  onChange={(e) => setFlatName(e.target.value)}
+                  placeholder="Enter flat name"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="members">Number of Members</label>
+                <input
+                  id="members"
+                  type="number"
+                  min="1"
+                  value={members}
+                  onChange={(e) => setMembers(e.target.value)}
+                  placeholder="Enter number of members"
+                  required
+                />
+              </div>
+
+              <div className="form-buttons">
+                <button type="submit" className="submit-btn">Create Flat</button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => setShowCreateForm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
 
         <section className="flats-section">
           <h3>Your Flats</h3>
