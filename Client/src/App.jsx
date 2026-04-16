@@ -4,6 +4,7 @@ import ShoppingList from "./components/shoppinglist";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
+import Finance from "./components/Finance";
 
 function App() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -23,6 +24,11 @@ function App() {
             <Route
                 path="/inventory"
                 element={user ? <Inventory user={user} /> : <Navigate to="/signin" replace />}
+            />
+
+            <Route
+                path="/finance"
+                element={user ? <Finance user={user} /> : <Navigate to="/signin" replace />}
             />
 
             <Route path="/signin" element={<SignIn />} />

@@ -37,6 +37,7 @@ function Finance({ user }) {
                 <main className="main-content">
                     <div className="welcome-section">
                         <h2>Finance</h2>
+                        <p>HelloWorld</p>
                     </div>
                 </main>
             </div>
@@ -45,3 +46,5 @@ function Finance({ user }) {
     )
 
 }
+
+export default Finance;

@@ -36,7 +36,7 @@ function ShoppingList({ user }) {
 
             <div className="dashboard-body">
                 <aside className="sidebar">
-                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                    <NavLink to="/finance" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
                         Finances
                     </NavLink>
                     <NavLink to="/shoppinglist" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
