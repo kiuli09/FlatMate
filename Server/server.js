@@ -81,15 +81,15 @@ app.post("/api/auth/signup", async (req, res) => {
 });
 
 app.post("/api/auth/create-flat", async (req, res) => {
-    const { name, members } = req.body;
-    console.log("Create flat attempt:", name, members);
+    const { name, members, created_by } = req.body;
+    console.log("Create flat attempt:", name, members, created_by);
 
     try {
         const result = await pool.query(
-            "INSERT INTO flat(name, num_people) VALUES ($1, $2) RETURNING *",
-            [name, members]
+            "INSERT INTO flat(name, num_people, created_by) VALUES ($1, $2, $3) RETURNING *",
+            [name, members, created_by]
         );
-
+        console.log(created_by);
         const newFlat = result.rows[0];
 
         res.status(201).json({
@@ -99,6 +99,21 @@ app.post("/api/auth/create-flat", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server flat creation error" });
+    }
+});
+
+app.post("/items", async (req, res) => {
+    const { name,flat_id,added_by } = req.body;
+    try {
+        const result = await pool.query(
+            "INSERT INTO shopping_list(flat_id,name,quantity,added_by) VALUES ($1, $2, $3, $4) RETURNING *",
+            [flat_id, name, 1, added_by]
+        );
+        const newItem = result.rows[0];
+        res.status(201).json(newItem);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
     }
 });
 

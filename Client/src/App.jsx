@@ -8,7 +8,6 @@ import HomePage from "./components/HomePage";
 
 function App() {
     const user = JSON.parse(localStorage.getItem("user"));
-
     const flats = [
         { id: 1, name: "Castle Street Flat", members: 5 },
         { id: 2, name: "George Street Flat", members: 4 },

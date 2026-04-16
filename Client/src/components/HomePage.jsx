@@ -38,6 +38,7 @@ function HomePage({ user, flats }) {
         body: JSON.stringify({
           name: flatName,
           members: Number(members),
+          created_by: user.id
         }),
       });
 

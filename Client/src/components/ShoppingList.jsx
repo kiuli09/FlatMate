@@ -5,17 +5,36 @@ import { useState } from "react";
 function ShoppingList({ user }) {
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState("");
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+    const handleAddItem = async () => {
+        if (!newItem.trim()) return;
+        console.log("RAW localStorage:", localStorage.getItem("currentFlat"));
+        try {
+            console.log("DEBUG:", { newItem, currentFlat, user });
+            const res = await fetch(`${API}/items`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name: newItem, flat_id: currentFlat.id, added_by: user?.id }),
+            });
 
-    const handleAddItem = () => {
-        if (newItem.trim() === "") return;
+            if (!res.ok) {
+    const errText = await res.text();
+    console.error("BACKEND ERROR:", errText);
+    return;
+}
 
-        const item = {
-            id: Date.now(),
-            name: newItem
-        };
+            const data = await res.json();
 
-        setItems([...items, item]);
-        setNewItem(""); // clear input
+            // Use the DB-returned item (correct id, etc.)
+            setItems(prevItems => [...prevItems, data]);
+
+            setNewItem(""); // clear input
+        } catch (error) {
+            console.error("Error adding item:", error);
+        }
     };
 
     return (
