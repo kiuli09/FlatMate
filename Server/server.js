@@ -80,6 +80,28 @@ app.post("/api/auth/signup", async (req, res) => {
     }
 });
 
+app.post("/api/auth/create-flat", async (req, res) => {
+    const { name, members } = req.body;
+    console.log("Create flat attempt:", name, members);
+
+    try {
+        const result = await pool.query(
+            "INSERT INTO flat(name, num_people) VALUES ($1, $2) RETURNING *",
+            [name, members]
+        );
+
+        const newFlat = result.rows[0];
+
+        res.status(201).json({
+            success: true,
+            flat: newFlat
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server flat creation error" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -9,6 +9,8 @@ function HomePage({ user, flats }) {
   const [flatName, setFlatName] = useState("");
   const [members, setMembers] = useState("");
 
+  const API = "http://localhost:5000";
+
   const handleSelectFlat = (flat) => {
     localStorage.setItem("currentFlat", JSON.stringify(flat));
     navigate("/dashboard");
@@ -23,22 +25,40 @@ function HomePage({ user, flats }) {
     console.log("Join flat clicked");
   };
 
-  const handleSubmitCreateFlat = (e) => {
+  const handleSubmitCreateFlat = async (e) => {
     e.preventDefault();
 
-    const newFlat = {
-      id: Date.now(),
-      name: flatName,
-      members: Number(members),
-    };
+    try {
+      const res = await fetch(`${API}/api/auth/create-flat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          name: flatName,
+          members: Number(members),
+        }),
+      });
 
-    console.log("New flat created:", newFlat);
+      const data = await res.json();
 
-    setFlatName("");
-    setMembers("");
-    setShowCreateForm(false);
+      if (!res.ok) {
+        console.error("Backend error:", data.message);
+        return;
+      }
+      console.log("Flat created successfully:", data);
+
+      localStorage.setItem("currentFlat", JSON.stringify(data.flat));
+      setFlatName("");
+      setMembers("");
+      setShowCreateForm(false);
+      navigate("/dashboard");
+
+    } catch (error) {
+      console.error("Error creating flat:", error);
+    }
   };
-
   return (
     <div className="home-page">
       <header className="home-header">
