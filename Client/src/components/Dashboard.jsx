@@ -97,7 +97,18 @@ function Dashboard({ user }) {
                             <p className="card-value">{memberCount}</p>
                         </div>
 
+                        <div className="dashboard-card">
+                            <h3>Shopping Items</h3>
+                            <p className="card-value">0</p>
+                        </div>
+
+                        <div className="dashboard-card">
+                            <h3>Outstanding Bills</h3>
+                            <p className="card-value">$0</p>
+                        </div>
                     </section>
+
+
                 </main>
             </div>
         </div>
