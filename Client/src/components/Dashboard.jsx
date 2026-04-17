@@ -81,21 +81,23 @@ function Dashboard({ user }) {
                 </aside>
 
                 <main className="main-content">
-                    <div className="welcome-section">
-                        <h2>Welcome back, {user?.username || "flatmate"}</h2>
-                        <p>Here’s an overview of your flat.</p>
-                        <div>
-                            {currentFlat && (
-                                <p>
-                                    <strong>Flat Name:</strong> {currentFlat.name}
-                                </p>
-                            )}
+                    <section className="welcome-banner">
+                        <h2>Welcome back, {displayName}</h2>
+                        <p>Here’s what’s happening in your flat today.</p>
+                    </section>
 
-                            <p>
-                                <strong>Members:</strong> {currentFlat ? currentFlat.num_people : "None"}
-                            </p>
+                    <section className="card-grid">
+                        <div className="dashboard-card highlight-card">
+                            <h3>Flat Name</h3>
+                            <p className="card-value">{flatName}</p>
                         </div>
-                    </div>
+
+                        <div className="dashboard-card">
+                            <h3>Members</h3>
+                            <p className="card-value">{memberCount}</p>
+                        </div>
+
+                    </section>
                 </main>
             </div>
         </div>
