@@ -5,15 +5,16 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
 import HomePage from "./components/HomePage";
+import { useState } from "react";
 
 function App() {
     const user = JSON.parse(localStorage.getItem("user"));
-
+    const [flats, setFlats] = useState([]);
     return (
         <Routes>
             <Route
                 path="/"
-                element={user ? <HomePage user={user} /> : <Navigate to="/signin" replace />}
+                element={user ? <HomePage user={user} flats={flats} setFlats={setFlats} /> : <Navigate to="/signin" replace />}
             />
 
             <Route
