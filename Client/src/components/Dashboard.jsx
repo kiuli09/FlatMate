@@ -108,7 +108,28 @@ function Dashboard({ user }) {
                         </div>
                     </section>
 
+                    <section className="content-grid">
+                        <div className="content-panel">
+                            <h3>Recent Activity</h3>
+                            <p>No recent activity yet.</p>
+                        </div>
 
+                        <div className="content-panel">
+                            <h3>Quick Actions</h3>
+                            <div className="quick-actions">
+                                <button>Add Expense</button>
+                                <button>Add Shopping Item</button>
+                                <button>Update Inventory</button>
+                                <button>View Timetable</button>
+                            </div>
+                        </div>
+
+                        <div className="content-panel">
+                            <h3>Upcoming Bills</h3>
+                            <p>No upcoming bills yet.</p>
+                        </div>
+
+                    </section>
                 </main>
             </div>
         </div>
