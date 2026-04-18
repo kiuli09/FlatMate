@@ -1,15 +1,16 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
-import ShoppingList from "./components/shoppinglist";
+import ShoppingList from "./components/ShoppingList";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
 import HomePage from "./components/HomePage";
-import Finance from "./Finance";
-import Navigation from "./Navigation";
+import Finance from "./components/Finance";
+import Navigation from "./components/Navigation";
 
 function App() {
     const user = JSON.parse(localStorage.getItem("user"));
+
 
     return (
         <Routes>

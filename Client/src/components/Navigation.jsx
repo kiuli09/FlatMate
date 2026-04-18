@@ -76,7 +76,9 @@ function Navigation({ user }) {
                         Inventory
                     </NavLink>
 
-                    <button className="nav-item logout-btn" onClick={handleLogout}>
+                    <button 
+                        className="nav-item logout-btn" 
+                        onClick={handleLogout}>
                         Logout
                     </button>
                 </aside>

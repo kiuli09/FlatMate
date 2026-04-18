@@ -113,10 +113,6 @@ body {
   color: white;
 }
 
-.logout-btn {
-  margin-top: auto;
-}
-
 .main-content {
   flex: 1;
   padding: 28px;
@@ -149,4 +145,8 @@ body {
   .topbar-label {
     display: none;
   }
+}
+
+.logout-btn {
+  margin-top: auto;
 }
