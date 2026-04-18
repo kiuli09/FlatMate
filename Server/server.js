@@ -71,7 +71,11 @@ app.post("/api/auth/signup", async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            user: newUser   
+            user: {
+                id: newUser.id,
+                email: newUser.email,
+                username: newUser.name
+            }
         });
 
     } catch (err) {

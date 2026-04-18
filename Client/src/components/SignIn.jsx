@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
 
-function SignIn() {
+function SignIn({ setUser }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -47,6 +47,7 @@ function SignIn() {
             }
 
             localStorage.setItem("user", JSON.stringify(data.user));
+            setUser(data.user);
             navigate("/", { replace: true });
         } catch (err) {
             console.error(err);

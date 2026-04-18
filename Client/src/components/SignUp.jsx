@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
 
-function SignUp() {
+function SignUp({ setUser }) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -54,6 +54,7 @@ function SignUp() {
             }
 
             localStorage.setItem("user", JSON.stringify(data.user));
+            setUser(data.user);
             navigate("/", { replace: true });
         } catch (err) {
             console.error(err);

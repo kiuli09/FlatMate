@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 import Dashboard from "./components/Dashboard";
 import ShoppingList from "./components/ShoppingList";
 import SignIn from "./components/SignIn";
@@ -9,7 +10,9 @@ import Finance from "./components/Finance";
 import Navigation from "./components/Navigation";
 
 function App() {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const [user, setUser] = useState(() => {
+        return JSON.parse(localStorage.getItem("user"));
+    });
 
     const flats = [
         { id: 1, name: "Castle Street Flat", members: 5 },
@@ -20,12 +23,12 @@ function App() {
         <Routes>
             <Route
                 path="/signin"
-                element={!user ? <SignIn /> : <Navigate to="/" replace />}
+                element={!user ? <SignIn setUser={setUser} /> : <Navigate to="/" replace />}
             />
 
             <Route
                 path="/signup"
-                element={!user ? <SignUp /> : <Navigate to="/" replace />}
+                element={!user ? <SignUp setUser={setUser} /> : <Navigate to="/" replace />}
             />
 
             <Route
