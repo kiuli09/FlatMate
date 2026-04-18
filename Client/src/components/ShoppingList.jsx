@@ -120,11 +120,18 @@ function ShoppingList({ user }) {
                     items.map((item) => (
                         <div key={item.id} className="shopping-item">
                             <label className="shopping-item-row">
-                                <input
-                                    type="checkbox"
-                                    onChange={() => handleCheckItem(item.id)}
-                                />
                                 <span>{item.name}</span>
+                                <div className="actions">
+                                    <button
+                                        className="purchased-btn"
+                                        onClick={() => handlePurchased(item.id)}> Purchased 
+                                    </button>
+
+                                    <button
+                                        className="remove-btn"
+                                        onClick={() => handleCheckItem(item.id)}> ✕
+                                    </button>  
+                                </div>
                             </label>
                         </div>
                     ))
