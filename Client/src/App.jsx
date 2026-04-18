@@ -13,11 +13,10 @@ function App() {
     const [user, setUser] = useState(() => {
         return JSON.parse(localStorage.getItem("user"));
     });
-
-    const flats = [
-        { id: 1, name: "Castle Street Flat", members: 5 },
-        { id: 2, name: "George Street Flat", members: 4 },
-    ];
+    const [flats, setFlats] = useState([
+    { id: 1, name: "Castle Street Flat", members: 5 },
+    { id: 2, name: "George Street Flat", members: 4 },
+]);
 
     return (
         <Routes>
@@ -34,7 +33,7 @@ function App() {
             <Route
                 path="/"
                 element={
-                    user ? <HomePage user={user} flats={flats} /> : <Navigate to="/signin" replace />
+                    user ? <HomePage user={user} flats={flats} setFlats={setFlats} /> : <Navigate to="/signin" replace />
                 }
             />
 
