@@ -34,7 +34,20 @@ app.get("/api/flats", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
+app.get("/items", async (req, res) => {
+    
+    try {
+        const result = await pool.query(
+            "SELECT * FROM shopping_list WHERE flat_id = $1",
+            [req.headers.flat]
+        );
+        console.log(result.rows);
+        res.json({ items: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body;

@@ -1,5 +1,5 @@
 import "./ShoppingList.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function ShoppingList({ user }) {
     const [items, setItems] = useState([]);
@@ -7,7 +7,33 @@ function ShoppingList({ user }) {
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
-
+      useEffect(() => {
+      const fetchItems = async () => {
+        try {
+          const res = await fetch(`${API}/items`, {
+            headers: {
+              flat : currentFlat?.id
+            },
+          });
+    
+          const data = await res.json();
+          
+          if (!res.ok) {
+            console.error("Error fetching items:", data.message);
+            return;
+          }
+    
+          setItems(data.items);
+    
+        } catch (error) {
+          console.error("Error fetching items:", error);
+        }
+      };
+    
+      if (user) {
+        fetchItems();
+      }
+    }, [user?.id]);
     const handleAddItem = async () => {
         if (!newItem.trim()) return;
 
