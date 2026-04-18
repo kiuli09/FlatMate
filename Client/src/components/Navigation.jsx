@@ -10,7 +10,7 @@ function Navigation({ user }) {
 
     const flatName = currentFlat?.name || "My Flat";
 
-    const handleLogout = () => {
+    const handleExitFlatGroup = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("currentFlat");
         navigate("/signin");
@@ -77,9 +77,9 @@ function Navigation({ user }) {
                     </NavLink>
 
                     <button 
-                        className="nav-item logout-btn" 
-                        onClick={handleLogout}>
-                        Logout
+                        className="nav-item exit-flatgrp-btn" 
+                        onClick={handleExitFlatGroup}>
+                        Exit Flat Group
                     </button>
                 </aside>
 
