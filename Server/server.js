@@ -156,10 +156,32 @@ app.post("/items", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
-app.delete("/items/:id", async (req, res) => {
+app.post("/items/purchased/:id", async (req, res) => {
     const { id } = req.params;
+    const { flat_id } = req.body;
+    try {
+        const result = await pool.query(
+            "Select name from shopping_list where id = $1",
+            [id]
+        );
+        const newItem = result.rows[0];
+        await pool.query(
+            "INSERT INTO inventory(flat_id,item_name,quantity,split,cost) VALUES ($1, $2, $3,$4, $5)",
+            [flat_id, newItem.name, 1, null, null]
+        );
+        await pool.query(
+            "DELETE FROM shopping_list WHERE id = $1",
+            [id]
+        );
+        res.json({ success: true, message: "Item purchased" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
+app.delete("/items/remove/:id", async (req, res) => {
+    const { id } = req.params;
     try {
         const result = await pool.query(
             "DELETE FROM shopping_list WHERE id = $1 RETURNING *",
