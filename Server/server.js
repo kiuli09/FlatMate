@@ -18,6 +18,24 @@ app.get("/api/test", (req, res) => {
     res.json({ message: "FlatMate backend working!" });
 });
 
+app.get("/api/flats", async (req, res) => {
+    try {
+        const result = await pool.query(
+  `SELECT f.*
+   FROM flat f
+   JOIN flat_members fm ON f.id = fm.flat_id
+   WHERE fm.user_id = $1`,
+    [req.headers.user]
+);
+        console.log(result.rows)
+        res.json({ flats: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
 app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body;
     console.log("Login attempt:", email, password);
@@ -52,7 +70,7 @@ app.post("/api/auth/login", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
     console.log("Login attempt:", email, password);
-    
+
 });
 
 app.post("/api/auth/signup", async (req, res) => {
@@ -95,6 +113,11 @@ app.post("/api/auth/create-flat", async (req, res) => {
         );
         console.log(created_by);
         const newFlat = result.rows[0];
+        await pool.query(
+            `INSERT INTO flat_members (user_id, flat_id)
+            VALUES ($1, $2)`,
+            [created_by, newFlat.id]
+        );
 
         res.status(201).json({
             success: true,
@@ -107,7 +130,7 @@ app.post("/api/auth/create-flat", async (req, res) => {
 });
 
 app.post("/items", async (req, res) => {
-    const { name,flat_id,added_by } = req.body;
+    const { name, flat_id, added_by } = req.body;
     try {
         const result = await pool.query(
             "INSERT INTO shopping_list(flat_id,name,quantity,added_by) VALUES ($1, $2, $3, $4) RETURNING *",

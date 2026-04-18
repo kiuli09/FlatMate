@@ -1,8 +1,9 @@
 import "./HomePage.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useEffect } from "react";
 
-function HomePage({ user, flats }) {
+function HomePage({ user, flats, setFlats }) {
   const navigate = useNavigate();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -13,6 +14,34 @@ function HomePage({ user, flats }) {
 
   const displayName =
     user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
+
+  useEffect(() => {
+  const fetchFlats = async () => {
+    try {
+      const res = await fetch(`${API}/api/flats`, {
+        headers: {
+          user: user.id
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Error fetching flats:", data.message);
+        return;
+      }
+
+      setFlats(data.flats);
+
+    } catch (error) {
+      console.error("Error fetching flats:", error);
+    }
+  };
+
+  if (user) {
+    fetchFlats();
+  }
+}, [user?.id]);
 
   const handleSelectFlat = (flat) => {
     localStorage.setItem("currentFlat", JSON.stringify(flat));
