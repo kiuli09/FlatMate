@@ -5,6 +5,8 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
 import HomePage from "./components/HomePage";
+import Finance from "./Finance";
+import Navigation from "./Navigation";
 
 function App() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -12,27 +14,30 @@ function App() {
     return (
         <Routes>
             <Route
+                path="/signin"
+                element={!user ? <SignIn /> : <Navigate to="/" replace />}
+            />
+
+            <Route
+                path="/signup"
+                element={!user ? <SignUp /> : <Navigate to="/" replace />}
+            />
+
+            <Route
                 path="/"
-                element={user ? <HomePage user={user} /> : <Navigate to="/signin" replace />}
+                element={
+                    user ? <HomePage user={user} flats={flats} /> : <Navigate to="/signin" replace />
+                }
             />
 
             <Route
-                path="/dashboard"
-                element={user ? <Dashboard user={user} /> : <Navigate to="/signin" replace />}
-            />
-
-            <Route
-                path="/shoppinglist"
-                element={user ? <ShoppingList user={user} /> : <Navigate to="/signin" replace />}
-            />
-
-            <Route
-                path="/inventory"
-                element={user ? <Inventory user={user} /> : <Navigate to="/signin" replace />}
-            />
-
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
+                element={user ? <Navigation user={user} /> : <Navigate to="/signin" replace />}
+            >
+                <Route path="/dashboard" element={<Dashboard user={user} />} />
+                <Route path="/finances" element={<Finance user={user} />} />
+                <Route path="/shoppinglist" element={<ShoppingList user={user} />} />
+                <Route path="/inventory" element={<Inventory user={user} />} />
+            </Route>
         </Routes>
     );
 }
