@@ -91,6 +91,13 @@ function HomePage({ user, flats, setFlats }) {
     }
   };
 
+  const handleLogout = () => {
+    console.log("Logout clicked");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentFlat");
+    window.location.href = "/signin";
+  };
   return (
     <div className="home-page">
       <header className="home-header">
@@ -99,6 +106,9 @@ function HomePage({ user, flats, setFlats }) {
         <div className="user-section">
           <span className="user-name">{displayName}</span>
           <div className="avatar-placeholder"></div>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </header>
 
