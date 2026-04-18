@@ -1,103 +1,79 @@
 import "./ShoppingList.css";
-import { NavLink } from "react-router-dom";
 import { useState } from "react";
 
 function ShoppingList({ user }) {
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState("");
+
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+
     const handleAddItem = async () => {
         if (!newItem.trim()) return;
-        console.log("RAW localStorage:", localStorage.getItem("currentFlat"));
+
+        if (!currentFlat?.id) {
+            console.error("No current flat found.");
+            return;
+        }
+
         try {
             console.log("DEBUG:", { newItem, currentFlat, user });
+
             const res = await fetch(`${API}/items`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ name: newItem, flat_id: currentFlat.id, added_by: user?.id }),
+                body: JSON.stringify({
+                    name: newItem,
+                    flat_id: currentFlat.id,
+                    added_by: user?.id,
+                }),
             });
 
             if (!res.ok) {
-    const errText = await res.text();
-    console.error("BACKEND ERROR:", errText);
-    return;
-}
+                const errText = await res.text();
+                console.error("BACKEND ERROR:", errText);
+                return;
+            }
 
             const data = await res.json();
-
-            // Use the DB-returned item (correct id, etc.)
-            setItems(prevItems => [...prevItems, data]);
-
-            setNewItem(""); // clear input
+            setItems((prevItems) => [...prevItems, data]);
+            setNewItem("");
         } catch (error) {
             console.error("Error adding item:", error);
         }
     };
 
     return (
-        <div className="dashboard-page">
-            <header className="topbar">
-                <div className="topbar-left">
-                    <div className="avatar-placeholder"></div>
-                    <span className="flat-name">My Flat</span>
-                </div>
-
-                <h1 className="app-title">FlatMate</h1>
-
-                <div className="topbar-right">
-                    <span className="user-name">{user?.username || "User"}</span>
-                    <div className="avatar-placeholder"></div>
-                </div>
-            </header>
-
-            <div className="dashboard-body">
-                <aside className="sidebar">
-                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Finances
-                    </NavLink>
-                    <NavLink to="/shoppinglist" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Shopping List
-                    </NavLink>
-                    <NavLink to="/inventory" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Inventory
-                    </NavLink>
-                    <NavLink to="/timetable" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Timetable
-                    </NavLink>
-                </aside>
-
-                <main className="main-content">
-                    <h2>Shopping List</h2>
-
-                    {/* Add item section */}
-                    <div className="add-item">
-                        <input
-                            type="text"
-                            placeholder="Enter item..."
-                            value={newItem}
-                            onChange={(e) => setNewItem(e.target.value)}
-                        />
-                        <button onClick={handleAddItem}>Add</button>
-                    </div>
-
-                    {/* Display items */}
-                    <div className="items-list">
-                        {items.length === 0 ? (
-                            <p>No items yet</p>
-                        ) : (
-                            items.map((item) => (
-                                <div key={item.id} className="shopping-item">
-                                    {item.name}
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </main>
+        <>
+            <div className="welcome-section">
+                <h2>Shopping List</h2>
+                <p>Add and keep track of items your flat needs.</p>
             </div>
-        </div>
+
+            <div className="add-item">
+                <input
+                    type="text"
+                    placeholder="Enter item..."
+                    value={newItem}
+                    onChange={(e) => setNewItem(e.target.value)}
+                />
+                <button onClick={handleAddItem}>Add</button>
+            </div>
+
+            <div className="items-list">
+                {items.length === 0 ? (
+                    <p>No items yet</p>
+                ) : (
+                    items.map((item) => (
+                        <div key={item.id} className="shopping-item">
+                            {item.name}
+                        </div>
+                    ))
+                )}
+            </div>
+        </>
     );
 }
 
