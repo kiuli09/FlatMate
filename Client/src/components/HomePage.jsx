@@ -9,7 +9,10 @@ function HomePage({ user, flats }) {
   const [flatName, setFlatName] = useState("");
   const [members, setMembers] = useState("");
 
-  const API = "http://localhost:5000";
+  const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+  const displayName =
+    user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
 
   const handleSelectFlat = (flat) => {
     localStorage.setItem("currentFlat", JSON.stringify(flat));
@@ -38,7 +41,7 @@ function HomePage({ user, flats }) {
         body: JSON.stringify({
           name: flatName,
           members: Number(members),
-          created_by: user.id
+          created_by: user.id,
         }),
       });
 
@@ -48,32 +51,31 @@ function HomePage({ user, flats }) {
         console.error("Backend error:", data.message);
         return;
       }
-      console.log("Flat created successfully:", data);
 
       localStorage.setItem("currentFlat", JSON.stringify(data.flat));
       setFlatName("");
       setMembers("");
       setShowCreateForm(false);
       navigate("/dashboard");
-
     } catch (error) {
       console.error("Error creating flat:", error);
     }
   };
+
   return (
     <div className="home-page">
       <header className="home-header">
         <h1 className="app-title">FlatMate</h1>
 
         <div className="user-section">
-          <span className="user-name">{user?.username || "User"}</span>
+          <span className="user-name">{displayName}</span>
           <div className="avatar-placeholder"></div>
         </div>
       </header>
 
       <main className="home-content">
         <section className="welcome-section">
-          <h2>Welcome back, {user?.username || "flatmate"}</h2>
+          <h2>Welcome back, {displayName}</h2>
           <p>Select a flat to continue or get started below.</p>
         </section>
 
@@ -107,7 +109,9 @@ function HomePage({ user, flats }) {
               </div>
 
               <div className="form-buttons">
-                <button type="submit" className="submit-btn">Create Flat</button>
+                <button type="submit" className="submit-btn">
+                  Create Flat
+                </button>
                 <button
                   type="button"
                   className="cancel-btn"
