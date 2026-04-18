@@ -7,33 +7,35 @@ function ShoppingList({ user }) {
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
-      useEffect(() => {
-      const fetchItems = async () => {
-        try {
-          const res = await fetch(`${API}/items`, {
-            headers: {
-              flat : currentFlat?.id
-            },
-          });
-    
-          const data = await res.json();
-          
-          if (!res.ok) {
-            console.error("Error fetching items:", data.message);
-            return;
-          }
-    
-          setItems(data.items);
-    
-        } catch (error) {
-          console.error("Error fetching items:", error);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`${API}/items`, {
+                    headers: {
+                        flat: currentFlat?.id
+                    },
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error("Error fetching items:", data.message);
+                    return;
+                }
+
+                setItems(data.items);
+
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            }
+        };
+
+        if (user) {
+            fetchItems();
         }
-      };
-    
-      if (user) {
-        fetchItems();
-      }
     }, [user?.id]);
+
     const handleAddItem = async () => {
         if (!newItem.trim()) return;
 
@@ -71,6 +73,24 @@ function ShoppingList({ user }) {
         }
     };
 
+    const handleCheckItem = async (itemId) => {
+        try {
+            const res = await fetch(`${API}/items/${itemId}`, {
+                method: "DELETE",
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error("Error deleting item:", errText);
+                return;
+            }
+
+            setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+        } catch (error) {
+            console.error("Error deleting item:", error);
+        }
+    };
+
     return (
         <>
             <div className="welcome-section">
@@ -84,6 +104,11 @@ function ShoppingList({ user }) {
                     placeholder="Enter item..."
                     value={newItem}
                     onChange={(e) => setNewItem(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleAddItem();
+                        }
+                    }}
                 />
                 <button onClick={handleAddItem}>Add</button>
             </div>
@@ -94,7 +119,13 @@ function ShoppingList({ user }) {
                 ) : (
                     items.map((item) => (
                         <div key={item.id} className="shopping-item">
-                            {item.name}
+                            <label className="shopping-item-row">
+                                <input
+                                    type="checkbox"
+                                    onChange={() => handleCheckItem(item.id)}
+                                />
+                                <span>{item.name}</span>
+                            </label>
                         </div>
                     ))
                 )}
