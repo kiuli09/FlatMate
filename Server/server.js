@@ -1,11 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 
-
 const app = express();
 const PORT = 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
+const { nanoid } = require("nanoid");
 
 app.use(cors());
 app.use(express.json());
@@ -118,11 +118,11 @@ app.post("/api/auth/signup", async (req, res) => {
 app.post("/api/auth/create-flat", async (req, res) => {
     const { name, members, created_by } = req.body;
     console.log("Create flat attempt:", name, members, created_by);
-
+    const joinCode = nanoid(6).toUpperCase();
     try {
         const result = await pool.query(
-            "INSERT INTO flat(name, num_people, created_by) VALUES ($1, $2, $3) RETURNING *",
-            [name, members, created_by]
+            "INSERT INTO flat(name, num_people, created_by, join_code) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, members, created_by, joinCode]
         );
         console.log(created_by);
         const newFlat = result.rows[0];
