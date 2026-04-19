@@ -1,7 +1,13 @@
 import "./Dashboard.css";
+import { useState } from "react";
 
 function Dashboard({ user }) {
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+    const [showMembersModal, setShowMembersModal] = useState(false);
+    const [membersList, setMembersList] = useState([]);
+    const [loadingMembers, setLoadingMembers] = useState(false);
 
     const displayName =
         user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
@@ -19,6 +25,35 @@ function Dashboard({ user }) {
         }
     };
 
+    const handleOpenMembers = async () => {
+        if (!currentFlat?.id) return;
+
+        setShowMembersModal(true);
+        setLoadingMembers(true);
+
+        try {
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error(data.message);
+                setMembersList([]);
+                return;
+            }
+
+            setMembersList(data.members || []);
+        } catch (err) {
+            console.error("Error fetching members:", err);
+            setMembersList([]);
+        } finally {
+            setLoadingMembers(false);
+        }
+    };
+
+    const handleCloseMembers = () => {
+        setShowMembersModal(false);
+    };
+
     return (
         <>
             <section className="welcome-banner">
@@ -32,9 +67,13 @@ function Dashboard({ user }) {
                     <p className="card-value">{flatName}</p>
                 </div>
 
-                <div className="dashboard-card">
+                <div
+                    className="dashboard-card clickable-card"
+                    onClick={handleOpenMembers}
+                >
                     <h3>Members</h3>
                     <p className="card-value">{memberCount}</p>
+                    <p className="card-hint">Click to view members</p>
                 </div>
 
                 <div className="dashboard-card">
@@ -75,6 +114,45 @@ function Dashboard({ user }) {
                     <p>No upcoming bills yet.</p>
                 </div>
             </section>
+
+            {showMembersModal && (
+                <div className="modal-overlay" onClick={handleCloseMembers}>
+                    <div
+                        className="members-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header">
+                            <h3>Flat Members</h3>
+                            <button
+                                className="close-modal-btn"
+                                onClick={handleCloseMembers}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {loadingMembers ? (
+                            <p>Loading members...</p>
+                        ) : membersList.length > 0 ? (
+                            <div className="members-list">
+                                {membersList.map((member) => (
+                                    <div className="member-row" key={member.id}>
+                                        <div className="member-avatar">
+                                            {member.name?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="member-info">
+                                            <p className="member-name">{member.name}</p>
+                                            <p className="member-email">{member.email}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p>No members found.</p>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 }
