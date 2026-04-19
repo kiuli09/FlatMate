@@ -94,8 +94,8 @@ app.post("/api/auth/signup", async (req, res) => {
         const hashedPassword = await argon2.hash(password);
 
         const result = await pool.query(
-            "INSERT INTO users(flat_id, email, name, password) VALUES ($1, $2, $3, $4) RETURNING id, email, name",
-            [null, email, username, hashedPassword]
+            "INSERT INTO users(email, name, password) VALUES ($1, $2, $3) RETURNING id, email, name",
+            [email, username, hashedPassword]
         );
 
         const newUser = result.rows[0];
