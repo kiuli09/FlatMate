@@ -5,6 +5,7 @@
 .welcome-section h2 {
   margin: 0 0 8px 0;
   font-size: 1.8rem;
+  color: #0f172a;
 }
 
 .welcome-section p {
@@ -12,14 +13,96 @@
   color: #6b7280;
 }
 
-.content-panel {
-  background-color: white;
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.add-btn {
+  padding: 10px 16px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #43a047;
+}
+
+.inventory-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background: white;
+  padding: 16px;
   border-radius: 14px;
-  padding: 20px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
-.content-panel p {
+.inventory-form input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.inventory-form input:focus {
+  border-color: #4caf50;
+}
+
+.inventory-form button {
+  padding: 10px 16px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inventory-form button:hover {
+  background: #43a047;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item-card {
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+.item-info p {
   margin: 0;
   color: #6b7280;
+}
+
+.empty-state {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  color: #6b7280;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }

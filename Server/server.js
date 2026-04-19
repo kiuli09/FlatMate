@@ -181,6 +181,39 @@ app.delete("/items/:id", async (req, res) => {
     }
 });
 
+app.post("/api/inventory", async (req, res) => {
+    const { flat_id, item_name, quantity } = req.body;
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO inventory (flat_id, item_name, quantity)
+             VALUES ($1, $2, $3)
+             RETURNING *`,
+            [flat_id, item_name, quantity]
+        );
+
+        res.status(201).json({ item: result.rows[0] });
+    } catch (err) {
+        console.error("Error adding inventory item:", err);
+        res.status(500).json({ message: "Error adding inventory item" });
+    }
+});
+
+app.get("/api/inventory/:flatId", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            "SELECT * FROM inventory WHERE flat_id = $1 ORDER BY id ASC",
+            [flatId]
+        );
+
+        res.json({ items: result.rows });
+    } catch (err) {
+        console.error("Error fetching inventory:", err);
+        res.status(500).json({ message: "Error fetching inventory" });
+    }
+});
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
