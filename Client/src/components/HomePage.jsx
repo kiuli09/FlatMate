@@ -7,9 +7,11 @@ function HomePage({ user, flats, setFlats }) {
   const navigate = useNavigate();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showJoinForm, setShowJoinForm] = useState(false);
   const [flatName, setFlatName] = useState("");
   const [members, setMembers] = useState("");
-
+  const [joinCode, setJoinCode] = useState("");
+  
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const displayName =
@@ -54,7 +56,8 @@ function HomePage({ user, flats, setFlats }) {
   };
 
   const handleJoinFlat = () => {
-    console.log("Join flat clicked");
+    setShowJoinForm(true);
+    //console.log("Join flat clicked");
   };
 
   const handleSubmitCreateFlat = async (e) => {
@@ -90,6 +93,38 @@ function HomePage({ user, flats, setFlats }) {
       console.error("Error creating flat:", error);
     }
   };
+
+  const handleSubmitJoinFlat = async (e) => {
+    e.preventDefault();
+    
+    try{
+      const res = await fetch(`${API}/api/auth/join-flat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        join_code: joinCode, // Using joinCode state for join code input
+        user_id: user.id,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Backend error:", data.message);
+      return;
+    }
+
+    localStorage.setItem("currentFlat", JSON.stringify(data.flat));
+    setJoinCode("");
+    setShowJoinForm(false);
+    navigate("/dashboard");
+    } catch (error) {
+      console.error("Error joining flat:", error);
+    }
+  }
 
   const handleLogout = () => {
     console.log("Logout clicked");
@@ -155,6 +190,37 @@ function HomePage({ user, flats, setFlats }) {
                   type="button"
                   className="cancel-btn"
                   onClick={() => setShowCreateForm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
+
+        {showJoinForm && (
+          <section className="join-flat-section">
+            <h3>Join a Flat</h3>
+            <form className="join-flat-form" onSubmit={handleSubmitJoinFlat}>
+              <div className="form-group">
+                <label htmlFor="joinCode">Join Code</label>
+                <input
+                  id="joinCode"
+                  type="text"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  placeholder="Enter join code"
+                  required
+                />
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="submit-btn">
+                  Join Flat
+                </button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => setShowJoinForm(false)}
                 >
                   Cancel
                 </button>
