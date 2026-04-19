@@ -268,6 +268,27 @@ app.get("/api/inventory/:flatId", async (req, res) => {
         res.status(500).json({ message: "Error fetching inventory" });
     }
 });
+
+app.get("/api/flats/:flatId/members", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT u.id, u.name, u.email
+             FROM flat_members fm
+             JOIN users u ON fm.user_id = u.id
+             WHERE fm.flat_id = $1
+             ORDER BY u.name ASC`,
+            [flatId]
+        );
+
+        res.json({ members: result.rows });
+    } catch (err) {
+        console.error("Error fetching flat members:", err);
+        res.status(500).json({ message: "Error fetching flat members" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
