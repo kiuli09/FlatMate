@@ -73,9 +73,40 @@ function ShoppingList({ user }) {
         }
     };
 
+    const handlePurchased = async (itemId) => {
+
+        if (!currentFlat?.id) {
+            console.error("No current flat found.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API}/items/purchased/${itemId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: itemId,
+                    flat_id: currentFlat.id
+                }),
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error("Error purchasing item:", errText);
+                return;
+            }
+
+            setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+        } catch (error) {
+            console.error("Error purchasing item:", error);
+        }
+    };
+
     const handleCheckItem = async (itemId) => {
         try {
-            const res = await fetch(`${API}/items/${itemId}`, {
+            const res = await fetch(`${API}/items/remove/${itemId}`, {
                 method: "DELETE",
             });
 
@@ -120,11 +151,18 @@ function ShoppingList({ user }) {
                     items.map((item) => (
                         <div key={item.id} className="shopping-item">
                             <label className="shopping-item-row">
-                                <input
-                                    type="checkbox"
-                                    onChange={() => handleCheckItem(item.id)}
-                                />
                                 <span>{item.name}</span>
+                                <div className="actions">
+                                    <button
+                                        className="purchased-btn"
+                                        onClick={() => handlePurchased(item.id)}> Purchased 
+                                    </button>
+
+                                    <button
+                                        className="remove-btn"
+                                        onClick={() => handleCheckItem(item.id)}> ✕
+                                    </button>  
+                                </div>
                             </label>
                         </div>
                     ))

@@ -49,3 +49,57 @@
   border-radius: 12px;
   font-weight: 500;
 }
+
+/* layout */
+.shopping-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.item-name {
+  font-size: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+
+.actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+
+.purchased-btn {
+  background: rgba(255, 255, 255, 0.9);
+  color: #166534;
+}
+
+.purchased-btn:hover {
+  background: #ffffff;
+  color: #14532d;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+
+.remove-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.remove-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}

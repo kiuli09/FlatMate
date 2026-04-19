@@ -1,11 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 
-
 const app = express();
 const PORT = 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
+const { nanoid } = require("nanoid");
 
 app.use(cors());
 app.use(express.json());
@@ -118,11 +118,11 @@ app.post("/api/auth/signup", async (req, res) => {
 app.post("/api/auth/create-flat", async (req, res) => {
     const { name, members, created_by } = req.body;
     console.log("Create flat attempt:", name, members, created_by);
-
+    const joinCode = nanoid(6).toUpperCase();
     try {
         const result = await pool.query(
-            "INSERT INTO flat(name, num_people, created_by) VALUES ($1, $2, $3) RETURNING *",
-            [name, members, created_by]
+            "INSERT INTO flat(name, num_people, created_by, join_code) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, members, created_by, joinCode]
         );
         console.log(created_by);
         const newFlat = result.rows[0];
@@ -156,10 +156,32 @@ app.post("/items", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
-app.delete("/items/:id", async (req, res) => {
+app.post("/items/purchased/:id", async (req, res) => {
     const { id } = req.params;
+    const { flat_id } = req.body;
+    try {
+        const result = await pool.query(
+            "Select name from shopping_list where id = $1",
+            [id]
+        );
+        const newItem = result.rows[0];
+        await pool.query(
+            "INSERT INTO inventory(flat_id,item_name,quantity,split,cost) VALUES ($1, $2, $3,$4, $5)",
+            [flat_id, newItem.name, 1, null, null]
+        );
+        await pool.query(
+            "DELETE FROM shopping_list WHERE id = $1",
+            [id]
+        );
+        res.json({ success: true, message: "Item purchased" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
+app.delete("/items/remove/:id", async (req, res) => {
+    const { id } = req.params;
     try {
         const result = await pool.query(
             "DELETE FROM shopping_list WHERE id = $1 RETURNING *",
