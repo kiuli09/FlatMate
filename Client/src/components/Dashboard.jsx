@@ -8,6 +8,16 @@ function Dashboard({ user }) {
 
     const flatName = currentFlat?.name || "No flat selected";
     const memberCount = currentFlat?.num_people || 0;
+    const joinCode = currentFlat?.join_code || "N/A";
+
+    const handleCopyCode = async () => {
+        try {
+            await navigator.clipboard.writeText(joinCode);
+            alert("Join code copied!");
+        } catch (err) {
+            console.error("Failed to copy join code:", err);
+        }
+    };
 
     return (
         <>
@@ -28,14 +38,20 @@ function Dashboard({ user }) {
                 </div>
 
                 <div className="dashboard-card">
+                    <h3>Join Code</h3>
+                    <p className="card-value">{joinCode}</p>
+                    <button onClick={handleCopyCode}>Copy Code</button>
+                </div>
+
+                <div className="dashboard-card">
                     <h3>Shopping Items</h3>
                     <p className="card-value">0</p>
                 </div>
 
-                <div className="dashboard-card">
+                {/* <div className="dashboard-card">
                     <h3>Outstanding Bills</h3>
                     <p className="card-value">$0</p>
-                </div>
+                </div> */}
             </section>
 
             <section className="content-grid">
