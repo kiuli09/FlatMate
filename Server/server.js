@@ -142,6 +142,38 @@ app.post("/api/auth/create-flat", async (req, res) => {
     }
 });
 
+app.post("/api/auth/join-flat", async (req, res) => {
+    const { join_code, user_id } = req.body;
+    console.log("Join flat attempt:", join_code, user_id);
+    try {
+        const result = await pool.query(
+            "SELECT * FROM flat WHERE join_code = $1",
+            [join_code]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Flat not found" });
+        }
+
+        const flat = result.rows[0];
+
+        await pool.query(
+            `INSERT INTO flat_members (user_id, flat_id)
+            VALUES ($1, $2)`,
+            [user_id, flat.id]
+        );
+
+        res.json({
+            success: true,
+            message: "Successfully joined flat",
+            flat: flat
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 app.post("/items", async (req, res) => {
     const { name, flat_id, added_by } = req.body;
     try {
