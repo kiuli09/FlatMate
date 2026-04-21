@@ -1,44 +1,111 @@
 import "./Inventory.css";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-function Inventory({ user }) {
+function Inventory() {
+    const [items, setItems] = useState([]);
+    const [showForm, setShowForm] = useState(false);
+    const [name, setName] = useState("");
+    const [quantity, setQuantity] = useState(1);
+
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`${API}/api/inventory/${currentFlat.id}`);
+                const data = await res.json();
+                setItems(data.items || []);
+            } catch (err) {
+                console.error("Error fetching inventory:", err);
+            }
+        };
+
+        if (currentFlat?.id) {
+            fetchItems();
+        }
+    }, []);
+
+    const handleAddItem = async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch(`${API}/api/inventory`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    flat_id: currentFlat.id,
+                    item_name: name,
+                    quantity: quantity,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setItems([...items, data.item]);
+                setShowForm(false);
+                setName("");
+                setQuantity(1);
+            } else {
+                console.error(data.message);
+            }
+        } catch (err) {
+            console.error("Error adding item:", err);
+        }
+    };
+
     return (
-        <div className="dashboard-page">
-            <header className="topbar">
-                <div className="topbar-left">
-                    <div className="avatar-placeholder"></div>
-                    <span className="flat-name">My Flat</span>
-                </div>
+        <div>
+            <div className="welcome-section">
+                <h2>Inventory</h2>
+                <p>Shared flat groceries, ingredients, and household items.</p>
+            </div>
 
-                <h1 className="app-title">FlatMate</h1>
+            <div className="inventory-header">
+                <div></div>
+                <button className="add-btn" onClick={() => setShowForm(!showForm)}>
+                    {showForm ? "Cancel" : "+ Add Item"}
+                </button>
+            </div>
 
-                <div className="topbar-right">
-                    <span className="user-name">{user?.username || "User"}</span>
-                    <div className="avatar-placeholder"></div>
-                </div>
-            </header>
+            {showForm && (
+                <form className="inventory-form" onSubmit={handleAddItem}>
+                    <input
+                        type="text"
+                        placeholder="Item name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="number"
+                        min="1"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        required
+                    />
+                    <button type="submit">Add</button>
+                </form>
+            )}
 
-            <div className="dashboard-body">
-                <aside className="sidebar">
-                    <NavLink to="/finance" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Finances
-                    </NavLink>
-                    <NavLink to="/shoppinglist" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Shopping List
-                    </NavLink>
-                    <NavLink to="/inventory" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Inventory
-                    </NavLink>
-                    <NavLink to="/timetable" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Timetable
-                    </NavLink>
-                </aside>
-
-                <main className="main-content">
-                    <div className="welcome-section">
-
+            <div className="items-list">
+                {items.length === 0 ? (
+                    <div className="empty-state">
+                        No inventory items yet.
                     </div>
-                </main>
+                ) : (
+                    items.map((item) => (
+                        <div key={item.id} className="item-card">
+                            <div className="item-info">
+                                <h3>{item.item_name}</h3>
+                                <p>Quantity: {item.quantity}</p>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

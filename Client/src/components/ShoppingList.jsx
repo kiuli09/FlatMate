@@ -1,84 +1,174 @@
 import "./ShoppingList.css";
-import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function ShoppingList({ user }) {
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState("");
 
-    const handleAddItem = () => {
-        if (newItem.trim() === "") return;
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
 
-        const item = {
-            id: Date.now(),
-            name: newItem
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`${API}/items`, {
+                    headers: {
+                        flat: currentFlat?.id
+                    },
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error("Error fetching items:", data.message);
+                    return;
+                }
+
+                setItems(data.items);
+
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            }
         };
 
-        setItems([...items, item]);
-        setNewItem(""); // clear input
+        if (user) {
+            fetchItems();
+        }
+    }, [user?.id]);
+
+    const handleAddItem = async () => {
+        if (!newItem.trim()) return;
+
+        if (!currentFlat?.id) {
+            console.error("No current flat found.");
+            return;
+        }
+
+        try {
+            console.log("DEBUG:", { newItem, currentFlat, user });
+
+            const res = await fetch(`${API}/items`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: newItem,
+                    flat_id: currentFlat.id,
+                    added_by: user?.id,
+                }),
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error("BACKEND ERROR:", errText);
+                return;
+            }
+
+            const data = await res.json();
+            setItems((prevItems) => [...prevItems, data]);
+            setNewItem("");
+        } catch (error) {
+            console.error("Error adding item:", error);
+        }
+    };
+
+    const handlePurchased = async (itemId) => {
+
+        if (!currentFlat?.id) {
+            console.error("No current flat found.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API}/items/purchased/${itemId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: itemId,
+                    flat_id: currentFlat.id
+                }),
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error("Error purchasing item:", errText);
+                return;
+            }
+
+            setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+        } catch (error) {
+            console.error("Error purchasing item:", error);
+        }
+    };
+
+    const handleCheckItem = async (itemId) => {
+        try {
+            const res = await fetch(`${API}/items/remove/${itemId}`, {
+                method: "DELETE",
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error("Error deleting item:", errText);
+                return;
+            }
+
+            setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+        } catch (error) {
+            console.error("Error deleting item:", error);
+        }
     };
 
     return (
-        <div className="dashboard-page">
-            <header className="topbar">
-                <div className="topbar-left">
-                    <div className="avatar-placeholder"></div>
-                    <span className="flat-name">My Flat</span>
-                </div>
-
-                <h1 className="app-title">FlatMate</h1>
-
-                <div className="topbar-right">
-                    <span className="user-name">{user?.username || "User"}</span>
-                    <div className="avatar-placeholder"></div>
-                </div>
-            </header>
-
-            <div className="dashboard-body">
-                <aside className="sidebar">
-                    <NavLink to="/finance" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Finances
-                    </NavLink>
-                    <NavLink to="/shoppinglist" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Shopping List
-                    </NavLink>
-                    <NavLink to="/inventory" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Inventory
-                    </NavLink>
-                    <NavLink to="/timetable" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                        Timetable
-                    </NavLink>
-                </aside>
-
-                <main className="main-content">
-                    <h2>Shopping List</h2>
-
-                    {/* Add item section */}
-                    <div className="add-item">
-                        <input
-                            type="text"
-                            placeholder="Enter item..."
-                            value={newItem}
-                            onChange={(e) => setNewItem(e.target.value)}
-                        />
-                        <button onClick={handleAddItem}>Add</button>
-                    </div>
-
-                    {/* Display items */}
-                    <div className="items-list">
-                        {items.length === 0 ? (
-                            <p>No items yet</p>
-                        ) : (
-                            items.map((item) => (
-                                <div key={item.id} className="shopping-item">
-                                    {item.name}
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </main>
+        <>
+            <div className="welcome-section">
+                <h2>Shopping List</h2>
+                <p>Add and keep track of items your flat needs.</p>
             </div>
-        </div>
+
+            <div className="add-item">
+                <input
+                    type="text"
+                    placeholder="Enter item..."
+                    value={newItem}
+                    onChange={(e) => setNewItem(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleAddItem();
+                        }
+                    }}
+                />
+                <button onClick={handleAddItem}>Add</button>
+            </div>
+
+            <div className="items-list">
+                {items.length === 0 ? (
+                    <p>No items yet</p>
+                ) : (
+                    items.map((item) => (
+                        <div key={item.id} className="shopping-item">
+                            <label className="shopping-item-row">
+                                <span>{item.name}</span>
+                                <div className="actions">
+                                    <button
+                                        className="purchased-btn"
+                                        onClick={() => handlePurchased(item.id)}> Purchased 
+                                    </button>
+
+                                    <button
+                                        className="remove-btn"
+                                        onClick={() => handleCheckItem(item.id)}> ✕
+                                    </button>  
+                                </div>
+                            </label>
+                        </div>
+                    ))
+                )}
+            </div>
+        </>
     );
 }
 

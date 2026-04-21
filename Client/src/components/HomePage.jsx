@@ -1,15 +1,49 @@
 import "./HomePage.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useEffect } from "react";
 
-function HomePage({ user, flats }) {
+function HomePage({ user, flats, setFlats }) {
   const navigate = useNavigate();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showJoinForm, setShowJoinForm] = useState(false);
   const [flatName, setFlatName] = useState("");
   const [members, setMembers] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+  
+  const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  const API = "http://localhost:5000";
+  const displayName =
+    user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
+
+  useEffect(() => {
+  const fetchFlats = async () => {
+    try {
+      const res = await fetch(`${API}/api/flats`, {
+        headers: {
+          user: user.id
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Error fetching flats:", data.message);
+        return;
+      }
+
+      setFlats(data.flats);
+
+    } catch (error) {
+      console.error("Error fetching flats:", error);
+    }
+  };
+
+  if (user) {
+    fetchFlats();
+  }
+}, [user?.id]);
 
   const handleSelectFlat = (flat) => {
     localStorage.setItem("currentFlat", JSON.stringify(flat));
@@ -22,7 +56,8 @@ function HomePage({ user, flats }) {
   };
 
   const handleJoinFlat = () => {
-    console.log("Join flat clicked");
+    setShowJoinForm(true);
+    //console.log("Join flat clicked");
   };
 
   const handleSubmitCreateFlat = async (e) => {
@@ -38,6 +73,7 @@ function HomePage({ user, flats }) {
         body: JSON.stringify({
           name: flatName,
           members: Number(members),
+          created_by: user.id,
         }),
       });
 
@@ -47,17 +83,55 @@ function HomePage({ user, flats }) {
         console.error("Backend error:", data.message);
         return;
       }
-      console.log("Flat created successfully:", data);
 
       localStorage.setItem("currentFlat", JSON.stringify(data.flat));
       setFlatName("");
       setMembers("");
       setShowCreateForm(false);
       navigate("/dashboard");
-
     } catch (error) {
       console.error("Error creating flat:", error);
     }
+  };
+
+  const handleSubmitJoinFlat = async (e) => {
+    e.preventDefault();
+    
+    try{
+      const res = await fetch(`${API}/api/auth/join-flat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        join_code: joinCode, // Using joinCode state for join code input
+        user_id: user.id,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Backend error:", data.message);
+      return;
+    }
+
+    localStorage.setItem("currentFlat", JSON.stringify(data.flat));
+    setJoinCode("");
+    setShowJoinForm(false);
+    navigate("/dashboard");
+    } catch (error) {
+      console.error("Error joining flat:", error);
+    }
+  }
+
+  const handleLogout = () => {
+    console.log("Logout clicked");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentFlat");
+    window.location.href = "/signin";
   };
   return (
     <div className="home-page">
@@ -65,14 +139,17 @@ function HomePage({ user, flats }) {
         <h1 className="app-title">FlatMate</h1>
 
         <div className="user-section">
-          <span className="user-name">{user?.username || "User"}</span>
+          <span className="user-name">{displayName}</span>
           <div className="avatar-placeholder"></div>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </header>
 
       <main className="home-content">
         <section className="welcome-section">
-          <h2>Welcome back, {user?.username || "flatmate"}</h2>
+          <h2>Welcome back, {displayName}</h2>
           <p>Select a flat to continue or get started below.</p>
         </section>
 
@@ -106,11 +183,44 @@ function HomePage({ user, flats }) {
               </div>
 
               <div className="form-buttons">
-                <button type="submit" className="submit-btn">Create Flat</button>
+                <button type="submit" className="submit-btn">
+                  Create Flat
+                </button>
                 <button
                   type="button"
                   className="cancel-btn"
                   onClick={() => setShowCreateForm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
+
+        {showJoinForm && (
+          <section className="join-flat-section">
+            <h3>Join a Flat</h3>
+            <form className="join-flat-form" onSubmit={handleSubmitJoinFlat}>
+              <div className="form-group">
+                <label htmlFor="joinCode">Join Code</label>
+                <input
+                  id="joinCode"
+                  type="text"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  placeholder="Enter join code"
+                  required
+                />
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="submit-btn">
+                  Join Flat
+                </button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => setShowJoinForm(false)}
                 >
                   Cancel
                 </button>
