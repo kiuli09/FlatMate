@@ -8,7 +8,7 @@ function Finance({ user }) {
     const [flatmate,setFlatmates] = useState(["Flatmate1","Flatmate3","Flatmate2","Flatmate4"]);
     const [owes,setOwes] = useState([0,100,100,0])
     const [paymentSplit, setPaymentSplit] = useState([25,25,25,25])
-    const [equalSplit, setEqalSplit] = useState(true)
+    const [equalSplit, setEqualSplit] = useState(true)
     const [currentAmount, setCurrentAmount] = useState(0)
 
     const updateCurrentAmount = (event) => {
@@ -17,7 +17,7 @@ function Finance({ user }) {
     }
 
     const updateEqualSplit = (event) => {
-        setEqalSplit(event.target.checked)
+        setEqualSplit(event.target.checked)
         console.log(equalSplit)
     }
 
@@ -105,7 +105,7 @@ function Finance({ user }) {
                             />
                             <label For="isEqualSplit">Everyone</label>
                             {equalSplit ? (
-                                <p>temp</p>
+                                <p></p>
                             ) : (
                                 <div>
                                     {flatmate.map((currentFlatmate,x) => (
