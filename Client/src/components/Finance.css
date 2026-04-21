@@ -148,3 +148,14 @@ body {
   margin: 0;
   color: #6b7280;
 }
+
+.finance-content {
+  display: flex;
+  align-content: flex-start;
+  gap: 20px;
+}
+
+.finance-element {
+  border: 2px solid black;
+  margin: 2px;
+}
