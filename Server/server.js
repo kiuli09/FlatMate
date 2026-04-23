@@ -49,6 +49,21 @@ app.get("/items", async (req, res) => {
     }
 });
 
+app.post("/expenses", async (req, res) => {
+    const { name, total, splits, flat_id } = req.body;
+    try {
+        const result = await pool.query(
+            "INSERT INTO transactions(flat_id, cost, type, receipt,items_purchased,status,evidence,completed_on) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            [flat_id, total, null, "one time payment", null, null, null, null]
+        );
+        res.status(201).json({ expense: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
 app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body;
     console.log("Login attempt:", email, password);
@@ -167,6 +182,26 @@ app.post("/api/auth/join-flat", async (req, res) => {
             success: true,
             message: "Successfully joined flat",
             flat: flat
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+app.post("/api/auth/leave-flat", async (req, res) => {
+    const { flat_id, user_id } = req.body;
+    console.log("Leave flat attempt:", flat_id, user_id);
+
+    try {
+        await pool.query(
+            "DELETE FROM flat_members WHERE flat_id = $1 AND user_id = $2",
+            [flat_id, user_id]
+        );
+
+        res.json({
+            success: true,
+            message: "Successfully left flat"
         });
     } catch (err) {
         console.error(err);
