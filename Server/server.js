@@ -288,6 +288,22 @@ app.post("/api/inventory", async (req, res) => {
     }
 });
 
+app.post("/api/inventory/search", async (req, res) => {
+    const { flat_id, query } = req.body;
+
+    try {
+        const result = await pool.query(
+            "SELECT * FROM inventory WHERE flat_id = $1 AND item_name ILIKE $2 ORDER BY id ASC",
+            [flat_id, `%${query}%`]
+        );
+
+        res.json({ items: result.rows });
+    } catch (err) {
+        console.error("Error searching inventory:", err);
+        res.status(500).json({ message: "Error searching inventory" });
+    }
+});
+
 app.get("/api/inventory/:flatId", async (req, res) => {
     const { flatId } = req.params;
 
