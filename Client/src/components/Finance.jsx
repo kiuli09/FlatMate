@@ -16,6 +16,7 @@ function Finance({ user }) {
 
     const updateCurrentAmount = (event) => {
         setCurrentAmount(event.target.value)
+        checkSplitValidity()
         console.log(currentAmount)
     }
 
@@ -27,9 +28,8 @@ function Finance({ user }) {
     }
 
     const updatePaymentSplit = (event,index) => {
-        checkSplitValidity()
         setPaymentSplit([...paymentSplit.slice(0,index),Number(event),...paymentSplit.slice(index+1)])
-        
+        checkSplitValidity()
     }
 
     const addTransaction = (event) => {
@@ -83,12 +83,15 @@ function Finance({ user }) {
             }
         }
     }
-// setFlatmates(["Flatmate1","Flatmate3","Flatmate2"]);
+
     return (
-                <main className="main-content">
-                    <h2>Finance</h2>
-                    <div className="finance-content">
-                        <div className="finance-element">
+                <main >
+                    <div className = "welcome-section">
+                        <h2>Finance</h2>
+                        <p>Manage finances with your flatmates</p>
+                    </div>
+                    <div className="finance-grid">
+                        <div className="finance-grid-element">
                             <h2>What your flatmates owe you</h2>
                             <table >
                                 <tbody>
@@ -106,31 +109,35 @@ function Finance({ user }) {
                             </table>
                         </div>
                         
-                        <div className="finance-element">
+                        <div className="finance-grid-element" >
                             <h2>
                                 Add Transaction
                             </h2>
-                            <input 
-                                type="number"
-                                placeholder = "Enter Amount" 
-                                onChange={updateCurrentAmount}
-                            />
-                            <div>
+                            <div className="add-transaction">
+                                <input 
+                                    type="number"
+                                    placeholder = "Enter Amount" 
+                                    onChange={updateCurrentAmount}
+                                />
+                            </div>
+                            <div className="add-transaction">
                                 <input 
                                     type="text" 
                                     name = "TransactionComment"
                                     placeholder="Add Comment"
                                 />
                             </div>
-                            <p>Who is paying?</p>
-                            <input 
-                                type="checkbox" 
-                                name="isEqualSplit" 
-                                id="equalSplitCheck" 
-                                checked = {equalSplit}
-                                onChange={updateEqualSplit}
-                            />
-                            <label For="isEqualSplit">Everyone</label>
+                            <div>
+                                <p>Who is paying?</p>
+                                <input 
+                                    type="checkbox" 
+                                    name="isEqualSplit" 
+                                    id="equalSplitCheck" 
+                                    checked = {equalSplit}
+                                    onChange={updateEqualSplit}
+                                />
+                                <label For="isEqualSplit">Everyone</label>
+                            </div>
                             
                             {equalSplit ? (
                                 <p></p>
@@ -138,7 +145,7 @@ function Finance({ user }) {
                                 <div>
                                     <p>{Number(getTotalPaymentSplit())}/{Number(currentAmount)}</p>
                                     {flatmate.map((currentFlatmate,x) => (
-                                        <div>
+                                        <div className="add-transaction">
                                             <input 
                                                 type="number"
                                                 id = {"box"+x}
