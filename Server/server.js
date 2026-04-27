@@ -340,6 +340,32 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
     }
 });
 
+app.delete("/api/inventory/:id", async (req, res) => {
+    const {id} = req.params;
+
+    try{
+
+        const result = await pool.query(
+            "DELETE FROM inventory WHERE id = $1 RETURNING *", 
+            [id]
+        );
+
+        if(result.rowCount === 0){
+            return res.status(404).json({message: "Inventory item not found"})
+        }
+
+        res.json({
+            success: true,
+            message: "Inventory item removed successfully",
+            item: result.rows[0]
+        });
+
+    }catch(err){
+        console.error("Error deleting inventory item:", err);
+        res.status(500).json({ message: "Error with deleting inventory item" });
+    }
+})
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

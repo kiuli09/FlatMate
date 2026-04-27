@@ -57,6 +57,28 @@ function Inventory() {
         }
     };
 
+    const handleDeleteItem = async (itemId) => {
+
+        try{
+
+            const res = await fetch (`${API}/api/inventory/${itemId}`, {
+                method: "DELETE",
+            });
+
+            const data = await res.json();
+
+            if(!res.ok){
+                alert(data.message || "Failed to remove item");
+                return;
+            }
+
+            setItems(items.filter((item) => item.id !== itemId));
+
+        }catch(err){
+            console.error("Errorwith removing item: ", err);
+        }
+    };
+
     return (
         <div>
             <div className="welcome-section">
@@ -103,7 +125,17 @@ function Inventory() {
                                 <h3>{item.item_name}</h3>
                                 <p>Quantity: {item.quantity}</p>
                             </div>
+
+                            <div className="actions">
+                                <button 
+                                    className="remove-btn" 
+                                    onClick={() => handleDeleteItem(item.id)}
+                                >
+                                    Remove
+                                </button>
+                            </div>
                         </div>
+
                     ))
                 )}
             </div>
