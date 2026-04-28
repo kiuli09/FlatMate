@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect,useEffect, useState } from "react";
 import { useRef } from "react";
 import "./Finance.css";
 import { NavLink } from "react-router-dom";
@@ -6,13 +6,65 @@ import { NavLink } from "react-router-dom";
 
 function Finance({ user }) {
     
-    const [flatmate,setFlatmates] = useState(["Flatmate1","Flatmate3","Flatmate2","Flatmate4"]);
+    const [flatmate,setFlatmates] = useState([]);
     const [owes,setOwes] = useState([0,100,100,0])
     const [paymentSplit, setPaymentSplit] = useState([25,25,25,25])
     const [equalSplit, setEqualSplit] = useState(true)
     const [currentAmount, setCurrentAmount] = useState(0)
     const [splitIsValid, setSplitIsValid] = useState(true)
+    const [transactions, setTransactions] = useState([])
+    const [comment, setComment] =useState("")
     const submitRef = useRef()
+    
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+
+    useEffect (() => {
+        console.log("usigeffect")
+        const fetchMembers = async () => {
+            console.log("FetchingMembers")
+            try {
+                console.log("Pulling from db")
+                const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+                const data = await res.json();
+                console.log(data.members)
+
+                setFlatmates(data.members || []);
+                console.log("a")
+                console.log(flatmate)
+            } catch (err) {
+                console.error("Error fetching Members:", err);
+            }
+        };
+        fetchMembers()
+    }, []);
+    
+    // const submitTransaction = async () => {
+    //     console.log("subittingTransaction")
+    //     try {
+    //         const res = await fetch(`${API}/api/finance/add-transaction`,{
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({
+    //                 flat_id: currentFlat.id,
+    //                 amount: currentAmount,
+    //                 comment: comment,
+    //                 split: paymentSplit,
+    //                 members: flatmate
+    //             })
+    //         })
+    //         console.log("Transaction Submitted")
+    //     }catch (err) {
+    //             console.error("Error submitting transactions:", err);
+    //         }
+    // }
+
+    const updateComment = (event) => {
+        setComment(event.target.value)
+        console.log(comment)
+    }
 
     const updateCurrentAmount = (event) => {
         setCurrentAmount(event.target.value)
@@ -57,6 +109,7 @@ function Finance({ user }) {
     const setSplitEqually = () => {
         let temp = paymentSplit
         console.log("Setting split equally")
+        console.log(transactions)
         for(let i = 0; i < paymentSplit.length; i++){
             temp[i] = currentAmount/flatmate.length
         }
@@ -98,7 +151,7 @@ function Finance({ user }) {
                                     {flatmate.map((currentFlatmate,x) => (
                                         <tr key={x}>
                                             <td>
-                                                {currentFlatmate} owes you ${owes[x]}
+                                                {currentFlatmate.name} owes you ${owes[x]}
                                             </td>
                                             <td>
                                                 {owes[x] === 0 ? "" : "for examplecost1"}
@@ -125,6 +178,7 @@ function Finance({ user }) {
                                     type="text" 
                                     name = "TransactionComment"
                                     placeholder="Add Comment"
+                                    onChange={updateComment}
                                 />
                             </div>
                             <div>
@@ -159,7 +213,12 @@ function Finance({ user }) {
                                     ))}
                                 </div> )}
                             <p>Submit</p>
-                            <input type="button" id = "TansactionSubmitButton" value="Add Transaction" ref={submitRef} onClick={addTransaction}/>
+                            <input 
+                                type="button" 
+                                id = "TansactionSubmitButton" 
+                                value="Add Transaction" 
+                                ref={submitRef} 
+                                onClick={addTransaction}/>
                         </div>
                     </div>
                 </main>

@@ -289,6 +289,40 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
     }
 });
 
+// app.post("/api/finance/add-transaction", async (req, res) => {
+//     console.log("Recieved Request")
+//     const { flat_id, amount, comment, split, members} = req.body
+//     console.log(flat_id)
+//     console.log(amount)
+//     console.log(comment)
+//     console.log(split)
+//     console.log(members)
+//     try{
+//         console.log("Runing Query")
+//         const transactions_result = await pool.query(
+//             `INSERT INTO transactions (flat_id, cost, type) 
+//              VALUES ($1,$2,$3)
+//              RETURNING transaction_id`,
+//             [flat_id,amount,comment]
+//         )
+        
+//         console.log(transactions_result)
+//         res.json({success: true})
+//         res.status(201)
+
+//         // const split_result = await pool.query(
+//         //     `INSERT INTO expense_split (flat_id, cost, type) 
+//         //      VALUES ($1,$2,$3)`,
+//         //     [flat_id,amount,comment]
+//         // )
+
+//         // res.json({transactions: split_result.rows})
+//     } catch (err) {
+//         console.error("Error fetching transactions:", err);
+//         res.status(501).json({ message: "Error fetching transactions" });
+//     }
+// });
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
