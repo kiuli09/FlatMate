@@ -112,8 +112,8 @@ function Inventory() {
                     <button type="submit">Add</button>
                 </form>
             )}
-
-            <div className="items-list">
+            
+            <div className="items-grid">
                 {items.length === 0 ? (
                     <div className="empty-state">
                         No inventory items yet.
