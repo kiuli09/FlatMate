@@ -1,7 +1,9 @@
 import "./Dashboard.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard({ user }) {
+    const navigate = useNavigate();
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -102,10 +104,10 @@ function Dashboard({ user }) {
                 <div className="content-panel">
                     <h3>Quick Actions</h3>
                     <div className="quick-actions">
-                        <button>Add Expense</button>
-                        <button>Add Shopping Item</button>
-                        <button>Update Inventory</button>
-                        <button>View Timetable</button>
+                        <button onClick={() => navigate("/finances")}>Add Expense</button>
+                        <button onClick={() => navigate("/shoppinglist")}>Add Shopping Item</button>
+                        <button onClick={() => navigate("/inventory")}>Update Inventory</button>
+                        <button onClick={() => navigate("/timetable")}>View Timetable</button>
                     </div>
                 </div>
 
