@@ -1,14 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Finance.css";
 
 function Finance({ user }) {
-    const [members, setMembers] = useState([user.username]);
+    const [members, setMembersList] = useState([]);
 
     const [expenseName, setExpenseName] = useState("");
     const [totalCost, setTotalCost] = useState("");
     const [splits, setSplits] = useState({});
     const [expenses, setExpenses] = useState([]);
 
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+    
+    //use effect to set members
+    useEffect(() => {
+        // Simulate fetching members from the server
+        const fetchMembers = async () => {
+             try {
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error(data.message);
+                setMembersList([]);
+                return;
+            }
+            setMembersList(data.members || []);
+        } catch (err) {
+            console.error("Error fetching members:", err);
+            setMembersList([]);
+        }
+    }
+        fetchMembers();
+}, [currentFlat?.id]);
 
     const handleSplitChange = (member, value) => {
         setSplits({
@@ -56,9 +80,9 @@ function Finance({ user }) {
                 <h3>Flat Members</h3>
 
                 <div className="member-list">
-                    {members.map((m, i) => (
-                        <div key={i} className="member-chip">
-                            {m}
+                    {members.map((m) => (
+                        <div key={m.id} className="member-chip">
+                            {m.name}
                         </div>
                     ))}
                 </div>
@@ -84,13 +108,13 @@ function Finance({ user }) {
                 <h4>Custom Split</h4>
 
                 {members.map((member) => (
-                    <div key={member} className="split-row">
-                        <label>{member}</label>
+                    <div key={member.id} className="split-row">
+                        <label>{member.name}</label>
                         <input
                             type="number"
                             placeholder="Amount"
                             onChange={(e) =>
-                                handleSplitChange(member, e.target.value)
+                                handleSplitChange(member.id, e.target.value)
                             }
                         />
                     </div>
@@ -115,13 +139,18 @@ function Finance({ user }) {
                             </div>
 
                             <ul className="split-list">
-                                {Object.entries(exp.splits).map(
-                                    ([member, amount]) => (
-                                        <li key={member}>
-                                            {member}: ${amount}
+                                {Object.entries(exp.splits).map(([memberId, amount]) => {
+                                    const memberObj = members.find(
+                                        m => String(m.id) === String(memberId)
+                                    );
+
+                                    return (
+                                        <li key={memberId}>
+                                            {memberObj ? memberObj.name : "Unknown"}: ${amount}
                                         </li>
-                                    )
-                                )}
+                                    );
+                                })}
+                                
                             </ul>
                         </div>
                     ))}
