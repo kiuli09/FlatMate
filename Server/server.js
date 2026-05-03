@@ -223,6 +223,21 @@ app.post("/items", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+app.get("/itemsCount", async (req, res) => {
+    const { flat_id } = req.headers;
+    try {
+        const result = await pool.query(
+            "SELECT COUNT(*) FROM shopping_list WHERE flat_id = $1",
+            [flat_id]
+        );
+        const newItem = result.rows[0];
+        console.log(newItem);
+        res.status(201).json(newItem);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 app.post("/items/purchased/:id", async (req, res) => {
     const { id } = req.params;
     const { flat_id } = req.body;
