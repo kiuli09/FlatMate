@@ -41,7 +41,7 @@ function Finance({ user }) {
         });
     };
 
-    const addExpense = () => {
+    const addExpense = async () => {
         const total = parseFloat(totalCost);
         const totalSplit = Object.values(splits).reduce((a, b) => a + b, 0);
 
@@ -58,11 +58,26 @@ function Finance({ user }) {
         const newExpense = {
             name: expenseName,
             total: total,
-            splits: splits
+            splits: splits,
+            created_by: user?.id
         };
+        console.log(newExpense);
+          const res = await fetch(`${API}/expenses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: expenseName,
+                    total: total,
+                    splits: splits,
+                    flat_id: currentFlat.id,
+                    
+                }),
+            });
 
         setExpenses([...expenses, newExpense]);
-
+        
         //reset form
         setExpenseName("");
         setTotalCost("");
