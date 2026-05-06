@@ -79,6 +79,37 @@ function Inventory() {
         }
     };
 
+    const getStatus = (quantity) => {
+        return Number(quantity) > 0 ? "In Stock" : "Out of Stock";
+    };
+
+    const getStatusClass = (quantity) => {
+        return getStatus(quantity).toLowerCase().replace(" ", "-");
+    }
+
+    const updateItemQuantity = async (itemId, newQuantity) => {
+        try {
+            const res = await fetch(`${API}/api/inventory/${itemId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ quantity: newQuantity }),
+            });
+
+            if (!res.ok) {
+                alert("Failed to update item quantity");
+                return;
+            }
+
+            setItems(items.map(item => 
+                item.id === itemId ? { ...item, quantity: newQuantity } : item
+            )); 
+        } catch (err) {
+            console.error("Error updating item quantity:", err);
+        }
+    };
+
     return (
         <div>
             <div className="welcome-section">
@@ -121,10 +152,18 @@ function Inventory() {
                 ) : (
                     items.map((item) => (
                         <div key={item.id} className="item-card">
-                            <div className="item-info">
-                                <h3>{item.item_name}</h3>
-                                <p>Quantity: {item.quantity}</p>
+                            <div className="item-card-top">
+                                <div className="item-info">
+                                    <h3>{item.item_name}</h3>
+                                    <p>Quantity: {item.quantity}</p>
+                                </div>
+
+                                <span className={`item-status ${Number(item.quantity) > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                    {getStatus(item.quantity)}
+                                </span>
                             </div>
+
+                            
 
                             <div className="actions">
                                 <button 

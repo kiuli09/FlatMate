@@ -151,3 +151,33 @@
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
+
+.item-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.item-status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.item-status.in-stock {
+    background-color: #e8f8ee;
+    color: #2f9e44;
+}
+
+.item-status.low-stock {
+    background-color: #fff3cd;
+    color: #b7791f;
+}
+
+.item-status.out-of-stock {
+    background-color: #fdecea;
+    color: #d93025;
+}
