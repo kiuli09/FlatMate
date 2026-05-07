@@ -366,6 +366,31 @@ app.delete("/api/inventory/:id", async (req, res) => {
     }
 })
 
+app.put("/api/inventory/:id", async (req, res) => {
+    const { id } = req.params;
+    const { item_name, quantity } = req.body;
+
+    try {
+        const result = await pool.query(
+            "UPDATE inventory SET quantity = $1 WHERE id = $2 RETURNING *",
+            [quantity, id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Inventory item not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "Inventory item updated successfully",
+            item: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error updating inventory item:", err);
+        res.status(500).json({ message: "Error with updating inventory item" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
