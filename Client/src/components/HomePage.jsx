@@ -11,6 +11,7 @@ function HomePage({ user, flats, setFlats }) {
   const [flatName, setFlatName] = useState("");
   const [members, setMembers] = useState("");
   const [joinCode, setJoinCode] = useState("");
+  const [showUserMenu, setShowUserMenu] = useState(false);
   
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -139,11 +140,27 @@ function HomePage({ user, flats, setFlats }) {
         <h1 className="app-title">FlatMate</h1>
 
         <div className="user-section">
+          
           <span className="user-name">{displayName}</span>
-          <div className="avatar-placeholder"></div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
+          
+          <button type="button" className="avatar-placeholder" onClick={() => setShowUserMenu(!showUserMenu)}>
+            {displayName.charAt(0).toUpperCase()}
           </button>
+
+          {showUserMenu && (
+            <div className="user-menu">
+              
+              <button onClick={() => navigate("/settings")}>
+                Settings
+              </button>
+
+              <button onClick={handleLogout}>
+                Logout
+              </button>
+
+            </div>
+          )}
+
         </div>
       </header>
 

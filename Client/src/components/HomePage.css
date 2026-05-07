@@ -24,22 +24,55 @@
 }
 
 .user-section {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.user-name {
-  font-size: 1rem;
-  font-weight: 500;
 }
 
 .avatar-placeholder {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background-color: #e5e7eb;
   border: 2px solid white;
+  background: #e5e7eb;
+  color: #111827;
+  font-weight: bold;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-menu {
+  position: absolute;
+  top: 55px;
+  right: 0;
+
+  background: white;
+  border-radius: 12px;
+  padding: 8px;
+
+  min-width: 150px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  z-index: 100;
+}
+
+.user-menu button {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: white;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.user-menu button:hover {
+  background: #f3f4f6;
 }
 
 .home-content {
@@ -192,12 +225,6 @@
 .cancel-btn {
   background-color: #e5e7eb;
   color: #1f2937;
-}
-
-.user-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .logout-btn {
