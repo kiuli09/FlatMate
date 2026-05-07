@@ -9,6 +9,7 @@ function Inventory() {
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+    const user = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -92,7 +93,7 @@ function Inventory() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ quantity: newQuantity }),
+                body: JSON.stringify({ quantity: Number(newQuantity) }),
             });
 
             if (!res.ok) {
@@ -101,12 +102,36 @@ function Inventory() {
             }
 
             setItems(items.map((item) =>
-                item.id === itemId ? { ...item, quantity: newQuantity } : item
+                item.id === itemId ? { ...item, quantity: Number(newQuantity) } : item
             ));
         } catch (err) {
             console.error("Error updating item quantity:", err);
         }
     };
+
+    const addToShoppingList = async (item) => {
+        try {
+            const res = await fetch(`${API}/items`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    flat_id: currentFlat.id,
+                    name: item.item_name,
+                    added_by: user.id,
+                }),
+            });
+
+            if (!res.ok) {
+                alert("Failed to add item to shopping list");
+                return;
+            }
+
+        } catch (err) {
+            console.error("Error adding item to shopping list:", err);
+        }
+    }
 
     return (
         <div>
@@ -173,11 +198,18 @@ function Inventory() {
                             </div>
 
                             <div className="actions">
+
+                                {Number(item.quantity) === 0 && (
+                                    <button className="shopping-btn" onClick={() => addToShoppingList(item)}>
+                                        Add to Shopping List
+                                    </button>
+                                )}
+
                                 <button
-                                    className="remove-btn"
+                                    className="remove-icon-btn"
                                     onClick={() => handleDeleteItem(item.id)}
                                 >
-                                    Remove
+                                    ✕
                                 </button>
                             </div>
                         </div>
