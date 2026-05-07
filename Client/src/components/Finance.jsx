@@ -20,18 +20,18 @@ function Finance({ user }) {
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
 
     useEffect (() => {
-        console.log("usigeffect")
+        // console.log("usigeffect")
         const fetchMembers = async () => {
-            console.log("FetchingMembers")
+            // console.log("FetchingMembers")
             try {
-                console.log("Pulling from db")
+                // console.log("Pulling from db")
                 const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
                 const data = await res.json();
-                console.log(data.members)
+                // console.log(data.members)
 
                 setFlatmates(data.members || []);
-                console.log("a")
-                console.log(flatmate)
+                // console.log("a")
+                // console.log(flatmate)
             } catch (err) {
                 console.error("Error fetching Members:", err);
             }
@@ -39,27 +39,27 @@ function Finance({ user }) {
         fetchMembers()
     }, []);
     
-    // const submitTransaction = async () => {
-    //     console.log("subittingTransaction")
-    //     try {
-    //         const res = await fetch(`${API}/api/finance/add-transaction`,{
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({
-    //                 flat_id: currentFlat.id,
-    //                 amount: currentAmount,
-    //                 comment: comment,
-    //                 split: paymentSplit,
-    //                 members: flatmate
-    //             })
-    //         })
-    //         console.log("Transaction Submitted")
-    //     }catch (err) {
-    //             console.error("Error submitting transactions:", err);
-    //         }
-    // }
+    const submitTransaction = async () => {
+        console.log("submittingTransaction")
+        try {
+            const res = await fetch(`${API}/api/finance/add-transaction`,{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    flat_id: currentFlat.id,
+                    amount: currentAmount,
+                    comment: comment,
+                    split: paymentSplit,
+                    members: flatmate
+                })
+            })
+            console.log("Transaction Submitted")
+        }catch (err) {
+                console.error("Error submitting transactions:", err);
+            }
+    }
 
     const updateComment = (event) => {
         setComment(event.target.value)
@@ -218,7 +218,7 @@ function Finance({ user }) {
                                 id = "TansactionSubmitButton" 
                                 value="Add Transaction" 
                                 ref={submitRef} 
-                                onClick={addTransaction}/>
+                                onClick={submitTransaction}/>
                         </div>
                     </div>
                 </main>
