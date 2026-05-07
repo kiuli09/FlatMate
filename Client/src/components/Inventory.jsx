@@ -59,9 +59,8 @@ function Inventory() {
 
     const handleDeleteItem = async (itemId) => {
 
-        try{
-
-            const res = await fetch (`${API}/api/inventory/${itemId}`, {
+        try {
+             const res = await fetch(`${API}/api/inventory/${itemId}`, {
                 method: "DELETE",
             });
 
@@ -73,19 +72,18 @@ function Inventory() {
             }
 
             setItems(items.filter((item) => item.id !== itemId));
-
         }catch(err){
-            console.error("Errorwith removing item: ", err);
+            console.error("Error with removing item: ", err);
         }
     };
 
     const getStatus = (quantity) => {
-        return Number(quantity) > 0 ? "In Stock" : "Out of Stock";
+        return Number(quantity) > 0 ? "In Stock" : "Low Stock";
     };
 
     const getStatusClass = (quantity) => {
-        return getStatus(quantity).toLowerCase().replace(" ", "-");
-    }
+        return Number(quantity) > 0 ? "in-stock" : "low-stock";
+    };
 
     const updateItemQuantity = async (itemId, newQuantity) => {
         try {
@@ -102,9 +100,9 @@ function Inventory() {
                 return;
             }
 
-            setItems(items.map(item => 
+            setItems(items.map((item) =>
                 item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )); 
+            ));
         } catch (err) {
             console.error("Error updating item quantity:", err);
         }
@@ -135,7 +133,7 @@ function Inventory() {
                     />
                     <input
                         type="number"
-                        min="1"
+                        min="0"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         required
@@ -143,7 +141,7 @@ function Inventory() {
                     <button type="submit">Add</button>
                 </form>
             )}
-            
+
             <div className="items-grid">
                 {items.length === 0 ? (
                     <div className="empty-state">
@@ -155,26 +153,34 @@ function Inventory() {
                             <div className="item-card-top">
                                 <div className="item-info">
                                     <h3>{item.item_name}</h3>
-                                    <p>Quantity: {item.quantity}</p>
+
+                                    <div className="quantity-edit">
+                                        <label>Quantity:</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={item.quantity}
+                                            onChange={(e) =>
+                                                updateItemQuantity(item.id, e.target.value)
+                                            }
+                                        />
+                                    </div>
                                 </div>
 
-                                <span className={`item-status ${Number(item.quantity) > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                <span className={`item-status ${getStatusClass(item.quantity)}`}>
                                     {getStatus(item.quantity)}
                                 </span>
                             </div>
 
-                            
-
                             <div className="actions">
-                                <button 
-                                    className="remove-btn" 
+                                <button
+                                    className="remove-btn"
                                     onClick={() => handleDeleteItem(item.id)}
                                 >
                                     Remove
                                 </button>
                             </div>
                         </div>
-
                     ))
                 )}
             </div>

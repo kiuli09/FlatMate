@@ -153,31 +153,51 @@
 }
 
 .item-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .item-status {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 6px 10px;
-    border-radius: 999px;
-    white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .item-status.in-stock {
-    background-color: #e8f8ee;
-    color: #2f9e44;
+  background-color: #e8f8ee;
+  color: #2f9e44;
 }
 
 .item-status.low-stock {
-    background-color: #fff3cd;
-    color: #b7791f;
+  background-color: #fff3cd;
+  color: #b7791f;
 }
 
-.item-status.out-of-stock {
-    background-color: #fdecea;
-    color: #d93025;
+.quantity-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.quantity-edit label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.quantity-edit input {
+  width: 70px;
+  padding: 7px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+}
+
+.quantity-edit input:focus {
+  border-color: #4caf50;
 }
