@@ -1,5 +1,5 @@
 import "./Dashboard.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard({ user }) {
@@ -10,6 +10,7 @@ function Dashboard({ user }) {
     const [showMembersModal, setShowMembersModal] = useState(false);
     const [membersList, setMembersList] = useState([]);
     const [loadingMembers, setLoadingMembers] = useState(false);
+    const [shoppingItemCount, setShoppingItemCount] = useState(0);
 
     const displayName =
         user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
@@ -17,6 +18,29 @@ function Dashboard({ user }) {
     const flatName = currentFlat?.name || "No flat selected";
     const memberCount = currentFlat?.num_people || 0;
     const joinCode = currentFlat?.join_code || "N/A";
+
+    //use effect for fetching shopping items and expenses for flat
+    useEffect(() => {
+        const fetchFlatData = async () => {
+            if (!currentFlat?.id) return;
+            try {
+                // Fetch shopping items
+                const itemsRes = await fetch(`${API}/itemsCount`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        flat_id: currentFlat?.id
+                    }
+                });
+                const itemsData = await itemsRes.json();
+                setShoppingItemCount(itemsData.count || 0);
+                console.log(itemsData);
+            } catch (err) {
+                console.error("Error fetching flat data:", err);
+            }
+        };
+        fetchFlatData();
+    }, [currentFlat?.id]);
 
     const handleCopyCode = async () => {
         try {
@@ -86,7 +110,7 @@ function Dashboard({ user }) {
 
                 <div className="dashboard-card">
                     <h3>Shopping Items</h3>
-                    <p className="card-value">0</p>
+                    <p className="card-value">{shoppingItemCount}</p>
                 </div>
 
                 {/* <div className="dashboard-card">
