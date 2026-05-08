@@ -21,12 +21,12 @@ app.get("/api/test", (req, res) => {
 app.get("/api/flats", async (req, res) => {
     try {
         const result = await pool.query(
-  `SELECT f.*
+            `SELECT f.*
    FROM flat f
    JOIN flat_members fm ON f.id = fm.flat_id
    WHERE fm.user_id = $1`,
-    [req.headers.user]
-);
+            [req.headers.user]
+        );
         console.log(result.rows)
         res.json({ flats: result.rows });
     } catch (err) {
@@ -35,7 +35,7 @@ app.get("/api/flats", async (req, res) => {
     }
 });
 app.get("/items", async (req, res) => {
-    
+
     try {
         const result = await pool.query(
             "SELECT * FROM shopping_list WHERE flat_id = $1",
@@ -291,36 +291,57 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
 
 app.post("/api/finance/add-transaction", async (req, res) => {
     console.log("Recieved Request")
-    const { flat_id, amount, comment, split, members} = req.body
+    const { flat_id, amount, comment, split, members } = req.body
     console.log(flat_id)
     console.log(amount)
     console.log(comment)
     console.log(split)
     console.log(members)
-    try{
+    try {
         console.log("Runing Query")
         const transactions_result = await pool.query(
-            `INSERT INTO transactions (flat_id, cost, type) 
-             VALUES ($1,$2,$3)
-             RETURNING transaction_id`,
-            [flat_id,amount,comment]
+            "INSERT INTO transactions (flat_id, cost) VALUES ($1,$2) RETURNING *",
+            [flat_id, amount]
         )
-        
-        console.log(transactions_result)
-        res.json({success: true})
-        res.status(201)
 
-        // const split_result = await pool.query(
-        //     `INSERT INTO expense_split (flat_id, cost, type) 
-        //      VALUES ($1,$2,$3)`,
-        //     [flat_id,amount,comment]
-        // )
+        console.log(transactions_result.rows[0].transaction_id)
+        // res.json({success: true})
+        res.status(201).json({ result: transactions_result })
+        for (const user in members) {
+            console.log(members[user].id)
+            const split_result = await pool.query(
+                `INSERT INTO expense_split (flat_id, transaction_id, user_id, amount) 
+                 VALUES ($1,$2,$3,$4)`,
+                [flat_id, transactions_result.rows[0].transaction_id,members[user].id, amount]
+            )
+        }
 
         // res.json({transactions: split_result.rows})
     } catch (err) {
         console.error("Error fetching transactions:", err);
-        res.status(501).json({ message: "Error fetching transactions" });
+        res.status(500).json({ message: "Error fetching transactions" });
     }
+// });
+
+// app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
+//     const {flat_id,user_id} = req.params;
+
+//     try {
+//         const result = await pool.query(
+//             `SELECT u.id, u.name, u.email
+//              FROM flat_members fm
+//              JOIN users u ON fm.user_id = u.id
+//              WHERE fm.flat_id = $1
+//              ORDER BY u.name ASC`,
+//             [flatId]
+//         );
+
+//         res.json({ members: result.rows });
+//     } catch (err) {
+//         console.error("Error fetching flat members:", err);
+//         res.status(500).json({ message: "Error fetching flat members" });
+//     }
+
 });
 
 app.listen(PORT, () => {
