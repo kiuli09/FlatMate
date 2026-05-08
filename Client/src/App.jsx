@@ -7,6 +7,7 @@ import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
 import HomePage from "./components/HomePage";
 import Finance from "./components/Finance";
+import Timetable from "./components/Timetable";
 import Navigation from "./components/Navigation";
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
                 <Route path="/finances" element={<Finance user={user} />} />
                 <Route path="/shoppinglist" element={<ShoppingList user={user} />} />
                 <Route path="/inventory" element={<Inventory user={user} />} />
+                <Route path="/timetable" element={<Timetable user={user} />} />
             </Route>
         </Routes>
     );

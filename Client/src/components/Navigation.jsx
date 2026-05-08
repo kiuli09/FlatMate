@@ -76,6 +76,15 @@ function Navigation({ user }) {
                         Inventory
                     </NavLink>
 
+                    <NavLink
+                        to="/timetable"
+                        className={({ isActive }) =>
+                            isActive ? "nav-item active" : "nav-item"
+                        }
+                    >
+                        Timetable
+                    </NavLink>
+
                     <button 
                         className="nav-item exit-flatgrp-btn" 
                         onClick={handleExitFlatGroup}>
