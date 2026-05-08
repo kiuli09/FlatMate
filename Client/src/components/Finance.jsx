@@ -52,7 +52,8 @@ function Finance({ user }) {
                     amount: currentAmount,
                     comment: comment,
                     split: paymentSplit,
-                    members: flatmate
+                    members: flatmate,
+                    current_user: user
                 })
             })
             console.log("Transaction Submitted")

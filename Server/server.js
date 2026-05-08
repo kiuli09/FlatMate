@@ -291,17 +291,18 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
 
 app.post("/api/finance/add-transaction", async (req, res) => {
     console.log("Recieved Request")
-    const { flat_id, amount, comment, split, members } = req.body
+    const { flat_id, amount, comment, split, members, current_user} = req.body
     console.log(flat_id)
     console.log(amount)
     console.log(comment)
     console.log(split)
     console.log(members)
+    console.log(current_user)
     try {
         console.log("Runing Query")
         const transactions_result = await pool.query(
-            "INSERT INTO transactions (flat_id, cost) VALUES ($1,$2) RETURNING *",
-            [flat_id, amount]
+            "INSERT INTO transactions (flat_id, cost,arranged_by) VALUES ($1,$2,$3) RETURNING *",
+            [flat_id, amount,current_user.id]
         )
 
         console.log(transactions_result.rows[0].transaction_id)
@@ -321,7 +322,7 @@ app.post("/api/finance/add-transaction", async (req, res) => {
         console.error("Error fetching transactions:", err);
         res.status(500).json({ message: "Error fetching transactions" });
     }
-// });
+});
 
 // app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
 //     const {flat_id,user_id} = req.params;
@@ -342,7 +343,7 @@ app.post("/api/finance/add-transaction", async (req, res) => {
 //         res.status(500).json({ message: "Error fetching flat members" });
 //     }
 
-});
+// });
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
