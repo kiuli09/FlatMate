@@ -1,0 +1,110 @@
+.timetable-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #dcdcdc;
+    background: white;
+}
+
+/* Base cell styling */
+.cell {
+    padding: 0.9rem;
+    min-height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+
+    font-size: 0.95rem;
+}
+
+/* Remove right border on last column (Sunday) */
+.cell:nth-child(8n) {
+    border-right: none;
+}
+
+/* HEADER ROW */
+.header {
+    background: #34a853;
+    color: white;
+    font-weight: 700;
+}
+
+/* Make sure header cells still respect grid */
+.header.time {
+    background: #2f9e44;
+}
+
+/* TIME COLUMN (left side) */
+.time-col {
+    background: #f6f6f6;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Optional hover for schedule cells */
+.cell:not(.header):not(.time-col):hover {
+    background: #e9f7ec;
+}
+
+/* Remove bottom border on last row */
+.timetable-grid > .cell:nth-last-child(-n + 8) {
+    border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .timetable-grid {
+        grid-template-columns: 90px repeat(7, minmax(80px, 1fr));
+    }
+
+    .cell {
+        min-height: 50px;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal content styling */
+.event-modal {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
