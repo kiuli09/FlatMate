@@ -150,7 +150,7 @@ function HomePage({ user, flats, setFlats }) {
           {showUserMenu && (
             <div className="user-menu">
               
-              <button onClick={() => navigate("/settings")}>
+              <button onClick={() => navigate("/UserSettings")}>
                 Settings
               </button>
 

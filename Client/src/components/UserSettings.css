@@ -1,0 +1,86 @@
+.settings-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  font-family: Arial, sans-serif;
+}
+
+.settings-header {
+  height: 80px;
+  background: #4caf50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.settings-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.settings-header button {
+  background: white;
+  color: #2f9e44;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-content {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.settings-card {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.settings-card h2 {
+  margin-top: 0;
+}
+
+.settings-card p {
+  color: #6b7280;
+}
+
+.settings-form {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-group input {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.save-btn {
+  margin-top: 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}

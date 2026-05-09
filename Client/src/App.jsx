@@ -8,6 +8,7 @@ import Inventory from "./components/Inventory";
 import HomePage from "./components/HomePage";
 import Finance from "./components/Finance";
 import Navigation from "./components/Navigation";
+import UserSettings from "./components/UserSettings";
 
 function App() {
     const [user, setUser] = useState(() => {
@@ -34,6 +35,13 @@ function App() {
                 path="/"
                 element={
                     user ? <HomePage user={user} flats={flats} setFlats={setFlats} /> : <Navigate to="/signin" replace />
+                }
+            />
+
+            <Route 
+                path="/UserSettings" 
+                element={
+                    user ? <UserSettings user={user} /> : <Navigate to="/signin" replace />
                 }
             />
 
