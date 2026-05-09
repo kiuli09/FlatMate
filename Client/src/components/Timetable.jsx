@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 function Timetable() {
 
     const [showEventModal, setShowEventModal] = useState(false);
+    const [selectedCell, setSelectedCell] = useState(null);
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     const user = JSON.parse(localStorage.getItem("user"));
@@ -14,12 +15,20 @@ function Timetable() {
     const closeEventModal = () => {
         setShowEventModal(false);
     };
-    function addtimetableCell(hour, day) {
+
+    const addtimetableCell = async (hour, day) => {
+        setSelectedCell({ hour, day });
+        console.log(`${hour} ${day} was clicked`);
         setShowEventModal(true);
         //fetch timetable data for flat and user
         //if there is a task at this hour and day, return a cell with the task name
         //otherwise return an empty cell
-        console.log(`${hour} ${day} was clicked`);
+        
+    }
+
+    const saveEvent = async (hour,day) => {
+        console.log("SAving event for hour: ", hour, "day: ", day);
+        setShowEventModal(false);
     }
 
     return (
@@ -72,6 +81,9 @@ function Timetable() {
                                     <label htmlFor="event-description">Description</label>
                                     <textarea id="event-description" placeholder="Enter event description"></textarea>
                                 </div>
+                                <button onClick={() => saveEvent(selectedCell.hour, selectedCell.day)} className="save-event-btn">
+                                    Save Event
+                                </button>
                             </form>
                         </div>
                     </div>
