@@ -196,6 +196,17 @@
     font-size: 0.9rem;
 }
 
+.join-code-button {
+    margin-top: 12px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
 /* FOR DARK MODE*/
 body.dark-mode .welcome-banner {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.78), rgba(102, 204, 122, 0.55));
@@ -214,19 +225,19 @@ body.dark-mode .dashboard-card, body.dark-mode .content-panel {
 }
 
 body.dark-mode .dashboard-card h3, body.dark-mode .content-panel h3 {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.896);
 }
 
 body.dark-mode .card-value {
   color: white;
 }
 
-ody.dark-mode .content-panel p,
+body.dark-mode .content-panel p,
 body.dark-mode .card-hint {
   color: rgba(255, 255, 255, 0.72);
 }
 
-body.dark-mode .quick-actions button {
+body.dark-mode .quick-actions button, body.dark-mode .join-code-button {
   background: rgba(76, 175, 80, 0.82);
   color: white;
 }

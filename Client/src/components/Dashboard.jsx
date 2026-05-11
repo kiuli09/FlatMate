@@ -105,7 +105,7 @@ function Dashboard({ user }) {
                 <div className="dashboard-card">
                     <h3>Join Code</h3>
                     <p className="card-value">{joinCode}</p>
-                    <button onClick={handleCopyCode}>Copy Code</button>
+                    <button className="join-code-button" onClick={handleCopyCode}>Copy Code</button>
                 </div>
 
                 <div className="dashboard-card">
