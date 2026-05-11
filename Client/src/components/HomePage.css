@@ -23,58 +23,6 @@
   font-weight: 700;
 }
 
-.user-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar-placeholder {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 2px solid white;
-  background: #e5e7eb;
-  color: #111827;
-  font-weight: bold;
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-menu {
-  position: absolute;
-  top: 55px;
-  right: 0;
-
-  background: white;
-  border-radius: 12px;
-  padding: 8px;
-
-  min-width: 150px;
-
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  z-index: 100;
-}
-
-.user-menu button {
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  background: white;
-  text-align: left;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.user-menu button:hover {
-  background: #f3f4f6;
-}
-
 .home-content {
   max-width: 1100px;
   margin: 0 auto;
@@ -225,19 +173,4 @@
 .cancel-btn {
   background-color: #e5e7eb;
   color: #1f2937;
-}
-
-.logout-btn {
-  background: white;
-  color: #2f9e44;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.logout-btn:hover {
-  background: #f1f3f5;
 }
