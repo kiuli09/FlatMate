@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Dashboard from "./components/Dashboard";
 import ShoppingList from "./components/ShoppingList";
 import SignIn from "./components/SignIn";
@@ -15,10 +15,20 @@ function App() {
     const [user, setUser] = useState(() => {
         return JSON.parse(localStorage.getItem("user"));
     });
+
+    const [darkMode, setDarkMode] = useState(() => {
+        return localStorage.getItem("darkMode") === "true";
+    });
+
+    useEffect(() => {
+        document.body.classList.toggle("dark-mode", darkMode);
+        localStorage.setItem("darkMode", darkMode);
+    }, [darkMode]);
+
     const [flats, setFlats] = useState([
-    { id: 1, name: "Castle Street Flat", members: 5 },
-    { id: 2, name: "George Street Flat", members: 4 },
-]);
+        { id: 1, name: "Castle Street Flat", members: 5 },
+        { id: 2, name: "George Street Flat", members: 4 },
+    ]);
 
     return (
         <Routes>
@@ -35,19 +45,47 @@ function App() {
             <Route
                 path="/"
                 element={
-                    user ? <HomePage user={user} flats={flats} setFlats={setFlats} /> : <Navigate to="/signin" replace />
-                }
-            />
-
-            <Route 
-                path="/UserSettings" 
-                element={
-                    user ? <UserSettings user={user} /> : <Navigate to="/signin" replace />
+                    user ? (
+                        <HomePage
+                            user={user}
+                            flats={flats}
+                            setFlats={setFlats}
+                            darkMode={darkMode}
+                            setDarkMode={setDarkMode}
+                        />
+                    ) : (
+                        <Navigate to="/signin" replace />
+                    )
                 }
             />
 
             <Route
-                element={user ? <Navigation user={user} /> : <Navigate to="/signin" replace />}
+                path="/UserSettings"
+                element={
+                    user ? (
+                        <UserSettings
+                            user={user}
+                            darkMode={darkMode}
+                            setDarkMode={setDarkMode}
+                        />
+                    ) : (
+                        <Navigate to="/signin" replace />
+                    )
+                }
+            />
+
+            <Route
+                element={
+                    user ? (
+                        <Navigation
+                            user={user}
+                            darkMode={darkMode}
+                            setDarkMode={setDarkMode}
+                        />
+                    ) : (
+                        <Navigate to="/signin" replace />
+                    )
+                }
             >
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
                 <Route path="/finances" element={<Finance user={user} />} />

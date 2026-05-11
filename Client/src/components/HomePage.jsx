@@ -2,8 +2,9 @@ import "./HomePage.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+import TopBar from "./TopBar";
 
-function HomePage({ user, flats, setFlats }) {
+function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   const navigate = useNavigate();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -136,7 +137,7 @@ function HomePage({ user, flats, setFlats }) {
   };
   return (
     <div className="home-page">
-      <header className="home-header">
+      {/* <header className="home-header">
         <h1 className="app-title">FlatMate</h1>
 
         <div className="user-section">
@@ -162,7 +163,9 @@ function HomePage({ user, flats, setFlats }) {
           )}
 
         </div>
-      </header>
+      </header> */}
+
+      <TopBar user={user} darkMode={darkMode} setDarkMode={setDarkMode}/>
 
       <main className="home-content">
         <section className="welcome-section">
