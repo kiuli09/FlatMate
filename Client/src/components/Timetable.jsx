@@ -5,13 +5,21 @@ function Timetable() {
 
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedCell, setSelectedCell] = useState(null);
+    const [events, setEvents] = useState([]);
+    const [eventName, setEventName] = useState("");
+    const [eventDescription, setEventDescription] = useState("");
+    const [duration, setDuration] = useState(1);
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     const user = JSON.parse(localStorage.getItem("user"));
 
     const hours = Array.from({ length: 18 }, (_, i) => i + 7);
 
-    
+    const getEventForCell = (hour, day) => {
+        return events.find(
+            (event) => event.hour === hour && event.day === day
+        );
+    };
     const closeEventModal = () => {
         setShowEventModal(false);
     };
@@ -23,13 +31,39 @@ function Timetable() {
         //fetch timetable data for flat and user
         //if there is a task at this hour and day, return a cell with the task name
         //otherwise return an empty cell
-        
+
     }
 
-    const saveEvent = async (hour,day) => {
-        console.log("SAving event for hour: ", hour, "day: ", day);
+    const saveEvent = async (hour, day) => {
+        if (!eventName.trim()) return;
+
+        const newEvent = {
+            id: Date.now(),
+            hour,
+            day,
+            duration,
+            name: eventName,
+            description: eventDescription,
+        };
+
+        setEvents((prev) => [...prev, newEvent]);
+
+        setEventName("");
+        setEventDescription("");
+        setDuration(1);
+
         setShowEventModal(false);
-    }
+    };
+
+    const days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
 
     return (
         <div className="timetable-container">
@@ -48,15 +82,51 @@ function Timetable() {
                     {hours.map((hour) => (
                         <>
                             <div className="cell time-col">{hour}:00</div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Monday")}></div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Tuesday")}></div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Wednesday")}></div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Thursday")}></div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Friday")}></div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Saturday")}></div>
-                            <div className="cell" onClick={() => addtimetableCell(hour, "Sunday")}></div>
+                            <div
+                                className="cell"
+                                onClick={() => addtimetableCell(hour, "Monday")}
+                            >
+                            </div>
+                            <div className="cell" onClick={() => addtimetableCell(hour, "Tuesday")}>
+
+                            </div>
+                            <div className="cell" onClick={() => addtimetableCell(hour, "Wednesday")}>
+
+                            </div>
+                            <div className="cell" onClick={() => addtimetableCell(hour, "Thursday")}>
+
+                            </div>
+                            <div className="cell" onClick={() => addtimetableCell(hour, "Friday")}>
+
+                            </div>
+                            <div className="cell" onClick={() => addtimetableCell(hour, "Saturday")}>
+
+                            </div>
+                            <div className="cell" onClick={() => addtimetableCell(hour, "Sunday")}>
+
+                            </div>
                         </>
                     ))}
+                    <div className="events-layer">
+                        {events.map((event) => {
+                            const dayIndex = days.indexOf(event.day);
+
+                            return (
+                                <div
+                                    key={event.id}
+                                    className="event-block"
+                                    style={{
+                                        gridColumn: dayIndex + 2,
+                                        gridRow: event.hour - 5,
+                                        height: `calc(${event.duration} * var(--row-height) - 8px)`
+                                    }}
+                                >
+                                    <strong>{event.name}</strong>
+                                    <small>{event.duration} hr</small>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
             {showEventModal && (
@@ -75,15 +145,26 @@ function Timetable() {
                             <form>
                                 <div className="form-group">
                                     <label htmlFor="event-name">Event Name</label>
-                                    <input type="text" id="event-name" placeholder="Enter event name" />
+                                    <input type="text" id="event-name" placeholder="Enter event name" value={eventName} onChange={(e) => setEventName(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="event-description">Description</label>
-                                    <textarea id="event-description" placeholder="Enter event description"></textarea>
+                                    <textarea id="event-description" placeholder="Enter event description" value={eventDescription} onChange={(e) => setEventDescription(e.target.value)}></textarea>
                                 </div>
-                                <button onClick={() => saveEvent(selectedCell.hour, selectedCell.day)} className="save-event-btn">
+                                <button type="button" onClick={() => saveEvent(selectedCell.hour, selectedCell.day)} className="save-event-btn">
                                     Save Event
                                 </button>
+                                <div className="form-group">
+                                    <label htmlFor="duration">Duration (hours)</label>
+                                    <input
+                                        type="number"
+                                        id="duration"
+                                        min="1"
+                                        max="12"
+                                        value={duration}
+                                        onChange={(e) => setDuration(Number(e.target.value))}
+                                    />
+                                </div>
                             </form>
                         </div>
                     </div>

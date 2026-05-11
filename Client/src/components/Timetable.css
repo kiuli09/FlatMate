@@ -1,13 +1,22 @@
 .timetable-grid {
+    --time-width: 120px;
+    --day-cols: 7;
+    --row-height: 135px;
+    --gap: 8px;
+
+    position: relative;
+
     display: grid;
-    grid-template-columns: 120px repeat(7, 1fr);
+    grid-template-columns: var(--time-width) repeat(var(--day-cols), 1fr);
+    grid-auto-rows: var(--row-height);
+
     width: 100%;
+
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid #dcdcdc;
     background: white;
 }
-
 /* Base cell styling */
 .cell {
     padding: 0.9rem;
@@ -107,4 +116,52 @@
     font-size: 1.8rem;
     cursor: pointer;
     line-height: 1;
+}
+
+
+.events-layer {
+    position: absolute;
+    inset: 0;
+
+    display: grid;
+
+    grid-template-columns: var(--time-width) repeat(var(--day-cols), 1fr);
+    grid-auto-rows: var(--row-height);
+
+    pointer-events: none;
+
+    z-index: 10;
+}
+
+.event-block {
+    margin: 4px;
+
+    background: #34a853;
+    color: white;
+
+    border-radius: 18px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+
+    pointer-events: auto;
+
+    overflow: hidden;
+
+    transition: 0.2s ease;
+}
+
+.event-block:hover {
+    transform: scale(1.02);
+}
+.cell {
+    cursor: pointer;
+    position: relative;
 }
