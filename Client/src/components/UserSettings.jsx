@@ -15,6 +15,9 @@ function UserSettings({ darkMode, setDarkMode }) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+
   const handleSave = (e) => {
     e.preventDefault();
 
@@ -29,7 +32,7 @@ function UserSettings({ darkMode, setDarkMode }) {
 
   };
 
-  const handleResetPassword = (e) => {
+  const handleResetPassword = async(e) => {
     e.preventDefault();
 
     if (newPassword.length < 6) {
@@ -42,12 +45,36 @@ function UserSettings({ darkMode, setDarkMode }) {
       return;
     }
 
-    alert("Password has been successfully reset!");
+    try{
+      const res = await fetch(`${API}/api/users/${user.id}/password`, 
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ currentPassword, newPassword, }),
+      });
 
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setShowPasswordForm(false);
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Error resetting password.");
+        return;
+      }
+
+      alert("Password has been successfully reset!");
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPasswordForm(false);
+
+    }catch(err){
+      console.error("Error resetting password:", err);
+      alert("An error occurred while resetting the password. Please try again.");
+    }
+
+
   }
 
   return (

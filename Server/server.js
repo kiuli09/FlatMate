@@ -70,6 +70,9 @@ app.post("/expenses", async (req, res) => {
 });
 
 
+/* AUTHENTICATION ROUTES */
+
+// Login route
 app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body;
     console.log("Login attempt:", email, password);
@@ -107,6 +110,7 @@ app.post("/api/auth/login", async (req, res) => {
 
 });
 
+// Signup route
 app.post("/api/auth/signup", async (req, res) => {
     const { username, email, password } = req.body;
     console.log("Signup attempt:", username, email, password);
@@ -133,6 +137,51 @@ app.post("/api/auth/signup", async (req, res) => {
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Reset password route
+app.put("/api/users/:id/password", async (req, res) => {
+    const {id} = req.params;
+    const {currentPassword, newPassword} = req.body;
+
+    // If theres no current password or new password
+    if(!currentPassword || !newPassword){
+        return res.status(400).json({message: "Current and new password are required"});
+    }
+
+    // If the new password is less than 6 characters
+    if(newPassword.length < 6){
+        return res.status(400).json({message: "New password must be at least 6 characters long"});
+    }
+
+    try{
+        const result = await pool.query(
+            "SELECT * FROM users where id = $1", [id]
+        );
+
+        if (result.rows.length === 0){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        const user = result.rows[0];
+
+        const pswMatch = await argon2.verify(user.password, currentPassword);
+
+        if(!pswMatch){
+            return res.status(401).json({message: "Current password is incorrect"});
+        }
+
+        const hashedPassword = await argon2.hash(newPassword);
+
+        await pool.query(
+            "UPDATE users SET password = $1 WHERE id = $2",
+            [hashedPassword, id]
+        );
+        res.json({success: true, message: "Password updated successfully"});
+    }catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error with updating password"});
     }
 });
 
