@@ -4,31 +4,6 @@
   font-family: Arial, sans-serif;
 }
 
-.settings-header {
-  height: 80px;
-  background: #4caf50;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-}
-
-.settings-header h1 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.settings-header button {
-  background: white;
-  color: #2f9e44;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .settings-content {
   max-width: 700px;
   margin: 0 auto;

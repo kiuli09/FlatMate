@@ -20,6 +20,39 @@
     gap: 14px;
 }
 
+.back-button {
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 11px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    transition: 
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.back-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+/* FOR DARK MODE*/
+
 .dark-mode-toggle {
     background: transparent !important;
     border: none !important;
@@ -124,4 +157,14 @@ body.dark-mode .user-menu button {
 
 body.dark-mode .user-menu button:hover {
     background: rgba(255,255,255,0.08);
+}
+
+body.dark-mode .back-button {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+body.dark-mode .back-button:hover {
+    background: rgba(255, 255, 255, 0.20);
 }

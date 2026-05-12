@@ -1,9 +1,8 @@
 import "./UserSettings.css";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import TopBar from "./TopBar";
 
-function UserSettings() {
-  const navigate = useNavigate();
+function UserSettings({ darkMode, setDarkMode }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [name, setName] = useState(user?.name || "");
@@ -24,10 +23,7 @@ function UserSettings() {
 
   return (
     <div className="settings-page">
-      <header className="settings-header">
-        <h1>FlatMate</h1>
-        <button onClick={() => navigate("/home")}>Back</button>
-      </header>
+      <TopBar user={user} darkMode={darkMode} setDarkMode={setDarkMode} showBackButton={true} />
 
       <main className="settings-content">
         <section className="settings-card">

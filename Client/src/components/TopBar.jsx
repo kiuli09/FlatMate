@@ -2,7 +2,7 @@ import "./TopBar.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function TopBar({ user, darkMode, setDarkMode }) {
+function TopBar({ user, darkMode, setDarkMode, showBackButton = false }) {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const navigate = useNavigate();
 
@@ -30,6 +30,11 @@ function TopBar({ user, darkMode, setDarkMode }) {
                     {darkMode ? "🌞" : "🌙"}
                 </button>
 
+                {showBackButton ? (
+                    <button className="back-button" onClick={() => navigate(-1)}>
+                        Back
+                    </button>
+                ) : (
                 <div className="profile-wrapper">
                     <button
                         type="button"
@@ -51,6 +56,9 @@ function TopBar({ user, darkMode, setDarkMode }) {
                         </div>
                     )}
                 </div>
+
+
+                )}
             </div>
         </header>
     );
