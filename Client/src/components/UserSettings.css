@@ -5,28 +5,55 @@
 }
 
 .settings-content {
-  max-width: 700px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: 48px 32px;
+}
+
+.settings-heading {
+  margin-bottom: 28px;
+}
+
+.settings-heading h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.settings-heading p {
+  margin-top: 8px;
+  color: #6b7280;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
 
 .settings-card {
   background: white;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-.settings-card h2 {
-  margin-top: 0;
+.settings-card h3 {
+  margin: 0;
+  font-size: 1.3rem;
 }
 
 .settings-card p {
   color: #6b7280;
+  margin-bottom: 22px;
 }
 
-.settings-form {
-  margin-top: 24px;
+.psw-card {
+  grid-column: span 2;
+}
+
+.settings-form,
+.password-form {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -49,43 +76,42 @@
   font-size: 1rem;
 }
 
-.save-btn {
+.ro-box{
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-weight: 600;
+}
+
+.save-btn, .reset-password-btn {
+  width: 100%;
   margin-top: 12px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn {
   background: #4caf50;
   color: white;
   border: none;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.password-section {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid #e5e7eb;
 }
 
 .reset-password-btn {
-  width: 100%;
   background: #f3f4f6;
   color: #374151;
   border: 1px solid #d1d5db;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .reset-password-btn:hover {
   background: #e5e7eb;
 }
 
-.password-form {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.form-group input::placeholder {
+  color: #9ca3af;
 }
 
 /*FOR DARK MODE*/
@@ -94,36 +120,16 @@ body.dark-mode .settings-page {
   color: #f8fafc;
 }
 
-body.dark-mode .settings-header {
-  background: linear-gradient(
-    to bottom,
-    rgba(76, 175, 80, 0.82) 0%,
-    rgba(76, 175, 80, 0.72) 55%,
-    rgba(76, 175, 80, 0.58) 100%
-  );
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
-}
-
-body.dark-mode .settings-header button {
-  background: rgba(255,255,255,0.14);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.16);
+body.dark-mode .settings-heading p {
+  color: rgba(255,255,255,0.72);
 }
 
 body.dark-mode .settings-card {
   background: rgba(255,255,255,0.09);
   color: white;
-
   border: 1px solid rgba(255,255,255,0.16);
-
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-
   box-shadow:
     0 10px 30px rgba(0,0,0,0.22),
     inset 0 1px 1px rgba(255,255,255,0.1);
@@ -143,14 +149,16 @@ body.dark-mode .form-group input {
   border: 1px solid rgba(255,255,255,0.35);
 }
 
+body.dark-mode .readonly-box {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: white;
+}
+
 body.dark-mode .save-btn {
   background: rgba(76,175,80,0.82);
   color: white;
   border: 1px solid rgba(255,255,255,0.14);
-}
-
-body.dark-mode .password-section {
-  border-top: 1px solid rgba(255,255,255,0.15);
 }
 
 body.dark-mode .reset-password-btn {
@@ -161,4 +169,18 @@ body.dark-mode .reset-password-btn {
 
 body.dark-mode .reset-password-btn:hover {
   background: rgba(255,255,255,0.18);
+}
+
+body.dark-mode .form-group input::placeholder {
+  color: rgba(43, 25, 25, 0.441);
+}
+
+@media (max-width: 760px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .password-card {
+    grid-column: span 1;
+  }
 }
