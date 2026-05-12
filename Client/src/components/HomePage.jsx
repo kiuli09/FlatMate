@@ -127,14 +127,7 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
       console.error("Error joining flat:", error);
     }
   }
-
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("currentFlat");
-    window.location.href = "/signin";
-  };
+  
   return (
     <div className="home-page">
       {/* <header className="home-header">

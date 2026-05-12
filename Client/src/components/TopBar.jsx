@@ -10,10 +10,11 @@ function TopBar({ user, darkMode, setDarkMode }) {
         user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
 
     const handleLogout = () => {
+        console.log("Logout clicked");
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         localStorage.removeItem("currentFlat");
-        navigate("/signin");
+        window.location.href = "/signin";
     };
 
     return (
