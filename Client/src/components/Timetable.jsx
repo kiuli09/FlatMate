@@ -9,6 +9,9 @@ function Timetable() {
     const [eventName, setEventName] = useState("");
     const [eventDescription, setEventDescription] = useState("");
     const [duration, setDuration] = useState(1);
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     const user = JSON.parse(localStorage.getItem("user"));
@@ -21,12 +24,17 @@ function Timetable() {
         );
     };
     const closeEventModal = () => {
+        setEventName("");
+        setEventDescription("");
+        setDuration(1);
         setShowEventModal(false);
     };
 
     const addtimetableCell = async (hour, day) => {
         setSelectedCell({ hour, day });
         console.log(`${hour} ${day} was clicked`);
+        setEditingEvent(null);
+        setIsEditing(false);
         setShowEventModal(true);
         //fetch timetable data for flat and user
         //if there is a task at this hour and day, return a cell with the task name
@@ -34,25 +42,63 @@ function Timetable() {
 
     }
 
-    const saveEvent = async (hour, day) => {
+    const saveEvent = () => {
         if (!eventName.trim()) return;
 
-        const newEvent = {
-            id: Date.now(),
-            hour,
-            day,
-            duration,
-            name: eventName,
-            description: eventDescription,
-        };
+        if (isEditing) {
+            setEvents((prev) =>
+                prev.map((event) =>
+                    event.id === editingEvent.id
+                        ? {
+                            ...event,
+                            name: eventName,
+                            description: eventDescription,
+                            duration,
+                        }
+                        : event
+                )
+            );
+        } else {
+            const newEvent = {
+                id: Date.now(),
+                hour: selectedCell.hour,
+                day: selectedCell.day,
+                duration,
+                name: eventName,
+                description: eventDescription,
+            };
 
-        setEvents((prev) => [...prev, newEvent]);
-
+            setEvents((prev) => [...prev, newEvent]);
+        }
         setEventName("");
         setEventDescription("");
         setDuration(1);
+        setShowEventModal(false);
+    };
+
+    const deleteEvent = () => {
+        if (!editingEvent) return;
+
+        setEvents((prev) =>
+            prev.filter((event) => event.id !== editingEvent.id)
+        );
 
         setShowEventModal(false);
+    };
+    const openEditEvent = (event) => {
+        setSelectedCell({
+            hour: event.hour,
+            day: event.day,
+        });
+
+        setEventName(event.name);
+        setEventDescription(event.description);
+        setDuration(event.duration);
+
+        setEditingEvent(event);
+        setIsEditing(true);
+
+        setShowEventModal(true);
     };
 
     const days = [
@@ -138,7 +184,7 @@ function Timetable() {
                             return (
                                 <div
                                     key={event.id}
-                                    className="event-block"
+                                    className="event-block" onClick={() => openEditEvent(event)}
                                     style={{
                                         gridColumn: dayIndex + 2,
                                         gridRow: `${event.hour - 5} / span ${event.duration}`,
@@ -167,7 +213,7 @@ function Timetable() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="modal-header">
-                            <h3>Add Event</h3>
+                            <h3>{isEditing ? "Edit Event" : "Add Event"}</h3>
                             <button className="close-modal-btn" onClick={closeEventModal}>
                                 &times;
                             </button>
@@ -182,9 +228,18 @@ function Timetable() {
                                     <label htmlFor="event-description">Description</label>
                                     <textarea id="event-description" placeholder="Enter event description" value={eventDescription} onChange={(e) => setEventDescription(e.target.value)}></textarea>
                                 </div>
-                                <button type="button" onClick={() => saveEvent(selectedCell.hour, selectedCell.day)} className="save-event-btn">
-                                    Save Event
+                                <button type="button" onClick={saveEvent}  className="save-event-btn" >
+                                    {isEditing ? "Update Event" : "Save Event"}
                                 </button>
+                                {isEditing && (
+                                    <button
+                                        type="button"
+                                        onClick={deleteEvent}
+                                        className="delete-event-btn"
+                                    >
+                                        Remove Event
+                                    </button>
+                                )}
                                 <div className="form-group">
                                     <label htmlFor="duration">Duration (hours)</label>
                                     <input
