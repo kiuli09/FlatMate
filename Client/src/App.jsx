@@ -10,6 +10,7 @@ import Finance from "./components/Finance";
 import Timetable from "./components/Timetable";
 import Navigation from "./components/Navigation";
 import UserSettings from "./components/UserSettings";
+import FlatSettings from "./components/FlatSettings";
 
 function App() {
     const [user, setUser] = useState(() => {
@@ -92,6 +93,7 @@ function App() {
                 <Route path="/shoppinglist" element={<ShoppingList user={user} />} />
                 <Route path="/inventory" element={<Inventory user={user} />} />
                 <Route path="/timetable" element={<Timetable user={user} />} />
+                <Route path="/flatsettings" element={<FlatSettings user={user} />} />
             </Route>
         </Routes>
     );

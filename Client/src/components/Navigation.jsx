@@ -88,6 +88,17 @@ function Navigation({ user, darkMode, setDarkMode }) {
                         Timetable
                     </NavLink>
 
+                    <div className="nav-divider"></div>
+
+                    <NavLink
+                        to="/flatsettings"
+                        className={
+                            ({isActive}) => isActive ? "nav-item active" : "nav-item"
+                        }
+                    >
+                        Flat Settings
+                    </NavLink>
+
                     <button 
                         className="nav-item exit-flatgrp-btn" 
                         onClick={handleExitFlatGroup}>
