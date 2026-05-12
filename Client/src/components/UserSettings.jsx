@@ -5,9 +5,9 @@ import TopBar from "./TopBar";
 function UserSettings({ darkMode, setDarkMode }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // For name and email updates
+  // For name  updates
   const [name, setName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [showNameForm, setShowNameForm] = useState(false);
 
   // for password updates
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -21,11 +21,12 @@ function UserSettings({ darkMode, setDarkMode }) {
     const updatedUser = {
       ...user,
       name,
-      email,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
-    alert("Settings saved!");
+    setShowNameForm(false);
+    alert("Display Name Updated Successfully!");
+
   };
 
   const handleResetPassword = (e) => {
@@ -64,21 +65,49 @@ function UserSettings({ darkMode, setDarkMode }) {
             <h3>Profile Information</h3>
             <p>Update your display name.</p>
 
-            <form onSubmit={handleSave} className="settings-form">
-              <div className="form-group">
-                <label>Display Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  placeholder="You haven't set a display name yet"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
+            {!showNameForm && (
+              <>
+                <div className="display-name-box">
+                  {name || "You haven't set a display name yet"}
+                </div>
 
-              <button className="save-btn" type="submit">
-                Save Changes
-              </button>
-            </form>
+                <button
+                  type="button"
+                  className="reset-password-btn"
+                  onClick={() => setShowNameForm(true)}
+                >
+                  Update Display Name
+                </button>
+              </>
+            )}
+
+            {showNameForm && (
+              <form onSubmit={handleSave} className="settings-form">
+                <div className="form-group">
+                  <label>Set New Display Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    placeholder="Update your display name"
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+
+                <button className="save-btn" type="submit">
+                  Update Name
+                </button>
+
+                <button 
+                  type="button" 
+                  className="reset-password-btn" 
+                  onClick={() => setShowNameForm(false)}
+                >
+                  Cancel Update
+                </button>
+
+
+              </form>
+            )}
           </section>
 
           <section className="settings-card">
@@ -94,14 +123,24 @@ function UserSettings({ darkMode, setDarkMode }) {
             <h3>Password</h3>
             <p>Change your account password.</p>
 
-            <button type="button" className="reset-password-btn" onClick={() => setShowPasswordForm(!showPasswordForm)}>
-              {showPasswordForm ? "Cancel Password Reset" : "Reset Password"}
-            </button>
+            {!showPasswordForm && (
+              <>
+
+                <button
+                  type="button"
+                  className="reset-password-btn"
+                  onClick={() => setShowPasswordForm(true)}
+                >
+                  Reset Password
+                </button>
+              </>
+            )}
 
             {showPasswordForm && (
               <form onSubmit={handleResetPassword} className="password-form">
                 <div className="form-group">
                   <label>Current Password</label>
+
                   <input
                     type="password"
                     value={currentPassword}
@@ -111,6 +150,7 @@ function UserSettings({ darkMode, setDarkMode }) {
 
                 <div className="form-group">
                   <label>New Password</label>
+
                   <input
                     type="password"
                     value={newPassword}
@@ -120,6 +160,7 @@ function UserSettings({ darkMode, setDarkMode }) {
 
                 <div className="form-group">
                   <label>Confirm New Password</label>
+
                   <input
                     type="password"
                     value={confirmPassword}
@@ -130,9 +171,17 @@ function UserSettings({ darkMode, setDarkMode }) {
                 <button className="save-btn" type="submit">
                   Update Password
                 </button>
+
+                <button
+                  type="button"
+                  className="reset-password-btn"
+                  onClick={() => setShowPasswordForm(false)}
+                >
+                  Cancel Password Reset
+                </button>
               </form>
             )}
-          </section>
+          </section>          
         </div>
       </main>
     </div>

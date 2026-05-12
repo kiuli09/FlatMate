@@ -101,17 +101,28 @@
 }
 
 .reset-password-btn {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: transparent;
+  color: #2f9e44;
+  border: 1px solid #4caf50;
 }
 
 .reset-password-btn:hover {
-  background: #e5e7eb;
+  background: #eef7ef;
 }
 
 .form-group input::placeholder {
   color: #9ca3af;
+}
+
+.display-name-box {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #eef7ef;
+  border: 1px solid #c8e6c9;
+  color: #1f2937;
+  font-weight: 700;
+  margin-bottom: 18px;
+  font-size: 1.05rem;
 }
 
 /*FOR DARK MODE*/
@@ -149,7 +160,7 @@ body.dark-mode .form-group input {
   border: 1px solid rgba(255,255,255,0.35);
 }
 
-body.dark-mode .readonly-box {
+body.dark-mode .ro-box {
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.18);
   color: white;
@@ -162,13 +173,13 @@ body.dark-mode .save-btn {
 }
 
 body.dark-mode .reset-password-btn {
-  background: rgba(255,255,255,0.12);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.18);
+  background: transparent;
+  color: #d9f99d;
+  border: 1px solid rgba(217, 249, 157, 0.45);
 }
 
 body.dark-mode .reset-password-btn:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(217, 249, 157, 0.10);
 }
 
 body.dark-mode .form-group input::placeholder {
@@ -183,4 +194,10 @@ body.dark-mode .form-group input::placeholder {
   .password-card {
     grid-column: span 1;
   }
+}
+
+body.dark-mode .display-name-box {
+  background: rgba(76, 175, 80, 0.16);
+  border: 1px solid rgba(76, 175, 80, 0.35);
+  color: white;
 }
