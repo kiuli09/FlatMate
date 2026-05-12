@@ -84,3 +84,64 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+/*FOR DARK MODE*/
+body.dark-mode .settings-page {
+  background: transparent;
+  color: #f8fafc;
+}
+
+body.dark-mode .settings-header {
+  background: linear-gradient(
+    to bottom,
+    rgba(76, 175, 80, 0.82) 0%,
+    rgba(76, 175, 80, 0.72) 55%,
+    rgba(76, 175, 80, 0.58) 100%
+  );
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+}
+
+body.dark-mode .settings-header button {
+  background: rgba(255,255,255,0.14);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.16);
+}
+
+body.dark-mode .settings-card {
+  background: rgba(255,255,255,0.09);
+  color: white;
+
+  border: 1px solid rgba(255,255,255,0.16);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.22),
+    inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+body.dark-mode .settings-card p {
+  color: rgba(255,255,255,0.75);
+}
+
+body.dark-mode .form-group label {
+  color: white;
+}
+
+body.dark-mode .form-group input {
+  background: rgba(255,255,255,0.92);
+  color: #111827;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+body.dark-mode .save-btn {
+  background: rgba(76,175,80,0.82);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.14);
+}
