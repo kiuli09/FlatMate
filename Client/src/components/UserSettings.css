@@ -60,6 +60,34 @@
   cursor: pointer;
 }
 
+.password-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.reset-password-btn {
+  width: 100%;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reset-password-btn:hover {
+  background: #e5e7eb;
+}
+
+.password-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 /*FOR DARK MODE*/
 body.dark-mode .settings-page {
   background: transparent;
@@ -119,4 +147,18 @@ body.dark-mode .save-btn {
   background: rgba(76,175,80,0.82);
   color: white;
   border: 1px solid rgba(255,255,255,0.14);
+}
+
+body.dark-mode .password-section {
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+body.dark-mode .reset-password-btn {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+body.dark-mode .reset-password-btn:hover {
+  background: rgba(255,255,255,0.18);
 }
