@@ -20,13 +20,13 @@ jobs:
           node-version: 22
 
       - name: Install server dependencies
-        working-directory: ./server
+        working-directory: ./Server
         run: npm install
 
       - name: Install client dependencies
-        working-directory: ./client
+        working-directory: ./Client
         run: npm install
 
       - name: Build client
-        working-directory: ./client
+        working-directory: ./Client
         run: npm run build
