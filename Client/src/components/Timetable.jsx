@@ -65,6 +65,30 @@ function Timetable() {
         "Sunday",
     ];
 
+    const eventsOverlap = (a, b) => {
+        const aEnd = a.hour + a.duration;
+        const bEnd = b.hour + b.duration;
+        return a.hour < bEnd && b.hour < aEnd;
+    };
+    const processedEvents = events.map((event) => {
+        const overlapping = events.filter(
+            (e) =>
+                e.day === event.day &&
+                eventsOverlap(event, e)
+        );
+
+        const index = overlapping.findIndex(
+            (e) => e.id === event.id
+        );
+
+        return {
+            ...event,
+            overlapCount: overlapping.length,
+            overlapIndex: index,
+        };
+    });
+
+
     return (
         <div className="timetable-container">
             <h2>{currentFlat?.name}'s Timetable</h2>
@@ -108,7 +132,7 @@ function Timetable() {
                         </>
                     ))}
                     <div className="events-layer">
-                        {events.map((event) => {
+                        {processedEvents.map((event) => {
                             const dayIndex = days.indexOf(event.day);
 
                             return (
@@ -117,8 +141,15 @@ function Timetable() {
                                     className="event-block"
                                     style={{
                                         gridColumn: dayIndex + 2,
-                                        gridRow: event.hour - 5,
-                                        height: `calc(${event.duration} * var(--row-height) - 8px)`
+                                        gridRow: `${event.hour - 5} / span ${event.duration}`,
+
+                                        width: `calc((100% - ${(event.overlapCount - 1) * 6
+                                            }px) / ${event.overlapCount})`,
+
+                                        marginLeft: `calc(
+                        (${100 / event.overlapCount}%)
+                        * ${event.overlapIndex}
+                    )`,
                                     }}
                                 >
                                     <strong>{event.name}</strong>
@@ -157,11 +188,7 @@ function Timetable() {
                                 <div className="form-group">
                                     <label htmlFor="duration">Duration (hours)</label>
                                     <input
-                                        type="number"
-                                        id="duration"
-                                        min="1"
-                                        max="12"
-                                        value={duration}
+                                        type="number" id="duration" min="1" max="12" value={duration}
                                         onChange={(e) => setDuration(Number(e.target.value))}
                                     />
                                 </div>

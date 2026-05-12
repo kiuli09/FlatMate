@@ -1,7 +1,7 @@
 .timetable-grid {
     --time-width: 120px;
     --day-cols: 7;
-    --row-height: 135px;
+    --row-height: 80px;
     --gap: 8px;
 
     position: relative;
