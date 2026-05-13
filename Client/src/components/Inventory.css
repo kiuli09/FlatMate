@@ -233,3 +233,54 @@
 .remove-icon-btn:hover {
   background: rgba(239, 68, 68, 0.25);
 }
+
+/* FOR DARK MODE*/
+body.dark-mode .inventory-form,
+body.dark-mode .item-card,
+body.dark-mode .empty-state {
+  background: rgba(255, 255, 255, 0.09);
+  color: white;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .item-info h3,
+body.dark-mode .welcome-section h2 {
+  color: white;
+}
+
+body.dark-mode .welcome-section p,
+body.dark-mode .item-info p,
+body.dark-mode .quantity-edit label,
+body.dark-mode .empty-state {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+body.dark-mode .inventory-form input,
+body.dark-mode .quantity-edit input {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+body.dark-mode .item-status.in-stock {
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+}
+
+body.dark-mode .item-status.low-stock {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+}
+
+body.dark-mode .remove-icon-btn {
+  background: rgba(239, 68, 68, 0.556);
+  color: #fecaca;
+}

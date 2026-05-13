@@ -70,6 +70,9 @@ app.post("/expenses", async (req, res) => {
 });
 
 
+/* AUTHENTICATION ROUTES */
+
+// Login route
 app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body;
     console.log("Login attempt:", email, password);
@@ -107,6 +110,7 @@ app.post("/api/auth/login", async (req, res) => {
 
 });
 
+// Signup route
 app.post("/api/auth/signup", async (req, res) => {
     const { username, email, password } = req.body;
     console.log("Signup attempt:", username, email, password);
@@ -133,6 +137,51 @@ app.post("/api/auth/signup", async (req, res) => {
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Reset password route
+app.put("/api/users/:id/password", async (req, res) => {
+    const {id} = req.params;
+    const {currentPassword, newPassword} = req.body;
+
+    // If theres no current password or new password
+    if(!currentPassword || !newPassword){
+        return res.status(400).json({message: "Current and new password are required"});
+    }
+
+    // If the new password is less than 6 characters
+    if(newPassword.length < 6){
+        return res.status(400).json({message: "New password must be at least 6 characters long"});
+    }
+
+    try{
+        const result = await pool.query(
+            "SELECT * FROM users where id = $1", [id]
+        );
+
+        if (result.rows.length === 0){
+            return res.status(404).json({message: "User not found"});
+        }
+
+        const user = result.rows[0];
+
+        const pswMatch = await argon2.verify(user.password, currentPassword);
+
+        if(!pswMatch){
+            return res.status(401).json({message: "Current password is incorrect"});
+        }
+
+        const hashedPassword = await argon2.hash(newPassword);
+
+        await pool.query(
+            "UPDATE users SET password = $1 WHERE id = $2",
+            [hashedPassword, id]
+        );
+        res.json({success: true, message: "Password updated successfully"});
+    }catch(err){
+        console.error(err);
+        res.status(500).json({message: "Server error with updating password"});
     }
 });
 
@@ -244,24 +293,53 @@ app.get("/itemsCount", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 app.post("/items/purchased/:id", async (req, res) => {
     const { id } = req.params;
     const { flat_id } = req.body;
+
     try {
         const result = await pool.query(
-            "Select name from shopping_list where id = $1",
+            "SELECT name FROM shopping_list WHERE id = $1",
             [id]
         );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Shopping list item not found" });
+        }
+
         const newItem = result.rows[0];
-        await pool.query(
-            "INSERT INTO inventory(flat_id,item_name,quantity,split,cost) VALUES ($1, $2, $3,$4, $5)",
-            [flat_id, newItem.name, 1, null, null]
+
+        const existingItem = await pool.query(
+            `SELECT * FROM inventory 
+             WHERE flat_id = $1 
+             AND LOWER(item_name) = LOWER($2)`,
+            [flat_id, newItem.name]
         );
+
+        if (existingItem.rows.length > 0) {
+            await pool.query(
+                `UPDATE inventory 
+                 SET quantity = quantity + 1
+                 WHERE flat_id = $1 
+                 AND LOWER(item_name) = LOWER($2)`,
+                [flat_id, newItem.name]
+            );
+        } else {
+            await pool.query(
+                `INSERT INTO inventory(flat_id, item_name, quantity, split, cost) 
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [flat_id, newItem.name, 1, null, null]
+            );
+        }
+
         await pool.query(
             "DELETE FROM shopping_list WHERE id = $1",
             [id]
         );
+
         res.json({ success: true, message: "Item purchased" });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
@@ -292,9 +370,25 @@ app.delete("/items/remove/:id", async (req, res) => {
 });
 
 app.post("/api/inventory", async (req, res) => {
-    const { flat_id, item_name, quantity } = req.body;
 
     try {
+        const { flat_id, item_name, quantity } = req.body;
+
+        const existingItem = await pool.query(
+            `SELECT * FROM inventory WHERE flat_id = $1 AND LOWER(item_name) = LOWER($2)`,
+            [flat_id, item_name]
+        );
+
+        if (existingItem.rows.length > 0){
+            const currentItem = existingItem.rows[0];
+
+            const updatedItem = await pool.query(
+                `UPDATE inventory SET quantity = quantity + $1 WHERE id = $2 RETURNING *`,
+                [quantity, currentItem.id]
+            );
+            return res.status(200).json({ item: updatedItem.rows[0] });
+        }
+
         const result = await pool.query(
             `INSERT INTO inventory (flat_id, item_name, quantity)
              VALUES ($1, $2, $3)

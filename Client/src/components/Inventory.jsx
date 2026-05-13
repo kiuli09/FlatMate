@@ -128,6 +128,8 @@ function Inventory() {
                 return;
             }
 
+            await handleDeleteItem(item.id);
+
         } catch (err) {
             console.error("Error adding item to shopping list:", err);
         }

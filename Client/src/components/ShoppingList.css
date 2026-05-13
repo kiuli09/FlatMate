@@ -103,3 +103,96 @@
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
+
+/* FOR DARK MODE*/
+
+body.dark-mode .welcome-section h2 {
+  color: white;
+}
+
+body.dark-mode .welcome-section p {
+  color: rgba(255,255,255,0.75);
+}
+
+/* ADD ITEM BAR */
+body.dark-mode .add-item input {
+  background: rgba(255,255,255,0.10);
+  color: white;
+
+  border: 1px solid rgba(255,255,255,0.16);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.18);
+}
+
+body.dark-mode .add-item input::placeholder {
+  color: rgba(255,255,255,0.55);
+}
+
+body.dark-mode .add-item input:focus {
+  border-color: rgba(102, 255, 153, 0.45);
+  outline: none;
+}
+
+/* ADD BUTTON */
+body.dark-mode .add-item button {
+  background: rgba(76, 175, 80, 0.78);
+
+  border: 1px solid rgba(255,255,255,0.16);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.18);
+}
+
+body.dark-mode .add-item button:hover {
+  background: rgba(76, 175, 80, 0.95);
+}
+
+/* SHOPPING ITEMS */
+body.dark-mode .shopping-item {
+  background: rgba(255,255,255,0.08);
+
+  border: 1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.20);
+
+  color: white;
+}
+
+/* PURCHASE BUTTON */
+body.dark-mode .purchased-btn {
+  background: rgba(255,255,255,0.14);
+  color: #d1fae5;
+
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+body.dark-mode .purchased-btn:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+/* REMOVE BUTTON */
+body.dark-mode .remove-btn {
+  background: rgba(239, 68, 68, 0.556);
+  border: 1px solid rgba(239,68,68,0.20);
+  color: #fecaca;
+}
+
+body.dark-mode .remove-btn:hover {
+  background: rgba(239, 68, 68, 0.556);
+}
+
+/* EMPTY STATE */
+body.dark-mode .items-list p {
+  color: rgba(255,255,255,0.72);
+}

@@ -1,0 +1,170 @@
+.topbar {
+    height: 95px;
+    background: #4caf50;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 38px;
+}
+
+.topbar-logo {
+    font-size: 38px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.back-button {
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 11px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    transition: 
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.back-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+/* FOR DARK MODE*/
+
+.dark-mode-toggle {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+
+    width: auto;
+    height: auto;
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.08);
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
+}
+.profile-circle {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+
+    border-radius: 50%;
+    background: #e9edf2;
+    color: #111;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.profile-wrapper {
+    position: relative;
+}
+
+.profile-circle {
+    border: none;
+    cursor: pointer;
+}
+
+.user-menu {
+    position: absolute;
+    top: 60px;
+    right: 0;
+
+    background: white;
+    color: #111827;
+
+    border-radius: 12px;
+    padding: 10px;
+    min-width: 150px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.user-menu button {
+    background: transparent;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.user-menu button:hover {
+    background: #f3f4f6;
+}
+
+body.dark-mode .user-menu {
+    background: rgba(255, 255, 255, 0.10);
+
+    border: 1px solid rgba(255,255,255,0.14);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.22),
+        inset 0 1px 1px rgba(255,255,255,0.08);
+}
+
+body.dark-mode .user-menu button {
+    color: white;
+}
+
+body.dark-mode .user-menu button:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+body.dark-mode .back-button {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+body.dark-mode .back-button:hover {
+    background: rgba(255, 255, 255, 0.20);
+}
