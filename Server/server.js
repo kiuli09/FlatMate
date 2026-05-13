@@ -69,6 +69,20 @@ app.post("/expenses", async (req, res) => {
     }
 });
 
+app.get("/api/flats/:flatId/expenses", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            "SELECT * FROM transactions WHERE flat_id = $1",
+            [flatId]
+        );
+        res.json({ expenses: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 /* AUTHENTICATION ROUTES */
 
