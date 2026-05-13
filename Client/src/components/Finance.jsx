@@ -25,11 +25,26 @@ function Finance({ user }) {
             // console.log("FetchingMembers")
             try {
                 // console.log("Pulling from db")
-                const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
-                const data = await res.json();
-                // console.log(data.members)
+                const flatRes = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+                const flatData = await flatRes.json();
+                console.log(flatData.members)
+                console.log(user.id)
+                const filtered_members = flatData.members.filter(temp => temp.id !== user.id);
+                console.log(filtered_members)
 
-                setFlatmates(data.members || []);
+                setFlatmates(filtered_members || []);
+
+                const owesRes = await fetch(`${API}/api/finance/get-owes/${currentFlat.id}/${user.id}`);
+                const data = await owesRes.json();
+                console.log(data.owes)
+
+                const tempArray = new Array(data.owes.length).fill(0)
+                for (let i = 0; i < data.owes.length; i++){
+                    tempArray[i] = data.owes[i].sum
+                }
+                console.log(tempArray)
+                setOwes(tempArray)
+                setPaymentSplit(new Array(filtered_members.length).fill(0))
                 // console.log("a")
                 // console.log(flatmate)
             } catch (err) {

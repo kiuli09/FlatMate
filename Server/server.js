@@ -324,27 +324,28 @@ app.post("/api/finance/add-transaction", async (req, res) => {
     }
 });
 
-// app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
-//     const {flat_id,user_id} = req.params;
+app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
+    const {flat_id,user_id} = req.params;
 
-//     try {
-//         const result = await pool.query(
-//             `SELECT u.id, u.name, u.email
-//              FROM flat_members fm
-//              JOIN users u ON fm.user_id = u.id
-//              WHERE fm.flat_id = $1
-//              ORDER BY u.name ASC`,
-//             [flatId]
-//         );
+    try {
+        const result = await pool.query(
+            `SELECT sum(es.amount)
+             FROM expense_split es 
+             JOIN transactions t on t.transaction_id = es.transaction_id  
+             WHERE es.flat_id = $1 AND t.arranged_by = $2
+             GROUP BY es.user_id,t.arranged_by
+             ORDER BY es.user_id`,
+            [flat_id,user_id]
+        );
 
-//         res.json({ members: result.rows });
-//     } catch (err) {
-//         console.error("Error fetching flat members:", err);
-//         res.status(500).json({ message: "Error fetching flat members" });
-//     }
+        res.json({ owes: result.rows });
+    } catch (err) {
+        console.error("Error fetching flat members:", err);
+        res.status(500).json({ message: "Error fetching flat members" });
+    }
 
-// });
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-});
+}); 
