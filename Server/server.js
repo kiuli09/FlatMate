@@ -69,18 +69,52 @@ app.post("/expenses", async (req, res) => {
     }
 });
 
-app.get("/api/flats/:flatId/expenses", async (req, res) => {
-    const { flatId } = req.params;
-
+app.get("/api/flats/:id/expenses", async (req, res) => {
     try {
-        const result = await pool.query(
-            "SELECT * FROM transactions WHERE flat_id = $1",
-            [flatId]
+        const transactions = await pool.query(
+            `
+            SELECT *
+            FROM transactions
+            WHERE flat_id = $1
+            `,
+            [req.params.id]
         );
-        res.json({ expenses: result.rows });
+
+        const formattedExpenses = [];
+
+        for (const tx of transactions.rows) {
+
+            const splitsResult = await pool.query(
+                `
+                SELECT user_id, amount
+                FROM expense_split
+                WHERE transaction_id = $1
+                `,
+                [tx.transaction_id]
+            );
+
+            const splits = {};
+
+            splitsResult.rows.forEach(split => {
+                splits[split.user_id] = split.amount;
+            });
+
+            formattedExpenses.push({
+                name: tx.items_purchased,
+                total: tx.cost,
+                splits: splits
+            });
+        }
+
+        res.json({
+            expenses: formattedExpenses
+        });
+
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({
+            message: "Server error"
+        });
     }
 });
 

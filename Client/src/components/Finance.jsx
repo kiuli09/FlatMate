@@ -14,10 +14,12 @@ function Finance({ user }) {
     
     //use effect to set members
     useEffect(() => {
-        // Simulate fetching members from the server
-        const fetchMembers = async () => {
-             try {
-            const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+    const fetchMembers = async () => {
+        try {
+            const res = await fetch(
+                `${API}/api/flats/${currentFlat.id}/members`
+            );
+
             const data = await res.json();
 
             if (!res.ok) {
@@ -25,29 +27,38 @@ function Finance({ user }) {
                 setMembersList([]);
                 return;
             }
+
             setMembersList(data.members || []);
         } catch (err) {
             console.error("Error fetching members:", err);
             setMembersList([]);
         }
-        const fetcheExpenses = async () => {
-            try{
-            const res = await fetch(`${API}/api/flats/${currentFlat.id}/expenses`);
+    };
+
+    const fetchExpenses = async () => {
+        try {
+            const res = await fetch(
+                `${API}/api/flats/${currentFlat.id}/expenses`
+            );
+
             const expensesData = await res.json();
-            if(!res.ok) {
+            console.log("Fetched expenses:", expensesData);
+            if (!res.ok) {
                 console.error(expensesData.message);
                 setExpenses([]);
                 return;
             }
+
             setExpenses(expensesData.expenses || []);
-            } catch (err) {
-                console.error("Error fetching expenses:", err);
-                setExpenses([]);
-            }
-        };
-        fetchMembers();
-        fetcheExpenses();
-}}), [currentFlat?.id];
+        } catch (err) {
+            console.error("Error fetching expenses:", err);
+            setExpenses([]);
+        }
+    };
+
+    fetchMembers();
+    fetchExpenses();
+}, [currentFlat?.id]);
 
     const handleSplitChange = (member, value) => {
         setSplits({
