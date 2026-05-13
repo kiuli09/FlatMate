@@ -30,9 +30,24 @@ function Finance({ user }) {
             console.error("Error fetching members:", err);
             setMembersList([]);
         }
-    }
+        const fetcheExpenses = async () => {
+            try{
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/expenses`);
+            const expensesData = await res.json();
+            if(!res.ok) {
+                console.error(expensesData.message);
+                setExpenses([]);
+                return;
+            }
+            setExpenses(expensesData.expenses || []);
+            } catch (err) {
+                console.error("Error fetching expenses:", err);
+                setExpenses([]);
+            }
+        };
         fetchMembers();
-}, [currentFlat?.id]);
+        fetcheExpenses();
+}}), [currentFlat?.id];
 
     const handleSplitChange = (member, value) => {
         setSplits({
