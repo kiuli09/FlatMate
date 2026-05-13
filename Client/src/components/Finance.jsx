@@ -1,25 +1,25 @@
-import { useLayoutEffect,useEffect, useState } from "react";
+import { useLayoutEffect, useEffect, useState } from "react";
 import { useRef } from "react";
 import "./Finance.css";
 import { NavLink } from "react-router-dom";
 
 
 function Finance({ user }) {
-    
-    const [flatmate,setFlatmates] = useState([]);
-    const [owes,setOwes] = useState([0,100,100,0])
-    const [paymentSplit, setPaymentSplit] = useState([25,25,25,25])
+
+    const [flatmate, setFlatmates] = useState([]);
+    const [owes, setOwes] = useState([0, 100, 100, 0])
+    const [paymentSplit, setPaymentSplit] = useState([25, 25, 25, 25])
     const [equalSplit, setEqualSplit] = useState(true)
     const [currentAmount, setCurrentAmount] = useState(0)
     const [splitIsValid, setSplitIsValid] = useState(true)
     const [transactions, setTransactions] = useState([])
-    const [comment, setComment] =useState("")
+    const [comment, setComment] = useState("")
     const submitRef = useRef()
-    
+
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
 
-    useEffect (() => {
+    useEffect(() => {
         // console.log("usigeffect")
         const fetchMembers = async () => {
             // console.log("FetchingMembers")
@@ -34,16 +34,7 @@ function Finance({ user }) {
 
                 setFlatmates(filtered_members || []);
 
-                const owesRes = await fetch(`${API}/api/finance/get-owes/${currentFlat.id}/${user.id}`);
-                const data = await owesRes.json();
-                console.log(data.owes)
-
-                const tempArray = new Array(data.owes.length).fill(0)
-                for (let i = 0; i < data.owes.length; i++){
-                    tempArray[i] = data.owes[i].sum
-                }
-                console.log(tempArray)
-                setOwes(tempArray)
+                updateOwes()
                 setPaymentSplit(new Array(filtered_members.length).fill(0))
                 // console.log("a")
                 // console.log(flatmate)
@@ -53,11 +44,24 @@ function Finance({ user }) {
         };
         fetchMembers()
     }, []);
-    
+
+    const updateOwes = async () => {
+        const owesRes = await fetch(`${API}/api/finance/get-owes/${currentFlat.id}/${user.id}`);
+        const data = await owesRes.json();
+        console.log(data.owes)
+
+        const tempArray = new Array(data.owes.length).fill(0)
+        for (let i = 0; i < data.owes.length; i++) {
+            tempArray[i] = data.owes[i].sum
+        }
+        console.log(tempArray)
+        setOwes(tempArray)
+    }
+
     const submitTransaction = async () => {
         console.log("submittingTransaction")
         try {
-            const res = await fetch(`${API}/api/finance/add-transaction`,{
+            const res = await fetch(`${API}/api/finance/add-transaction`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -72,9 +76,10 @@ function Finance({ user }) {
                 })
             })
             console.log("Transaction Submitted")
-        }catch (err) {
-                console.error("Error submitting transactions:", err);
-            }
+        } catch (err) {
+            console.error("Error submitting transactions:", err);
+        }
+        updateOwes()
     }
 
     const updateComment = (event) => {
@@ -95,30 +100,30 @@ function Finance({ user }) {
         console.log(equalSplit)
     }
 
-    const updatePaymentSplit = (event,index) => {
-        setPaymentSplit([...paymentSplit.slice(0,index),Number(event),...paymentSplit.slice(index+1)])
+    const updatePaymentSplit = (event, index) => {
+        setPaymentSplit([...paymentSplit.slice(0, index), Number(event), ...paymentSplit.slice(index + 1)])
         checkSplitValidity()
     }
 
     const addTransaction = (event) => {
         let temp = owes
-        if(equalSplit){
-            for(let i = 0; i < owes.length; i++){
-                temp+=currentAmount/4
-                }
-        }else {
-            for(let i = 0; i < owes.length; i++){
-                temp+=currentAmount/4
-                }
+        if (equalSplit) {
+            for (let i = 0; i < owes.length; i++) {
+                temp += currentAmount / 4
+            }
+        } else {
+            for (let i = 0; i < owes.length; i++) {
+                temp += currentAmount / 4
+            }
         }
         setOwes(temp)
     }
 
     const getTotalPaymentSplit = () => {
         let temp = 0
-        for(let i = 0; i < paymentSplit.length; i++){
-                temp+=paymentSplit[i]
-                }
+        for (let i = 0; i < paymentSplit.length; i++) {
+            temp += paymentSplit[i]
+        }
         return temp
     }
 
@@ -126,8 +131,8 @@ function Finance({ user }) {
         let temp = paymentSplit
         console.log("Setting split equally")
         console.log(transactions)
-        for(let i = 0; i < paymentSplit.length; i++){
-            temp[i] = currentAmount/flatmate.length
+        for (let i = 0; i < paymentSplit.length; i++) {
+            temp[i] = currentAmount / flatmate.length
         }
         setPaymentSplit(temp)
         console.log(paymentSplit)
@@ -135,17 +140,17 @@ function Finance({ user }) {
 
     const checkSplitValidity = () => {
         console.log("Checking Split Validity")
-        if(equalSplit){
+        if (equalSplit) {
             setSplitIsValid(true)
             submitRef.current.disabled = false
             console.log("Split is equal so true")
 
-        }else{
-            if(Number(getTotalPaymentSplit()) === Number(currentAmount)){
+        } else {
+            if (Number(getTotalPaymentSplit()) === Number(currentAmount)) {
                 setSplitIsValid(true)
                 submitRef.current.disabled = false
                 console.log("paymentsplit and currentamount is equal so true")
-            }else{
+            } else {
                 setSplitIsValid(false)
                 submitRef.current.disabled = true
                 console.log("Neither is equal so false")
@@ -154,90 +159,90 @@ function Finance({ user }) {
     }
 
     return (
-                <main >
-                    <div className = "welcome-section">
-                        <h2>Finance</h2>
-                        <p>Manage finances with your flatmates</p>
+        <main >
+            <div className="welcome-section">
+                <h2>Finance</h2>
+                <p>Manage finances with your flatmates</p>
+            </div>
+            <div className="finance-grid">
+                <div className="finance-grid-element">
+                    <h2>What your flatmates owe you</h2>
+                    <table >
+                        <tbody>
+                            {flatmate.map((currentFlatmate, x) => (
+                                <tr key={x}>
+                                    <td>
+                                        {currentFlatmate.name} owes you ${owes[x]}
+                                    </td>
+                                    <td>
+                                        {owes[x] === 0 ? "" : "for examplecost1"}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="finance-grid-element" >
+                    <h2>
+                        Add Transaction
+                    </h2>
+                    <div className="add-transaction">
+                        <input
+                            type="number"
+                            placeholder="Enter Amount"
+                            onChange={updateCurrentAmount}
+                        />
                     </div>
-                    <div className="finance-grid">
-                        <div className="finance-grid-element">
-                            <h2>What your flatmates owe you</h2>
-                            <table >
-                                <tbody>
-                                    {flatmate.map((currentFlatmate,x) => (
-                                        <tr key={x}>
-                                            <td>
-                                                {currentFlatmate.name} owes you ${owes[x]}
-                                            </td>
-                                            <td>
-                                                {owes[x] === 0 ? "" : "for examplecost1"}
-                                            </td>
-                                        </tr>    
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div className="finance-grid-element" >
-                            <h2>
-                                Add Transaction
-                            </h2>
-                            <div className="add-transaction">
-                                <input 
-                                    type="number"
-                                    placeholder = "Enter Amount" 
-                                    onChange={updateCurrentAmount}
-                                />
-                            </div>
-                            <div className="add-transaction">
-                                <input 
-                                    type="text" 
-                                    name = "TransactionComment"
-                                    placeholder="Add Comment"
-                                    onChange={updateComment}
-                                />
-                            </div>
-                            <div>
-                                <p>Who is paying?</p>
-                                <input 
-                                    type="checkbox" 
-                                    name="isEqualSplit" 
-                                    id="equalSplitCheck" 
-                                    checked = {equalSplit}
-                                    onChange={updateEqualSplit}
-                                />
-                                <label For="isEqualSplit">Everyone</label>
-                            </div>
-                            
-                            {equalSplit ? (
-                                <p></p>
-                            ) : (
-                                <div>
-                                    <p>{Number(getTotalPaymentSplit())}/{Number(currentAmount)}</p>
-                                    {flatmate.map((currentFlatmate,x) => (
-                                        <div className="add-transaction">
-                                            <input 
-                                                type="number"
-                                                id = {"box"+x}
-                                                key = {"box"+x}
-                                                value = {paymentSplit[x]}
-                                                name={x}
-                                                onChange={(e) => updatePaymentSplit(e.target.value,x)}
-                                            />
-                                            <label For={"box"+x}>{currentFlatmate}</label>
-                                        </div>
-                                    ))}
-                                </div> )}
-                            <p>Submit</p>
-                            <input 
-                                type="button" 
-                                id = "TansactionSubmitButton" 
-                                value="Add Transaction" 
-                                ref={submitRef} 
-                                onClick={submitTransaction}/>
-                        </div>
+                    <div className="add-transaction">
+                        <input
+                            type="text"
+                            name="TransactionComment"
+                            placeholder="Add Comment"
+                            onChange={updateComment}
+                        />
                     </div>
-                </main>
+                    <div>
+                        <p>Who is paying?</p>
+                        <input
+                            type="checkbox"
+                            name="isEqualSplit"
+                            id="equalSplitCheck"
+                            checked={equalSplit}
+                            onChange={updateEqualSplit}
+                        />
+                        <label For="isEqualSplit">Everyone</label>
+                    </div>
+
+                    {equalSplit ? (
+                        <p></p>
+                    ) : (
+                        <div>
+                            <p>{Number(getTotalPaymentSplit())}/{Number(currentAmount)}</p>
+                            {flatmate.map((currentFlatmate, x) => (
+                                <div className="add-transaction">
+                                    <input
+                                        type="number"
+                                        id={"box" + x}
+                                        key={"box" + x}
+                                        value={paymentSplit[x]}
+                                        name={x}
+                                        onChange={(e) => updatePaymentSplit(e.target.value, x)}
+                                    />
+                                    <label For={"box" + x}>{currentFlatmate.name}</label>
+                                </div>
+                            ))}
+                        </div>)}
+                    <p>Submit</p>
+                    <input
+                        type="button"
+                        id="TansactionSubmitButton"
+                        value="Add Transaction"
+                        ref={submitRef}
+                        onClick={submitTransaction} />
+                </div>
+            </div>
+        </main>
     )
 }
 
