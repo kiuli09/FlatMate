@@ -169,7 +169,7 @@ function Finance({ user }) {
                     <h2>Overview</h2>
                     {owes.map((current, x) => (
                         <p key={x}>
-                            {current.name} owes you ${current.sum } for {current.description}
+                            {current.name} owes you ${current.sum} for {current.description}
                         </p>
                     ))}
                 </div>
@@ -194,7 +194,14 @@ function Finance({ user }) {
                         />
                     </div>
                     <div>
-                        <p>Who is paying?</p>
+                        <input
+                            type="checkbox"
+                            name="isReoccuring"
+                            checked={false}
+                        />
+                        <label htmlFor="isReoccuring">Reoccuring</label>
+                    </div>
+                    <div>
                         <input
                             type="checkbox"
                             name="isEqualSplit"
@@ -202,7 +209,7 @@ function Finance({ user }) {
                             checked={equalSplit}
                             onChange={updateEqualSplit}
                         />
-                        <label For="isEqualSplit">Everyone</label>
+                        <label For="isEqualSplit">Equal Payment Split</label>
                     </div>
 
                     {equalSplit ? (
