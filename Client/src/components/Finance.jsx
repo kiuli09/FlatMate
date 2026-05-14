@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 function Finance({ user }) {
 
     const [flatmate, setFlatmates] = useState([]);
-    const [owes, setOwes] = useState([0, 100, 100, 0])
+    const [owes, setOwes] = useState([])
     const [paymentSplit, setPaymentSplit] = useState([25, 25, 25, 25])
     const [equalSplit, setEqualSplit] = useState(true)
     const [currentAmount, setCurrentAmount] = useState(0)
@@ -50,12 +50,12 @@ function Finance({ user }) {
         const data = await owesRes.json();
         console.log(data.owes)
 
-        const tempArray = new Array(data.owes.length).fill(0)
-        for (let i = 0; i < data.owes.length; i++) {
-            tempArray[i] = data.owes[i].sum
-        }
-        console.log(tempArray)
-        setOwes(tempArray)
+        // const tempArray = new Array(data.owes.length).fill(0)
+        // for (let i = 0; i < data.owes.length; i++) {
+        //     tempArray[i] = data.owes[i].sum
+        // }
+        // console.log(tempArray)
+        setOwes(data.owes)
     }
 
     const submitTransaction = async () => {
@@ -166,21 +166,12 @@ function Finance({ user }) {
             </div>
             <div className="finance-grid">
                 <div className="finance-grid-element">
-                    <h2>What your flatmates owe you</h2>
-                    <table >
-                        <tbody>
-                            {flatmate.map((currentFlatmate, x) => (
-                                <tr key={x}>
-                                    <td>
-                                        {currentFlatmate.name} owes you ${owes[x]}
-                                    </td>
-                                    <td>
-                                        {owes[x] === 0 ? "" : "for examplecost1"}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <h2>Overview</h2>
+                    {owes.map((current, x) => (
+                        <p key={x}>
+                            {current.name} owes you ${current.sum } for {current.description}
+                        </p>
+                    ))}
                 </div>
 
                 <div className="finance-grid-element" >
@@ -242,6 +233,12 @@ function Finance({ user }) {
                         onClick={submitTransaction} />
                 </div>
             </div>
+            <div className="finance-grid-element">
+                <h2>
+                    Summary:
+                </h2>
+            </div>
+
         </main>
     )
 }
