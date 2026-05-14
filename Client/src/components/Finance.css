@@ -138,7 +138,34 @@ section h4 {
   flex-direction: column;
   gap: 12px;
 }
+.expense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
 
+.expense-header h3 {
+  margin: 0;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-controls p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+.expense-type-filter {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
 .expense-card {
   padding: 16px 18px;
   background: #f0fdf4;
@@ -252,4 +279,8 @@ body.dark-mode .section > button {
 body.dark-mode .expense-card {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+}
+
+body.dark-mode .filter-controls p {
+  color: rgba(255,255,255,0.75);
 }

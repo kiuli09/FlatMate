@@ -8,33 +8,12 @@ function Finance({ user }) {
     const [totalCost, setTotalCost] = useState("");
     const [splits, setSplits] = useState({});
     const [expenses, setExpenses] = useState([]);
-    const [expenseType, setExpenseType] = useState("One time");
+    const [expenseType, setExpenseType] = useState("One-time");
+    const [filterType, setFilterType] = useState("All");
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
-    
+
     //use effect to set members
-    useEffect(() => {
-    const fetchMembers = async () => {
-        try {
-            const res = await fetch(
-                `${API}/api/flats/${currentFlat.id}/members`
-            );
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                console.error(data.message);
-                setMembersList([]);
-                return;
-            }
-            console.log("Fetched members:", data.members);
-            setMembersList(data.members || []);
-        } catch (err) {
-            console.error("Error fetching members:", err);
-            setMembersList([]);
-        }
-    };
-
     const fetchExpenses = async () => {
         try {
             const res = await fetch(
@@ -56,9 +35,31 @@ function Finance({ user }) {
         }
     };
 
-    fetchMembers();
-    fetchExpenses();
-}, [currentFlat?.id]);
+    useEffect(() => {
+        const fetchMembers = async () => {
+            try {
+                const res = await fetch(
+                    `${API}/api/flats/${currentFlat.id}/members`
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.message);
+                    setMembersList([]);
+                    return;
+                }
+                console.log("Fetched members:", data.members);
+                setMembersList(data.members || []);
+            } catch (err) {
+                console.error("Error fetching members:", err);
+                setMembersList([]);
+            }
+        };
+
+        fetchMembers();
+        fetchExpenses();
+    }, [currentFlat?.id]);
 
     const handleSplitChange = (member, value) => {
         setSplits({
@@ -89,27 +90,47 @@ function Finance({ user }) {
             created_by: user?.username
         };
         console.log(newExpense);
-          const res = await fetch(`${API}/expenses`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: expenseName,
-                    total: total,
-                    splits: splits,
-                    expense_type: expenseType,
-                    flat_id: currentFlat.id,
-                    created_by: user?.username
-                }),
-            });
+        const res = await fetch(`${API}/expenses`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: expenseName,
+                total: total,
+                splits: splits,
+                expense_type: expenseType,
+                flat_id: currentFlat.id,
+                created_by: user?.username
+            }),
+        });
 
         setExpenses([...expenses, newExpense]);
-        
+
         //reset form
         setExpenseName("");
         setTotalCost("");
         setSplits({});
+    };
+    const filterByType = async (type) => {
+        try {
+            console.log("Filtering by type:", type);
+            if (type === "All") {
+                await fetchExpenses();
+                return;
+            }
+            else {
+                const res = await fetch(
+                    `${API}/api/flats/${currentFlat.id}/expenses/${type}`
+                );
+
+                const expensesData = await res.json();
+                console.log("Filtered expenses:", expensesData);
+                setExpenses(expensesData.expenses || []);
+            }
+        } catch (err) {
+            console.error("Error filtering expenses:", err);
+        }
     };
 
     return (
@@ -147,13 +168,13 @@ function Finance({ user }) {
                         onChange={(e) => setTotalCost(e.target.value)}
                     />
                     <select
-                    value={expenseType}
-                    onChange={(e) => setExpenseType(e.target.value)}
-                >
-                    <option value="One time">One time</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Monthly">Monthly</option>
-                </select>
+                        value={expenseType}
+                        onChange={(e) => setExpenseType(e.target.value)}
+                    >
+                        <option value="One time">One-time</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                    </select>
                 </div>
 
                 <h4>Custom Split</h4>
@@ -175,8 +196,26 @@ function Finance({ user }) {
             </div>
 
             <div className="section">
-                <h3>Expenses</h3>
-
+                <div className="expense-header">
+                    <h3>Expenses</h3>
+                    <div className="filter-controls">
+                        <p>filter by type:</p>
+                        <select
+                            className="expense-type-filter"
+                            value={filterType}
+                            onChange={(e) => {
+                                const selectedType = e.target.value;
+                                setFilterType(selectedType);
+                                filterByType(selectedType);
+                            }}
+                        >
+                            <option value="">All</option>
+                            <option value="One time">One time</option>
+                            <option value="Weekly">Weekly</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
                 <div className="expenses-list">
                     {expenses.map((exp, index) => (
                         <div key={index} className="expense-card">
@@ -201,13 +240,13 @@ function Finance({ user }) {
                                         </li>
                                     );
                                 })}
-                                
+
                             </ul>
                             <div className="expense-bottom-row">
                                 <span className="expense-type">Type: {exp.expense_type}</span>
                                 <span className="expense-created-by">Created by: {exp.created_by}</span>
                             </div>
-                            
+
                         </div>
                     ))}
                 </div>

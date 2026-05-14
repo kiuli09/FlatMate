@@ -69,6 +69,58 @@ app.post("/expenses", async (req, res) => {
     }
 });
 
+app.get(`/api/flats/:currentFlat/expenses/:type`, async (req, res) => {
+    const { currentFlat, type} = req.params;
+     try {
+        const transactions = await pool.query(
+            `
+            SELECT *
+            FROM transactions
+            WHERE flat_id = $1 AND category = $2
+            `,
+            [currentFlat, type]
+        );
+
+        const formattedExpenses = [];
+
+        for (const tx of transactions.rows) {
+
+            const splitsResult = await pool.query(
+                `
+                SELECT user_id, amount
+                FROM expense_split
+                WHERE transaction_id = $1
+                `,
+                [tx.transaction_id]
+            );
+
+            const splits = {};
+
+            splitsResult.rows.forEach(split => {
+                splits[split.user_id] = split.amount;
+            });
+
+            formattedExpenses.push({
+                name: tx.items_purchased,
+                total: tx.cost,
+                expense_type: tx.category,
+                splits: splits,
+                created_by: tx.created_by
+            });
+        }
+
+        res.json({
+            expenses: formattedExpenses
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+});
+
 app.get("/api/flats/:id/expenses", async (req, res) => {
     try {
         const transactions = await pool.query(
