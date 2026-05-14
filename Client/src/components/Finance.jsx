@@ -100,7 +100,7 @@ function Finance({ user }) {
                     splits: splits,
                     expense_type: expenseType,
                     flat_id: currentFlat.id,
-                    created_by: user?.id
+                    created_by: user?.username
                 }),
             });
 

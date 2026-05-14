@@ -235,6 +235,9 @@ body.dark-mode .expense-card {
   border: 1px solid rgba(255,255,255,0.14);
 }
 
+body.dark-mode .expense-total {
+  color: rgba(255,255,255,0.85);
+}
 body.dark-mode .expense-bottom-row > span,
 body.dark-mode .split-list li {
   color: rgba(255,255,255,0.75);
