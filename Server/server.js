@@ -187,6 +187,19 @@ app.post("/api/flats/:id/timetable", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+app.get("/api/flats/:id/timetable", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(
+            "SELECT * FROM timetable WHERE flat_id = $1",
+            [id]
+        );
+        res.json({ events: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 /* AUTHENTICATION ROUTES */
 
 // Login route

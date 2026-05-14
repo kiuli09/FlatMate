@@ -17,7 +17,22 @@ function Timetable() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const hours = Array.from({ length: 18 }, (_, i) => i + 7);
+      useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable`);
+                const data = await res.json();
+                setEvents(data.events);
+                console.log("Fetched events:", data.events.id);
+            } catch (err) {
+                console.error(err);
+            }
+        };
 
+        if (currentFlat?.id) {
+            fetchEvents();
+        }
+    }, [API, currentFlat?.id]);
     const getEventForCell = (hour, day) => {
         return events.find(
             (event) => event.hour === hour && event.day === day
@@ -84,7 +99,7 @@ function Timetable() {
 
     const deleteEvent = () => {
         if (!editingEvent) return;
-
+        
         setEvents((prev) =>
             prev.filter((event) => event.id !== editingEvent.id)
         );
