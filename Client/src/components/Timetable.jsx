@@ -67,7 +67,13 @@ function Timetable() {
                 name: eventName,
                 description: eventDescription,
             };
-
+            const res = fetch(`${API}/api/flats/${currentFlat.id}/timetable`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newEvent)
+            });
             setEvents((prev) => [...prev, newEvent]);
         }
         setEventName("");

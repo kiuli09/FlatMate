@@ -171,7 +171,22 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
         });
     }
 });
+app.post("/api/flats/:id/timetable", async (req, res) => {
+    const { id } = req.params;
+    const { hour, day, duration, name, description } = req.body;
 
+    try {
+        const result = await pool.query(
+            `INSERT INTO timetable (flat_id, hour, day, duration, name, description)
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [id, hour, day, duration, name, description]
+        );
+        res.status(201).json({ event: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 /* AUTHENTICATION ROUTES */
 
 // Login route
