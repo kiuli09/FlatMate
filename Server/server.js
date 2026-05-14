@@ -50,11 +50,11 @@ app.get("/items", async (req, res) => {
 });
 
 app.post("/expenses", async (req, res) => {
-    const { name, total, splits, flat_id, created_by } = req.body;
+    const { name, total, splits, flat_id,expense_type, created_by } = req.body;
     try {
         const result = await pool.query(
-            "INSERT INTO transactions(flat_id, cost, type, receipt,items_purchased,status,evidence,completed_on) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-            [flat_id, total, null, "one time payment", name, null, null, null]
+            "INSERT INTO transactions(flat_id, cost, category, type, receipt,items_purchased,status,evidence,completed_on,created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
+            [flat_id, total, expense_type, null, null, name, null, null, null, created_by]
         );
         for (const member in splits) {
             const expenseResults = await pool.query(
@@ -102,7 +102,9 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
             formattedExpenses.push({
                 name: tx.items_purchased,
                 total: tx.cost,
-                splits: splits
+                expense_type: tx.category,
+                splits: splits,
+                created_by: tx.created_by
             });
         }
 

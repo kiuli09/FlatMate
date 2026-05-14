@@ -8,7 +8,7 @@ function Finance({ user }) {
     const [totalCost, setTotalCost] = useState("");
     const [splits, setSplits] = useState({});
     const [expenses, setExpenses] = useState([]);
-
+    const [expenseType, setExpenseType] = useState("One time");
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     
@@ -27,7 +27,7 @@ function Finance({ user }) {
                 setMembersList([]);
                 return;
             }
-
+            console.log("Fetched members:", data.members);
             setMembersList(data.members || []);
         } catch (err) {
             console.error("Error fetching members:", err);
@@ -85,7 +85,8 @@ function Finance({ user }) {
             name: expenseName,
             total: total,
             splits: splits,
-            created_by: user?.id
+            expense_type: expenseType.trim(),
+            created_by: user?.username
         };
         console.log(newExpense);
           const res = await fetch(`${API}/expenses`, {
@@ -97,8 +98,9 @@ function Finance({ user }) {
                     name: expenseName,
                     total: total,
                     splits: splits,
+                    expense_type: expenseType,
                     flat_id: currentFlat.id,
-                    
+                    created_by: user?.id
                 }),
             });
 
@@ -144,6 +146,14 @@ function Finance({ user }) {
                         value={totalCost}
                         onChange={(e) => setTotalCost(e.target.value)}
                     />
+                    <select
+                    value={expenseType}
+                    onChange={(e) => setExpenseType(e.target.value)}
+                >
+                    <option value="One time">One time</option>
+                    <option value="Weekly">Weekly</option>
+                    <option value="Monthly">Monthly</option>
+                </select>
                 </div>
 
                 <h4>Custom Split</h4>
@@ -193,6 +203,11 @@ function Finance({ user }) {
                                 })}
                                 
                             </ul>
+                            <div className="expense-bottom-row">
+                                <span className="expense-type">Type: {exp.expense_type}</span>
+                                <span className="expense-created-by">Created by: {exp.created_by}</span>
+                            </div>
+                            
                         </div>
                     ))}
                 </div>
