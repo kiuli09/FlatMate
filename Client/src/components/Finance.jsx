@@ -8,7 +8,7 @@ function Finance({ user }) {
     const [totalCost, setTotalCost] = useState("");
     const [splits, setSplits] = useState({});
     const [expenses, setExpenses] = useState([]);
-    const [expenseType, setExpenseType] = useState("One-time");
+    const [expenseType, setExpenseType] = useState("One time");
     const [filterType, setFilterType] = useState("All");
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
@@ -171,7 +171,7 @@ function Finance({ user }) {
                         value={expenseType}
                         onChange={(e) => setExpenseType(e.target.value)}
                     >
-                        <option value="One time">One-time</option>
+                        <option value="One time">One time</option>
                         <option value="Weekly">Weekly</option>
                         <option value="Monthly">Monthly</option>
                     </select>
