@@ -49,6 +49,7 @@ app.get("/items", async (req, res) => {
     }
 });
 
+/* EXPENSES ROUTES */
 app.post("/expenses", async (req, res) => {
     const { name, total, splits, flat_id,expense_type, created_by } = req.body;
     try {
@@ -171,6 +172,9 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
         });
     }
 });
+
+
+/* TIMETABLE ROUTES */
 app.post("/api/flats/:id/timetable", async (req, res) => {
     const { id } = req.params;
     const { hour, day, duration, name, description } = req.body;
@@ -187,6 +191,7 @@ app.post("/api/flats/:id/timetable", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 app.get("/api/flats/:id/timetable", async (req, res) => {
     const { id } = req.params;
     try {
@@ -200,6 +205,7 @@ app.get("/api/flats/:id/timetable", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     const { flatId, eventId } = req.params;
     const { hour, day, duration, name, description } = req.body;
@@ -220,6 +226,7 @@ app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     const { flatId, eventId } = req.params;
     try {
@@ -236,6 +243,7 @@ app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 /* AUTHENTICATION ROUTES */
 
 // Login route
@@ -351,6 +359,7 @@ app.put("/api/users/:id/password", async (req, res) => {
     }
 });
 
+/* FLAT CREATION / JOIN / LEAVE ROUTES */
 app.post("/api/auth/create-flat", async (req, res) => {
     const { name, members, created_by } = req.body;
     console.log("Create flat attempt:", name, members, created_by);
@@ -444,6 +453,7 @@ app.post("/items", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 app.get("/itemsCount", async (req, res) => {
     const { flat_id } = req.headers;
     try {
@@ -683,6 +693,36 @@ app.put("/api/inventory/:id", async (req, res) => {
     } catch (err) {
         console.error("Error updating inventory item:", err);
         res.status(500).json({ message: "Error with updating inventory item" });
+    }
+});
+
+app.get("/api/flats/:flatId/details", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT f.id, f.name, f.created_by, f.join_code, f.current_people, f.num_people, COUNT(fm.user_id) AS member_count
+                FROM flat f LEFT JOIN flat_members fm ON f.id = fm.flat_id
+                WHERE f.id = $1 GROUP BY f.id, f.name, f.created_by, f.join_code, f.current_people, f.num_people
+            `,
+            [flatId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "Flat not found"
+            });
+        }
+
+        res.json({
+            flat: result.rows[0]
+        });
+
+    } catch (err) {
+        console.error("Error fetching flat details:", err);
+        res.status(500).json({
+            message: "Server error fetching flat details"
+        });
     }
 });
 

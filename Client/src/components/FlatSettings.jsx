@@ -13,12 +13,12 @@ function FlatSettings() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetchFlatSettings();
+    fetchFlatDetails();
   }, []);
 
   const fetchFlatSettings = async () => {
     try {
-      const res = await fetch(`${API}/api/flats/${currentFlat.id}`);
+      const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
       const data = await res.json();
 
       setFlat(data.flat);
@@ -28,6 +28,24 @@ function FlatSettings() {
     } catch (error) {
       console.error("Error fetching flat settings:", error);
       setMessage("Failed to fetch flat settings.");
+    }
+  };
+
+  const fetchFlatDetails = async () => {
+    try {
+      const res = await fetch(`${API}/api/flats/${currentFlat.id}/details`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage("Failed to fetch flat details.");
+        return;
+      }
+      setFlat(data.flat);
+      setNewFlatName(data.flat.name);
+      setMessage("");
+    } catch (error) {
+      console.error("Error fetching flat details:", error);
+      setMessage("Failed to fetch flat details.");
     }
   };
 
@@ -46,7 +64,7 @@ function FlatSettings() {
         <h3>Flat Details</h3>
         <p><strong>Flat Name:</strong> {flat?.name}</p>
         <p><strong>Join Code:</strong> {flat?.join_code}</p>
-        <p><strong>Members:</strong> {members.length}</p>
+        <p><strong>Members:</strong> {flat?.member_count} / {flat?.num_people}</p>
       </section>
 
       <section className="settings-card">
