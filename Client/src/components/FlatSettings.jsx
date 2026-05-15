@@ -14,22 +14,8 @@ function FlatSettings() {
 
   useEffect(() => {
     fetchFlatDetails();
+    fetchMembers();
   }, []);
-
-  const fetchFlatSettings = async () => {
-    try {
-      const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
-      const data = await res.json();
-
-      setFlat(data.flat);
-      setMembers(data.members || []);
-      setNewFlatName(data.flat?.name || "");
-      setMessage("");
-    } catch (error) {
-      console.error("Error fetching flat settings:", error);
-      setMessage("Failed to fetch flat settings.");
-    }
-  };
 
   const fetchFlatDetails = async () => {
     try {
@@ -49,6 +35,52 @@ function FlatSettings() {
     }
   };
 
+  const fetchMembers = async () => {
+    try {
+      const res = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+      const data = await res.json();
+
+      setMembers(data.members || []);
+      setMessage("");
+
+    } catch (error) {
+      console.error("Error fetching flat members:", error);
+      setMessage("Failed to fetch flat members.");
+    }
+  };
+
+  const handleUpdateFlatName = async () => {
+
+    try {
+
+      const res = await fetch(`${API}/api/flats/${currentFlat.id}/update-name`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name: newFlatName })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage("Failed to update flat name.");
+        return;
+      }
+
+      const updatedFlat = { ...currentFlat, name: data.flat.name };
+
+      localStorage.setItem("currentFlat", JSON.stringify(updatedFlat));
+
+      setFlat(data.flat);
+      setMessage("Flat name updated successfully.");
+
+    } catch (error) {
+      console.error("Error updating flat name:", error);
+      setMessage("Failed to update flat name.");
+    }
+  }
+
   return (
     <div className="flat-settings-page">
       <div className="flat-settings-header">
@@ -64,7 +96,7 @@ function FlatSettings() {
         <h3>Flat Details</h3>
         <p><strong>Flat Name:</strong> {flat?.name}</p>
         <p><strong>Join Code:</strong> {flat?.join_code}</p>
-        <p><strong>Members:</strong> {flat?.member_count} / {flat?.num_people}</p>
+        <p><strong>Members:</strong> {members.length} / {flat?.num_people}</p>      
       </section>
 
       <section className="settings-card">
@@ -75,7 +107,7 @@ function FlatSettings() {
           onChange={(e) => setNewFlatName(e.target.value)}
           placeholder="Enter new flat name"
         />
-        <button>Update Name</button>
+        <button onClick={handleUpdateFlatName}>Update Name</button>
       </section>
 
       <section className="settings-card">

@@ -726,6 +726,36 @@ app.get("/api/flats/:flatId/details", async (req, res) => {
     }
 });
 
+app.put("/api/flats/:flatId/update-name", async (req, res) => {
+    const {flatId} = req.params;
+    const {name} = req.body;
+
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ message: "Flat name cannot be empty" });
+    }
+
+    try {
+        const result = await pool.query(
+            "UPDATE flat SET name = $1 WHERE id = $2 RETURNING *",
+            [name.trim(), flatId]
+        );
+
+        // If flat doesnt exist
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Flat not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "Flat name updated successfully",
+            flat: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error updating flat name:", err);
+        res.status(500).json({ message: "Error with updating flat name" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
