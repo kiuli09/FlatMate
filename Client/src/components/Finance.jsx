@@ -164,7 +164,7 @@ function Finance({ user }) {
                     <h2>Overview</h2>
                     {owes.map((current, x) => (
                         <p key={x}>
-                            {current.name} owes you ${current.sum} for {current.description}
+                            {current.name} owes you ${current.sum} for {current.category}
                         </p>
                     ))}
                 </div>
