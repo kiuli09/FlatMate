@@ -301,7 +301,7 @@ app.post("/api/finance/add-transaction", async (req, res) => {
     try {
         console.log("Runing Query")
         const transactions_result = await pool.query(
-            "INSERT INTO transactions (flat_id, cost, arranged_by, description) VALUES ($1,$2,$3,$4) RETURNING *",
+            "INSERT INTO transactions (flat_id, cost, created_by, category) VALUES ($1,$2,$3,$4) RETURNING *",
             [flat_id, amount, current_user.id, comment]
         )
 
@@ -329,12 +329,12 @@ app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT u.name, es.user_id, sum(es.amount), t.arranged_by, t.description  
+            `SELECT u.name, es.user_id, sum(es.amount), t.created_by, t.category  
              FROM expense_split es 
              JOIN transactions t on t.transaction_id = es.transaction_id  
              JOIN users u on u.id = es.user_id 
-             WHERE es.flat_id = $1 AND t.arranged_by = $2
-             GROUP BY u.name,es.user_id,t.arranged_by,t.description;`,
+             WHERE es.flat_id = $1 AND t.created_by = $2
+             GROUP BY u.name,es.user_id,t.created_by,t.category;`,
             [flat_id,user_id]
         );
 

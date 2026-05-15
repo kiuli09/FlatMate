@@ -50,11 +50,6 @@ function Finance({ user }) {
         const data = await owesRes.json();
         console.log(data.owes)
 
-        // const tempArray = new Array(data.owes.length).fill(0)
-        // for (let i = 0; i < data.owes.length; i++) {
-        //     tempArray[i] = data.owes[i].sum
-        // }
-        // console.log(tempArray)
         setOwes(data.owes)
     }
 
