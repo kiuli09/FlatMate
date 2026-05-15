@@ -559,7 +559,7 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
 
 app.post("/api/finance/add-transaction", async (req, res) => {
     console.log("Recieved Request")
-    const { flat_id, amount, comment, split, members, current_user} = req.body
+    const { flat_id, amount, comment, split, members, current_user,reoccuringType} = req.body
     console.log(flat_id)
     console.log(amount)
     console.log(comment)

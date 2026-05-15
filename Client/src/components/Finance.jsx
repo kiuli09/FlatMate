@@ -14,6 +14,7 @@ function Finance({ user }) {
     const [splitIsValid, setSplitIsValid] = useState(true)
     const [transactions, setTransactions] = useState([])
     const [comment, setComment] = useState("")
+    const [reoccuringType, setReoccuringType] = useState("Equal Split")
     const submitRef = useRef()
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -67,7 +68,8 @@ function Finance({ user }) {
                     comment: comment,
                     split: paymentSplit,
                     members: flatmate,
-                    current_user: user
+                    current_user: user,
+                    reoccuringType: reoccuringType
                 })
             })
             console.log("Transaction Submitted")
@@ -98,6 +100,11 @@ function Finance({ user }) {
     const updatePaymentSplit = (event, index) => {
         setPaymentSplit([...paymentSplit.slice(0, index), Number(event), ...paymentSplit.slice(index + 1)])
         checkSplitValidity()
+    }
+
+    const updateReoccuringType = (event) => {
+        setReoccuringType(event.target.value)
+        console.log(reoccuringType)
     }
 
     const addTransaction = (event) => {
@@ -189,12 +196,16 @@ function Finance({ user }) {
                         />
                     </div>
                     <div>
-                        <input
-                            type="checkbox"
-                            name="isReoccuring"
-                            checked={false}
-                        />
-                        <label htmlFor="isReoccuring">Reoccuring</label>
+                        <select
+                            id="reoccuringDropDown"
+                            name="reoccuringDropDown"
+                            value={reoccuringType}
+                            onChange={updateReoccuringType}
+                        >
+                            <option value="Single Payment"> Single Payment</option>
+                            <option value="Reoccurs Weekly"> Reoccurs Weekly</option>
+                            <option value="Reoccurs Monthly"> Reoccurs Monthly</option>
+                        </select>
                     </div>
                     <div>
                         <input
@@ -239,6 +250,16 @@ function Finance({ user }) {
                 <h2>
                     Summary:
                 </h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
             </div>
 
         </main>
