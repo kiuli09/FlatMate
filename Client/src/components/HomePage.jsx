@@ -2,8 +2,9 @@ import "./HomePage.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+import TopBar from "./TopBar";
 
-function HomePage({ user, flats, setFlats }) {
+function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   const navigate = useNavigate();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -11,6 +12,7 @@ function HomePage({ user, flats, setFlats }) {
   const [flatName, setFlatName] = useState("");
   const [members, setMembers] = useState("");
   const [joinCode, setJoinCode] = useState("");
+  const [showUserMenu, setShowUserMenu] = useState(false);
   
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -125,27 +127,38 @@ function HomePage({ user, flats, setFlats }) {
       console.error("Error joining flat:", error);
     }
   }
-
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("currentFlat");
-    window.location.href = "/signin";
-  };
+  
   return (
     <div className="home-page">
-      <header className="home-header">
+      {/* <header className="home-header">
         <h1 className="app-title">FlatMate</h1>
 
         <div className="user-section">
+          
           <span className="user-name">{displayName}</span>
-          <div className="avatar-placeholder"></div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
+          
+          <button type="button" className="avatar-placeholder" onClick={() => setShowUserMenu(!showUserMenu)}>
+            {displayName.charAt(0).toUpperCase()}
           </button>
+
+          {showUserMenu && (
+            <div className="user-menu">
+              
+              <button onClick={() => navigate("/UserSettings")}>
+                Settings
+              </button>
+
+              <button onClick={handleLogout}>
+                Logout
+              </button>
+
+            </div>
+          )}
+
         </div>
-      </header>
+      </header> */}
+
+      <TopBar user={user} darkMode={darkMode} setDarkMode={setDarkMode}/>
 
       <main className="home-content">
         <section className="welcome-section">

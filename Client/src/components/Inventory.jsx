@@ -9,6 +9,7 @@ function Inventory() {
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+    const user = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -57,6 +58,83 @@ function Inventory() {
         }
     };
 
+    const handleDeleteItem = async (itemId) => {
+
+        try {
+             const res = await fetch(`${API}/api/inventory/${itemId}`, {
+                method: "DELETE",
+            });
+
+            const data = await res.json();
+
+            if(!res.ok){
+                alert(data.message || "Failed to remove item");
+                return;
+            }
+
+            setItems(items.filter((item) => item.id !== itemId));
+        }catch(err){
+            console.error("Error with removing item: ", err);
+        }
+    };
+
+    const getStatus = (quantity) => {
+        return Number(quantity) > 0 ? "In Stock" : "Low Stock";
+    };
+
+    const getStatusClass = (quantity) => {
+        return Number(quantity) > 0 ? "in-stock" : "low-stock";
+    };
+
+    const updateItemQuantity = async (itemId, newQuantity) => {
+        try {
+            const res = await fetch(`${API}/api/inventory/${itemId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ quantity: Number(newQuantity) }),
+            });
+
+            if (!res.ok) {
+                alert("Failed to update item quantity");
+                return;
+            }
+
+            setItems(items.map((item) =>
+                item.id === itemId ? { ...item, quantity: Number(newQuantity) } : item
+            ));
+        } catch (err) {
+            console.error("Error updating item quantity:", err);
+        }
+    };
+
+    const addToShoppingList = async (item) => {
+        try {
+            const res = await fetch(`${API}/items`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    flat_id: currentFlat.id,
+                    name: item.item_name,
+                    added_by: user.id,
+                }),
+            });
+
+            if (!res.ok) {
+                alert("Failed to add item to shopping list");
+                return;
+            }
+
+            await handleDeleteItem(item.id);
+
+        } catch (err) {
+            console.error("Error adding item to shopping list:", err);
+        }
+    }
+
     return (
         <div>
             <div className="welcome-section">
@@ -82,7 +160,7 @@ function Inventory() {
                     />
                     <input
                         type="number"
-                        min="1"
+                        min="0"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         required
@@ -91,7 +169,7 @@ function Inventory() {
                 </form>
             )}
 
-            <div className="items-list">
+            <div className="items-grid">
                 {items.length === 0 ? (
                     <div className="empty-state">
                         No inventory items yet.
@@ -99,9 +177,42 @@ function Inventory() {
                 ) : (
                     items.map((item) => (
                         <div key={item.id} className="item-card">
-                            <div className="item-info">
-                                <h3>{item.item_name}</h3>
-                                <p>Quantity: {item.quantity}</p>
+                            <div className="item-card-top">
+                                <div className="item-info">
+                                    <h3>{item.item_name}</h3>
+
+                                    <div className="quantity-edit">
+                                        <label>Quantity:</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={item.quantity}
+                                            onChange={(e) =>
+                                                updateItemQuantity(item.id, e.target.value)
+                                            }
+                                        />
+                                    </div>
+                                </div>
+
+                                <span className={`item-status ${getStatusClass(item.quantity)}`}>
+                                    {getStatus(item.quantity)}
+                                </span>
+                            </div>
+
+                            <div className="actions">
+
+                                {Number(item.quantity) === 0 && (
+                                    <button className="shopping-btn" onClick={() => addToShoppingList(item)}>
+                                        Add to Shopping List
+                                    </button>
+                                )}
+
+                                <button
+                                    className="remove-icon-btn"
+                                    onClick={() => handleDeleteItem(item.id)}
+                                >
+                                    ✕
+                                </button>
                             </div>
                         </div>
                     ))

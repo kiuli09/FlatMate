@@ -5,7 +5,8 @@
 
 .welcome-section h2 {
   margin: 0 0 8px 0;
-  font-size: 1.8rem;
+  font-size: 1.9rem;
+  color: #111827;
 }
 
 .welcome-section p {
@@ -13,20 +14,55 @@
   color: #6b7280;
 }
 
+.section {
+  background: white;
+  border: 1px solid #eef1f4;
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.section h3 {
+  margin: 0 0 14px;
+  color: #111827;
+}
+
+section h4 {
+  margin: 18px 0 12px;
+  color: #374151;
+}
+
 
 /* Shared input row (same style as add-item) */
 .add-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 20px;
 }
 
-.add-item input {
-  flex: 1;
+.add-item input, .split-row input {
+  width: 100%;
   padding: 12px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
   font-size: 1rem;
+  outline: none;
+}
+
+.add-item input:focus, .split-row input:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.add-item select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  outline: none;
 }
 
 .add-item button {
@@ -43,13 +79,6 @@
   background-color: #43a047;
 }
 
-
-/* Section spacing */
-.section {
-  margin-bottom: 24px;
-}
-
-
 /* Member list (simple text list) */
 .member-list {
   display: flex;
@@ -58,34 +87,50 @@
 }
 
 .member-chip {
-  background: #4caf50;
-  color: white;
-  padding: 6px 12px;
+  background: #e8f8ee;
+  color: #2f9e44;
+  padding: 7px 13px;
   border-radius: 999px;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 
 /* Split inputs */
 .split-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 80px 1fr;
   gap: 10px;
   margin-bottom: 10px;
   align-items: center;
 }
 
 .split-row label {
-  min-width: 80px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #374151;
 }
 
 .split-row input {
-  flex: 1;
+  width: 100%;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
 }
 
+.section > button {
+  margin-top: 6px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #4caf50;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.section > button:hover {
+  background: #43a047;
+}
 
 /* Expense list (same vibe as shopping items) */
 .expenses-list {
@@ -93,12 +138,40 @@
   flex-direction: column;
   gap: 12px;
 }
+.expense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
 
+.expense-header h3 {
+  margin: 0;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-controls p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+.expense-type-filter {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
 .expense-card {
-  padding: 14px 18px;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 12px;
+  padding: 16px 18px;
+  background: #f0fdf4;
+  color: #111827;
+  border: 1px solid #cdeed4;
+  border-radius: 14px;
   font-weight: 500;
 }
 
@@ -112,8 +185,25 @@
 
 .expense-name {
   font-size: 1rem;
+  font-weight: 700;
 }
 
+.expense-total {
+  font-size: 0.95rem;
+  color: #2f9e44;
+  font-weight: 700;
+}
+
+.expense-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.expense-type,
+.expense-created-by {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
 .card-value {
   font-size: 2rem;
   font-weight: 700;
@@ -155,6 +245,86 @@
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
+}
+
+.expense-created-by {
+  margin-left: 12px;
+  position: right;;
+}
+
+/* Split breakdown */
+.split-list {
+  margin-top: 10px;
+  padding-left: 18px;
+  color: #4b5563;
+}
+
+.split-list li {
+  font-size: 0.9rem
+}
+
+/* FOR DARK MODE*/
+body.dark-mode .welcome-section h2,
+body.dark-mode .section h3,
+body.dark-mode .section h4,
+body.dark-mode .split-row label {
+  color: white;
+}
+
+body.dark-mode .welcome-section p {
+  color: rgba(255,255,255,0.75);
+}
+
+body.dark-mode .section {
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 16px;
+  padding: 20px;
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.22),
+    inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+body.dark-mode .add-item input,
+body.dark-mode .split-row input {
+  background: rgba(255,255,255,0.92);
+  color: #111827;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+body.dark-mode .member-chip,
+body.dark-mode .section > button,
+body.dark-mode .expense-card {
+  background: rgba(76,175,80,0.78);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+body.dark-mode .expense-total {
+  color: rgba(255,255,255,0.85);
+}
+body.dark-mode .expense-bottom-row > span,
+body.dark-mode .split-list li {
+  color: rgba(255,255,255,0.75);
+}
+body.dark-mode .section > button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body.dark-mode .expense-card {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body.dark-mode .filter-controls p {
+  color: rgba(255,255,255,0.75);
 }
 
 .add-transaction input {

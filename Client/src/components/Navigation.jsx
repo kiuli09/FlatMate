@@ -1,7 +1,8 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import "./Navigation.css";
+import TopBar from "./TopBar";
 
-function Navigation({ user }) {
+function Navigation({ user, darkMode, setDarkMode }) {
     const navigate = useNavigate();
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
 
@@ -18,7 +19,7 @@ function Navigation({ user }) {
 
     return (
         <div className="dashboard-page">
-            <header className="topbar">
+            {/* <header className="topbar">
                 <div className="topbar-left">
                     <div className="avatar-placeholder"></div>
                     <div className="topbar-text">
@@ -36,7 +37,9 @@ function Navigation({ user }) {
                     </div>
                     <div className="avatar-placeholder"></div>
                 </div>
-            </header>
+            </header> */}
+
+            <TopBar user={user} darkMode={darkMode} setDarkMode={setDarkMode}/>
 
             <div className="dashboard-body">
                 <aside className="sidebar">
@@ -74,6 +77,26 @@ function Navigation({ user }) {
                         }
                     >
                         Inventory
+                    </NavLink>
+
+                    <NavLink
+                        to="/timetable"
+                        className={({ isActive }) =>
+                            isActive ? "nav-item active" : "nav-item"
+                        }
+                    >
+                        Timetable
+                    </NavLink>
+
+                    <div className="nav-divider"></div>
+
+                    <NavLink
+                        to="/flatsettings"
+                        className={
+                            ({isActive}) => isActive ? "nav-item active" : "nav-item"
+                        }
+                    >
+                        Flat Settings
                     </NavLink>
 
                     <button 

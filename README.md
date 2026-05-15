@@ -41,3 +41,8 @@ Each member of our team has taken computer science courses previously, meaning w
 For the project, we will be using free and open-source tools such as GitHub for version control, Visual Studio Code for development, and a cloud hosting service for deployment (to be confirmed). We will also use Taiga to track tasks across each sprint, including tasks that need to be done, are in progress, and have been completed.
 
 These resources are sufficient to support the development, collaboration, and deployment of FlatMate.
+
+## For Evidence Tracking
+We are using Taiga to keep track of our user stories and tasks for implementations. The following link will direct you to our Taiga Page. 
+
+https://tree.taiga.io/project/judithainuu-flatmate/taskboard/sprint-1-26374

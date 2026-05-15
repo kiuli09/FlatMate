@@ -1,0 +1,365 @@
+.timetable-grid {
+    --time-width: 120px;
+    --day-cols: 7;
+    --row-height: 80px;
+    --gap: 8px;
+
+    position: relative;
+
+    display: grid;
+    grid-template-columns: var(--time-width) repeat(var(--day-cols), 1fr);
+    grid-auto-rows: var(--row-height);
+
+    width: 100%;
+
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #dcdcdc;
+    background: white;
+}
+
+/* Base cell styling */
+.cell {
+    padding: 0.9rem;
+    min-height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+
+    font-size: 0.95rem;
+}
+
+/* Remove right border on last column (Sunday) */
+.cell:nth-child(8n) {
+    border-right: none;
+}
+
+/* HEADER ROW */
+.header {
+    background: #34a853;
+    color: white;
+    font-weight: 700;
+}
+
+/* Make sure header cells still respect grid */
+.header.time {
+    background: #2f9e44;
+}
+
+/* TIME COLUMN (left side) */
+.time-col {
+    background: #f6f6f6;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Optional hover for schedule cells */
+.cell:not(.header):not(.time-col):hover {
+    background: #e9f7ec;
+}
+
+/* Remove bottom border on last row */
+.timetable-grid > .cell:nth-last-child(-n + 8) {
+    border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .timetable-grid {
+        grid-template-columns: 90px repeat(7, minmax(80px, 1fr));
+    }
+
+    .cell {
+        min-height: 50px;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal content styling */
+.event-modal {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+
+.events-layer {
+    position: absolute;
+    inset: 0;
+
+    display: grid;
+
+    grid-template-columns: var(--time-width) repeat(var(--day-cols), 1fr);
+    grid-auto-rows: var(--row-height);
+
+    pointer-events: none;
+
+    z-index: 10;
+}
+
+.event-block {
+    margin: 4px;
+
+    background: #34a853;
+    color: white;
+
+    border-radius: 18px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+
+    pointer-events: auto;
+
+    overflow: hidden;
+
+    transition: 0.2s ease;
+}
+
+.event-block:hover {
+    transform: scale(1.02);
+}
+.cell {
+    cursor: pointer;
+    position: relative;
+}
+
+
+.modal-body form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: rgb(9, 8, 8);
+    font-weight: 600;
+}
+
+.event-modal textarea {
+    min-height: 90px;
+    resize: vertical;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.event-modal input, .event-modal textarea {
+    padding: 12px;
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.event-modal input:focus, .event-modal textarea:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.save-event-btn {
+    align-self: flex-start;
+
+    background: linear-gradient(
+        135deg,
+        #4caf50,
+        #66cc7a
+    );
+
+    color: white;
+    border: none;
+    border-radius: 10px;
+
+    padding: 12px 18px;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.save-event-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(76, 175, 80, 0.25);
+}
+
+/* FOR DARK MODE*/
+body.dark-mode .timetable-container h2 {
+    color: white;
+}
+
+body.dark-mode .timetable-grid {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.22),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .cell {
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+}
+
+body.dark-mode .header {
+    background: rgba(76, 175, 80, 0.82);
+    color: white;
+}
+
+body.dark-mode .header.time {
+    background: rgba(76, 175, 80, 0.95);
+}
+
+body.dark-mode .time-col {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .cell:not(.header):not(.time-col):hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .event-modal {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+
+    border: 1px solid rgba(255, 255, 255, 0.16);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+body.dark-mode .close-modal-btn {
+    color: white;
+}
+
+body.dark-mode .event-modal input,
+body.dark-mode .event-modal textarea {
+    background: rgba(255, 255, 255, 0.92);
+    color: #111827;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+body.dark-mode .modal-body form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+body.dark-mode .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+body.dark-mode .form-group label {
+    color: white;
+    font-weight: 600;
+}
+
+body.dark-mode .event-modal textarea {
+    min-height: 90px;
+    resize: vertical;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+body.dark-mode .event-modal input,
+body.dark-mode .event-modal textarea {
+    padding: 12px;
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+body.dark-mode .event-modal input:focus,
+body.dark-mode .event-modal textarea:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+body.dark-mode .save-event-btn {
+    align-self: flex-start;
+
+    background: linear-gradient(
+        135deg,
+        #4caf50,
+        #66cc7a
+    );
+
+    color: white;
+    border: none;
+    border-radius: 10px;
+
+    padding: 12px 18px;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+body.dark-mode .save-event-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(76, 175, 80, 0.25);
+}
