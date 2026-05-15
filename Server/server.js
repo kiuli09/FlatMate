@@ -460,6 +460,20 @@ app.get("/itemsCount", async (req, res) => {
     }
 });
 
+app.get("/api/flats/:id/upcoming-bills", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const billsRes = await pool.query(
+            "SELECT * FROM transactions WHERE flat_id = $1 AND category = 'Weekly' OR category = 'Monthly';",
+            [id]
+        );
+        res.json({ bills: billsRes.rows });
+    } catch (err) {
+        console.error("Error fetching upcoming bills:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 app.post("/items/purchased/:id", async (req, res) => {
     const { id } = req.params;
     const { flat_id } = req.body;
