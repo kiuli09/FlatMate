@@ -14,7 +14,7 @@ function Finance({ user }) {
     const [splitIsValid, setSplitIsValid] = useState(true)
     const [transactions, setTransactions] = useState([])
     const [comment, setComment] = useState("")
-    const [reoccuringType, setReoccuringType] = useState("Equal Split")
+    const [reoccuringType, setReoccuringType] = useState("S")
     const submitRef = useRef()
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -185,7 +185,11 @@ function Finance({ user }) {
                             type="number"
                             placeholder="Enter Amount"
                             onChange={updateCurrentAmount}
+                            name="amountInput"
                         />
+                    </div>
+                    <div>
+                        <input type="text" />
                     </div>
                     <div className="add-transaction">
                         <input
@@ -202,9 +206,9 @@ function Finance({ user }) {
                             value={reoccuringType}
                             onChange={updateReoccuringType}
                         >
-                            <option value="Single Payment"> Single Payment</option>
-                            <option value="Reoccurs Weekly"> Reoccurs Weekly</option>
-                            <option value="Reoccurs Monthly"> Reoccurs Monthly</option>
+                            <option value="S"> Single Payment</option>
+                            <option value="W"> Reoccurs Weekly</option>
+                            <option value="M"> Reoccurs Monthly</option>
                         </select>
                     </div>
                     <div>

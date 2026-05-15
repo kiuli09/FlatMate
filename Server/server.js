@@ -569,8 +569,8 @@ app.post("/api/finance/add-transaction", async (req, res) => {
     try {
         console.log("Runing Query")
         const transactions_result = await pool.query(
-            "INSERT INTO transactions (flat_id, cost, created_by, category) VALUES ($1,$2,$3,$4) RETURNING *",
-            [flat_id, amount, current_user.id, comment]
+            "INSERT INTO transactions (flat_id, cost, created_by, comment,reoccurence_type) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+            [flat_id, amount, current_user.id, comment,reoccuringType]
         )
 
         console.log(transactions_result.rows[0].transaction_id)
@@ -612,6 +612,23 @@ app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
         res.status(500).json({ message: "Error fetching flat members" });
     }
 
+});
+
+app.get("/api/finance/:flatId/categories", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `select distinct(category) from transactions
+             where flat_id = $1;`,
+            [flatId]
+        );
+
+        res.json({ categories: result.rows });
+    } catch (err) {
+        console.error("Error fetching categories:", err);
+        res.status(500).json({ message: "Error fetching categories" });
+    }
 });
 
 app.delete("/api/inventory/:id", async (req, res) => {
