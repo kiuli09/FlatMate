@@ -81,6 +81,29 @@ function FlatSettings() {
     }
   }
 
+  const handleAddMember = async () => {
+    try {
+      const res = await fetch(`${API}/api/flats/${currentFlat.id}/add-member`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: memberEmail })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage("Failed to add member.");
+        return;
+      }
+      setMessage("Member added successfully.");
+      setMemberEmail("");
+      fetchMembers();
+    } catch (error) {
+      console.error("Error adding member:", error);
+      setMessage("Failed to add member.");
+    }
+  }
+
   return (
     <div className="flat-settings-page">
       <div className="flat-settings-header">
@@ -129,7 +152,7 @@ function FlatSettings() {
           onChange={(e) => setMemberEmail(e.target.value)}
           placeholder="Enter member's email"
         />
-        <button>Add Member</button>
+        <button onClick={handleAddMember}>Add Member</button>
       </section>
 
       {/* <h2>Flat Settings</h2>

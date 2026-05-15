@@ -756,6 +756,51 @@ app.put("/api/flats/:flatId/update-name", async (req, res) => {
     }
 });
 
+app.post("/api/flats/:id/add-member", async (req, res) => {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email || email.trim() === "") {
+        return res.status(400).json({message: "Email is required"});
+    }
+
+    try {
+        const result = await pool.query(
+            "SELECT id, name, email FROM users WHERE email = $1",
+            [email.trim()]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const user = result.rows[0];
+
+        const insertResult = await pool.query(
+            `
+            INSERT INTO flat_members (user_id, flat_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id, flat_id) DO NOTHING
+            RETURNING *
+            `,
+            [user.id, id]
+        );
+
+        if (insertResult.rowCount === 0) {
+            return res.status(400).json({ message: "Failed to add member to flat" });
+        }
+
+        res.json({
+            success: true,
+            message: "Member added successfully",
+            member: insertResult.rows[0]
+        });
+    } catch (err) {
+        console.error("Error adding member:", err);
+        res.status(500).json({ message: "Error with adding member" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
