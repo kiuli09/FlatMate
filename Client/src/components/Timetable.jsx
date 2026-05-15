@@ -61,6 +61,19 @@ function Timetable() {
         if (!eventName.trim()) return;
 
         if (isEditing) {
+            const res = fetch(`${API}/api/flats/${currentFlat.id}/timetable/${editingEvent.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    hour: selectedCell.hour,
+                    day: selectedCell.day,
+                    duration,
+                    name: eventName,
+                    description: eventDescription
+                })
+            });
             setEvents((prev) =>
                 prev.map((event) =>
                     event.id === editingEvent.id
@@ -97,9 +110,16 @@ function Timetable() {
         setShowEventModal(false);
     };
 
-    const deleteEvent = () => {
+    const deleteEvent = async () => {
         if (!editingEvent) return;
-        
+        console.log(`Deleting event with id ${editingEvent.id}`);
+        const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable/${editingEvent.id}`, {
+            method: "DELETE",
+        }); 
+        if (!res.ok) {
+            console.error("Failed to delete event");
+            return;
+        }
         setEvents((prev) =>
             prev.filter((event) => event.id !== editingEvent.id)
         );

@@ -200,6 +200,42 @@ app.get("/api/flats/:id/timetable", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
+    const { flatId, eventId } = req.params;
+    const { hour, day, duration, name, description } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE timetable
+             SET hour = $1, day = $2, duration = $3, name = $4, description = $5
+             WHERE flat_id = $6 AND id = $7
+             RETURNING *`,
+            [hour, day, duration, name, description, flatId, eventId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+        res.json({ event: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
+    const { flatId, eventId } = req.params;
+    try {
+        const result = await pool.query(
+            "DELETE FROM timetable WHERE flat_id = $1 AND id = $2 RETURNING *",
+            [flatId, eventId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+        res.json({ message: "Event deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 /* AUTHENTICATION ROUTES */
 
 // Login route
