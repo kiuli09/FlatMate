@@ -7,7 +7,6 @@ import SignUp from "./components/SignUp";
 import Inventory from "./components/Inventory";
 import Finance from "./components/Finance";
 import HomePage from "./components/HomePage";
-import Finance from "./components/Finance";
 import Timetable from "./components/Timetable";
 import Navigation from "./components/Navigation";
 import UserSettings from "./components/UserSettings";
