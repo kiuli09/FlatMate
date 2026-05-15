@@ -1,0 +1,150 @@
+.flat-settings-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.flat-settings-header{
+    margin-bottom: 24px;
+}
+
+.flat-settings-header h2{
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+}
+
+.flat-settings-header p{
+    margin: 0;
+    color: #6b7280;
+}
+
+.messa/* MESSAGE */
+.message {
+  background: #dcfce7;
+  color: #166534;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* SETTINGS CARD */
+.settings-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 24px;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.settings-card h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.2rem;
+}
+
+/* INPUT + BUTTON ROW */
+.settings-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  margin-bottom: 14px;
+}
+
+.settings-card input:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+/* BUTTONS */
+.settings-card button {
+  border: none;
+  background: #4caf50;
+  color: white;
+
+  padding: 12px 18px;
+  border-radius: 10px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.settings-card button:hover {
+  background: #43a047;
+  transform: translateY(-1px);
+}
+
+/* MEMBER LIST */
+.members-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.members-list:last-child {
+  border-bottom: none;
+}
+
+.members-list span {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* REMOVE BUTTON */
+.remove-btn {
+  background: #ef4444 !important;
+}
+
+.remove-btn:hover {
+  background: #dc2626 !important;
+}
+
+/* DARK MODE */
+body.dark-mode .flat-settings-header p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark-mode .settings-card {
+  background: rgba(255, 255, 255, 0.08);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.18);
+}
+
+body.dark-mode .settings-card h3,
+body.dark-mode .settings-card p,
+body.dark-mode .members-list span {
+  color: white;
+}
+
+body.dark-mode .settings-card input {
+  background: rgba(255, 255, 255, 0.08);
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  color: white;
+}
+
+body.dark-mode .settings-card input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.dark-mode .message {
+  background: rgba(76, 175, 80, 0.18);
+  color: #d1fae5;
+}

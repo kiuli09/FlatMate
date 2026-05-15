@@ -1,5 +1,5 @@
 import "./FlatSettings.css";
-import {use, useEffect, useState} from "react";  
+import { useEffect, useState } from "react";
 
 function FlatSettings() {
 
@@ -38,14 +38,14 @@ function FlatSettings() {
         <p>Manage your flat details and members!</p>
       </div>
 
-      {message && (
+      {/* {message && (
         <p className="message">{message}</p>
-      )}
+      )} */}
 
       <section className="settings-card">
         <h3>Flat Details</h3>
         <p><strong>Flat Name:</strong> {flat?.name}</p>
-        <p><strong>Join Code:</strong> {flat?.joinCode}</p>
+        <p><strong>Join Code:</strong> {flat?.join_code}</p>
         <p><strong>Members:</strong> {members.length}</p>
       </section>
 
