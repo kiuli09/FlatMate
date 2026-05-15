@@ -104,6 +104,28 @@ function FlatSettings() {
     }
   }
 
+  const handleRemoveMember = async (memberId) => {
+    try {
+      const res = await fetch(`${API}/api/flats/${currentFlat.id}/remove-member/${memberId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ memberId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage("Failed to remove member.");
+        return;
+      }
+      setMessage("Member removed successfully.");
+      fetchMembers();
+    } catch (error) {
+      console.error("Error removing member:", error);
+      setMessage("Failed to remove member.");
+    }
+  }
+
   return (
     <div className="flat-settings-page">
       <div className="flat-settings-header">
@@ -139,7 +161,7 @@ function FlatSettings() {
         {members.map((m) => (
           <div className="members-list" key={m.id}>
             <span>{m.email}</span>
-            <button className="remove-btn">Remove</button>
+            <button className="remove-btn" onClick={() => handleRemoveMember(m.id)}>Remove</button>
           </div>
         ))}
       </section>

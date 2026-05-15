@@ -801,6 +801,30 @@ app.post("/api/flats/:id/add-member", async (req, res) => {
     }
 });
 
+app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
+    const { flatId, userId } = req.params;
+
+    try {
+        const result = await pool.query(
+            "DELETE FROM flat_members WHERE flat_id = $1 AND user_id = $2 RETURNING *",
+            [flatId, userId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Member not found in the flat" });
+        }
+
+        res.json({
+            success: true,
+            message: "Member removed successfully",
+            member: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error removing member:", err);
+        res.status(500).json({ message: "Error with removing member" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
