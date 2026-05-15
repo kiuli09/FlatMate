@@ -464,7 +464,7 @@ app.get("/api/flats/:id/upcoming-bills", async (req, res) => {
     const { id } = req.params;
     try {
         const billsRes = await pool.query(
-            "SELECT * FROM transactions WHERE flat_id = $1 AND category = 'Weekly' OR category = 'Monthly';",
+            "SELECT * FROM transactions WHERE flat_id = $1 AND category IN ('Weekly', 'Monthly');",
             [id]
         );
         res.json({ bills: billsRes.rows });
