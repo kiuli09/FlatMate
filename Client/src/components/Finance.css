@@ -344,3 +344,17 @@ body.dark-mode .filter-controls p {
   font-weight: 600;
   cursor: pointer;
 }
+
+.summary-table {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 3px;
+}
+
+.summary-table-heading {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding-left: 3px;
+  padding-right: 3px;
+  background-color: #4caf50;
+}

@@ -688,6 +688,39 @@ app.get("/api/finance/:flatId/categories", async (req, res) => {
     }
 });
 
+app.get("/api/finance/:flatId/monthly_summary", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT 
+                category,
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 1) AS "Jan",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 2) AS "Feb",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 3) AS "Mar",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 4) AS "Apr",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 5) AS "May",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 6) AS "Jun",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 7) AS "Jul",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 8) AS "Aug",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 9) AS "Sep",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 10) AS "Oct",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 11) AS "Nov",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 12) AS "Dec"
+             FROM transactions 
+             where flat_id = $1
+             GROUP BY category
+             ORDER BY category;`,
+            [flatId]
+        );
+
+        res.json({ summary: result.rows });
+    } catch (err) {
+        console.error("Error fetching summary:", err);
+        res.status(500).json({ message: "Error fetching summary" });
+    }
+});
+
 app.delete("/api/inventory/:id", async (req, res) => {
     const { id } = req.params;
 

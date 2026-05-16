@@ -17,6 +17,7 @@ function Finance({ user }) {
     const [comment, setComment] = useState("")
     const [reoccuringType, setReoccuringType] = useState("S")
     const [categories, setCategories] = useState([])
+    const [summary, setSummary] = useState([])
     const [currentCategory, setCurrentCategory] = useState("")
 
     const submitRef = useRef()
@@ -41,6 +42,7 @@ function Finance({ user }) {
 
                 updateOwes()
                 updateCategories()
+                updateSummary()
                 setPaymentSplit(new Array(filtered_members.length).fill(0))
                 // console.log("a")
                 // console.log(flatmate)
@@ -59,6 +61,7 @@ function Finance({ user }) {
 
         setOwesYou(data.owesYou)
         setYouOwe(data.youOwe)
+        updateSummary()
     }
 
     const updateCategories = async () => {
@@ -67,6 +70,14 @@ function Finance({ user }) {
         console.log(data.categories.map(a => a.category.trim()))
 
         setCategories(data.categories.map(a => a.category.trim()))
+    }
+
+    const updateSummary = async () => {
+        const owesRes = await fetch(`${API}/api/finance/${currentFlat.id}/monthly_summary`);
+        const data = await owesRes.json();
+        console.log(data.summary)
+
+        setSummary(data.summary)
     }
 
     const submitTransaction = async () => {
@@ -353,13 +364,41 @@ function Finance({ user }) {
                 <h2>
                     Summary:
                 </h2>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>
-
-                            </td>
-                        </tr>
+                <p>Total amount spent on flat related costs by month and category</p>
+                <table class="summary-table">
+                    <thead>
+                        <th class="summary-table-heading">Category</th>
+                        <th class="summary-table-heading">Jan</th>
+                        <th class="summary-table-heading">Feb</th>
+                        <th class="summary-table-heading">March</th>
+                        <th class="summary-table-heading">April</th>
+                        <th class="summary-table-heading">May</th>
+                        <th class="summary-table-heading">June</th>
+                        <th class="summary-table-heading">July</th>
+                        <th class="summary-table-heading">August</th>
+                        <th class="summary-table-heading">September</th>
+                        <th class="summary-table-heading">October</th>
+                        <th class="summary-table-heading">November</th>
+                        <th class="summary-table-heading">December</th>
+                    </thead>
+                    <tbody class="summary-table">
+                        {summary.map((data, x) => (
+                            <tr class="summary-table">
+                                <td class="summary-table">{data.category}</td>
+                                <td class="summary-table">${data.Jan}</td>
+                                <td class="summary-table">${data.Feb}</td>
+                                <td class="summary-table">${data.Mar}</td>
+                                <td class="summary-table">${data.Apr}</td>
+                                <td class="summary-table">${data.May}</td>
+                                <td class="summary-table">${data.Jun}</td>
+                                <td class="summary-table">${data.Jul}</td>
+                                <td class="summary-table">${data.Aug}</td>
+                                <td class="summary-table">${data.Sep}</td>
+                                <td class="summary-table">${data.Oct}</td>
+                                <td class="summary-table">${data.Nov}</td>
+                                <td class="summary-table">${data.Dec}</td>
+                            </tr>
+                        ))}
                     </tbody>
 
                 </table>
