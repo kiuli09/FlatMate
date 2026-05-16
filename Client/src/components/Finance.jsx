@@ -7,7 +7,8 @@ import { NavLink } from "react-router-dom";
 function Finance({ user }) {
 
     const [flatmate, setFlatmates] = useState([]);
-    const [owes, setOwes] = useState([])
+    const [owesYou, setOwesYou] = useState([])
+    const [youOwe, setYouOwe] = useState([])
     const [paymentSplit, setPaymentSplit] = useState([25, 25, 25, 25])
     const [equalSplit, setEqualSplit] = useState(true)
     const [currentAmount, setCurrentAmount] = useState(0)
@@ -15,6 +16,9 @@ function Finance({ user }) {
     const [transactions, setTransactions] = useState([])
     const [comment, setComment] = useState("")
     const [reoccuringType, setReoccuringType] = useState("S")
+    const [categories, setCategories] = useState([])
+    const [currentCategory, setCurrentCategory] = useState("")
+
     const submitRef = useRef()
 
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -36,6 +40,7 @@ function Finance({ user }) {
                 setFlatmates(filtered_members || []);
 
                 updateOwes()
+                updateCategories()
                 setPaymentSplit(new Array(filtered_members.length).fill(0))
                 // console.log("a")
                 // console.log(flatmate)
@@ -49,13 +54,24 @@ function Finance({ user }) {
     const updateOwes = async () => {
         const owesRes = await fetch(`${API}/api/finance/get-owes/${currentFlat.id}/${user.id}`);
         const data = await owesRes.json();
-        console.log(data.owes)
+        console.log(data.owesYou)
+        console.log(data.youOwe)
 
-        setOwes(data.owes)
+        setOwesYou(data.owesYou)
+        setYouOwe(data.youOwe)
+    }
+
+    const updateCategories = async () => {
+        const owesRes = await fetch(`${API}/api/finance/${currentFlat.id}/categories`);
+        const data = await owesRes.json();
+        console.log(data.categories.map(a => a.category.trim()))
+
+        setCategories(data.categories.map(a => a.category.trim()))
     }
 
     const submitTransaction = async () => {
-        console.log("submittingTransaction")
+        console.log("submittingTransaction" + user.id)
+
         try {
             const res = await fetch(`${API}/api/finance/add-transaction`, {
                 method: "POST",
@@ -69,19 +85,25 @@ function Finance({ user }) {
                     split: paymentSplit,
                     members: flatmate,
                     current_user: user,
-                    reoccuringType: reoccuringType
+                    reoccuringType: reoccuringType,
+                    category: currentCategory
                 })
             })
             console.log("Transaction Submitted")
         } catch (err) {
             console.error("Error submitting transactions:", err);
         }
-        updateOwes()
+        updateOwesYou()
     }
 
     const updateComment = (event) => {
         setComment(event.target.value)
         console.log(comment)
+    }
+
+    const updateCurrentCategory = (event) => {
+        setCurrentCategory(event.target.value)
+        console.log(currentCategory)
     }
 
     const updateCurrentAmount = (event) => {
@@ -108,17 +130,17 @@ function Finance({ user }) {
     }
 
     const addTransaction = (event) => {
-        let temp = owes
+        let temp = owesYou
         if (equalSplit) {
-            for (let i = 0; i < owes.length; i++) {
+            for (let i = 0; i < owesYou.length; i++) {
                 temp += currentAmount / 4
             }
         } else {
-            for (let i = 0; i < owes.length; i++) {
+            for (let i = 0; i < owesYou.length; i++) {
                 temp += currentAmount / 4
             }
         }
-        setOwes(temp)
+        setOwesYou(temp)
     }
 
     const getTotalPaymentSplit = () => {
@@ -168,12 +190,24 @@ function Finance({ user }) {
             </div>
             <div className="finance-grid">
                 <div className="finance-grid-element">
+
                     <h2>Overview</h2>
-                    {owes.map((current, x) => (
-                        <p key={x}>
-                            {current.name} owes you ${current.sum} for {current.category}
-                        </p>
-                    ))}
+                    <div className="finance-grid-element">
+                        <h3>These people owe you:</h3>
+                        {owesYou.map((current, x) => (
+                            <p key={x}>
+                                {current.name}: ${current.sum} for {current.category}
+                            </p>
+                        ))}
+                    </div>
+                    <div className="finance-grid-element">
+                        <h3>You owe these people:</h3>
+                        {youOwe.map((current, x) => (
+                            <p key={x}>
+                                {current.name}: ${current.sum} for {current.category}
+                            </p>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="finance-grid-element" >
@@ -188,8 +222,12 @@ function Finance({ user }) {
                             name="amountInput"
                         />
                     </div>
-                    <div>
-                        <input type="text" />
+                    <div className="add-transaction">
+                        <input
+                            type="text"
+                            placeholder={"Chose Category: " + categories.join()}
+                            onChange={updateCurrentCategory}
+                        />
                     </div>
                     <div className="add-transaction">
                         <input

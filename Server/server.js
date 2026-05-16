@@ -559,7 +559,7 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
 
 app.post("/api/finance/add-transaction", async (req, res) => {
     console.log("Recieved Request")
-    const { flat_id, amount, comment, split, members, current_user,reoccuringType} = req.body
+    const { flat_id, amount, comment, split, members, current_user,reoccuringType,category} = req.body
     console.log(flat_id)
     console.log(amount)
     console.log(comment)
@@ -569,8 +569,8 @@ app.post("/api/finance/add-transaction", async (req, res) => {
     try {
         console.log("Runing Query")
         const transactions_result = await pool.query(
-            "INSERT INTO transactions (flat_id, cost, created_by, comment,reoccurence_type) VALUES ($1,$2,$3,$4,$5) RETURNING *",
-            [flat_id, amount, current_user.id, comment,reoccuringType]
+            "INSERT INTO transactions (flat_id, cost, created_by, comment,reoccurence_type,category) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
+            [flat_id, amount, current_user.id, comment,reoccuringType,category]
         )
 
         console.log(transactions_result.rows[0].transaction_id)
@@ -596,7 +596,7 @@ app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
     const {flat_id,user_id} = req.params;
 
     try {
-        const result = await pool.query(
+        const result1 = await pool.query(
             `SELECT u.name, es.user_id, sum(es.amount), t.created_by, t.category  
              FROM expense_split es 
              JOIN transactions t on t.transaction_id = es.transaction_id  
@@ -606,7 +606,20 @@ app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
             [flat_id,user_id]
         );
 
-        res.json({ owes: result.rows });
+        const result2 = await pool.query(
+            `SELECT u.name, es.user_id, sum(es.amount), t.created_by, t.category  
+             FROM expense_split es 
+             JOIN transactions t on t.transaction_id = es.transaction_id  
+             JOIN users u on u.id = es.user_id 
+             WHERE es.flat_id = $1 AND es.user_id = $2
+             GROUP BY u.name,es.user_id,t.created_by,t.category;`,
+            [flat_id,user_id]
+        );
+
+        res.json({ 
+            owesYou: result1.rows,
+            youOwe: result2.rows
+        });
     } catch (err) {
         console.error("Error fetching flat members:", err);
         res.status(500).json({ message: "Error fetching flat members" });
