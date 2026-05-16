@@ -93,7 +93,54 @@ function Finance({ user }) {
         } catch (err) {
             console.error("Error submitting transactions:", err);
         }
-        updateOwesYou()
+        updateOwes()
+    }
+
+    const settleByCategory = async (event, flavour) => {
+        console.log(event.target.name)
+        console.log(owesYou[event.target.name])
+        console.log(flavour)
+        console.log(owesYou)
+        console.log(youOwe)
+        if (flavour == "oweYou") {
+            try {
+                const res = await fetch(`${API}/api/finance/settle-by-category`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        flat_id: currentFlat.id,
+                        created_by: user.id,
+                        category: owesYou[event.target.name].category,
+                        user_id: owesYou[event.target.name].user_id
+                    })
+                })
+                console.log("Transaction Settled")
+            } catch (err) {
+                console.error("Error Settling transaction:", err);
+            }
+        } else {
+            console.log(youOwe[event.target.name])
+            try {
+                const res = await fetch(`${API}/api/finance/settle-by-category`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        flat_id: currentFlat.id,
+                        created_by: youOwe[event.target.name].created_by,
+                        category: youOwe[event.target.name].category,
+                        user_id: user.id
+                    })
+                })
+                console.log("Transaction Settled")
+            } catch (err) {
+                console.error("Error Settling transaction:", err);
+            }
+        }
+        updateOwes()
     }
 
     const updateComment = (event) => {
@@ -196,6 +243,13 @@ function Finance({ user }) {
                         <h3>These people owe you:</h3>
                         {owesYou.map((current, x) => (
                             <p key={x}>
+                                <input
+                                    type="button"
+                                    id={"submitOweYouRow" + x}
+                                    name={x}
+                                    onClick={(event) => settleByCategory(event, "oweYou")}
+                                // flavour="oweYou"
+                                />
                                 {current.name}: ${current.sum} for {current.category}
                             </p>
                         ))}
@@ -204,6 +258,13 @@ function Finance({ user }) {
                         <h3>You owe these people:</h3>
                         {youOwe.map((current, x) => (
                             <p key={x}>
+                                <input
+                                    type="button"
+                                    id={"submitYouOweRow" + x}
+                                    name={x}
+                                    onClick={(event) => settleByCategory(event, "youOwe")}
+                                // flavour="youOwe"
+                                />
                                 {current.name}: ${current.sum} for {current.category}
                             </p>
                         ))}
