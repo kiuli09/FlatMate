@@ -294,19 +294,35 @@ function Finance({ user }) {
                                 <span className="expense-type">Type: {exp.expense_type}</span>
                                 <span className="expense-created-by">Created by: {exp.created_by}</span>
                             </div>
-                           <div className="expense-bottom-row-buttons">
-    {exp.receipt_url ? (
-        <div className="receipt-actions">
-            <button
-                onClick={() =>
-                    window.open(`${API}${exp.receipt_url}`, "_blank")
-                }
-            >
-                View Receipt
-            </button>
+                            <div className="expense-bottom-row-buttons">
 
+    <div className="receipt-actions">
+        {exp.receipt_url ? (
+            <>
+                <button
+                    className="view-receipt-btn"
+                    onClick={() =>
+                        window.open(`${API}${exp.receipt_url}`, "_blank")
+                    }
+                >
+                    View Receipt
+                </button>
+
+                <label className="receipt-upload-btn">
+                    Change Receipt
+                    <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(e) =>
+                            handleReceiptUpload(exp.id, e.target.files[0])
+                        }
+                    />
+                </label>
+            </>
+        ) : (
             <label className="receipt-upload-btn">
-                Change Receipt
+                Add Receipt
                 <input
                     type="file"
                     accept="image/*"
@@ -316,24 +332,16 @@ function Finance({ user }) {
                     }
                 />
             </label>
-        </div>
-    ) : (
-        <label className="receipt-upload-btn">
-            Add Receipt
-            <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) =>
-                    handleReceiptUpload(exp.id, e.target.files[0])
-                }
-            />
-        </label>
-    )}
+        )}
+    </div>
 
-    <button onClick={() => deleteExpense(exp.id)}>
+    <button
+        className="expense-delete-button"
+        onClick={() => deleteExpense(exp.id)}
+    >
         Delete
     </button>
+
 </div>
                         </div>
                     ))}
