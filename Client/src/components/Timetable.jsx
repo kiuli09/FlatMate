@@ -57,11 +57,11 @@ function Timetable() {
 
     }
 
-    const saveEvent = () => {
+    const saveEvent = async() => {
         if (!eventName.trim()) return;
 
         if (isEditing) {
-            const res = fetch(`${API}/api/flats/${currentFlat.id}/timetable/${editingEvent.id}`, {
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable/${editingEvent.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -88,21 +88,24 @@ function Timetable() {
             );
         } else {
             const newEvent = {
-                id: Date.now(),
+                id: null,
                 hour: selectedCell.hour,
                 day: selectedCell.day,
                 duration,
                 name: eventName,
                 description: eventDescription,
             };
-            const res = fetch(`${API}/api/flats/${currentFlat.id}/timetable`, {
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(newEvent)
             });
+            const data = await res.json();
+            newEvent.id = data.event.id;
             setEvents((prev) => [...prev, newEvent]);
+
         }
         setEventName("");
         setEventDescription("");
