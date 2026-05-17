@@ -84,6 +84,7 @@ function Inventory() {
             }
 
             setItems(items.filter((item) => item.id !== itemId));
+            setSuccessMessage("Item removed from inventory!");
         }catch(err){
             console.error("Error with removing item: ", err);
         }
@@ -115,6 +116,7 @@ function Inventory() {
             setItems(items.map((item) =>
                 item.id === itemId ? { ...item, quantity: Number(newQuantity) } : item
             ));
+            setSuccessMessage("Item quantity updated!");
         } catch (err) {
             console.error("Error updating item quantity:", err);
         }
@@ -140,7 +142,7 @@ function Inventory() {
             }
 
             await handleDeleteItem(item.id);
-
+            setSuccessMessage(`${item.item_name} added to shopping list!`);
         } catch (err) {
             console.error("Error adding item to shopping list:", err);
         }

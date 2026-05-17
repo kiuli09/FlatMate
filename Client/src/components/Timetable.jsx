@@ -11,13 +11,22 @@ function Timetable() {
     const [duration, setDuration] = useState(1);
     const [editingEvent, setEditingEvent] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-
+    const [successMessage, setSuccessMessage] = useState("");
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     const user = JSON.parse(localStorage.getItem("user"));
 
     const hours = Array.from({ length: 18 }, (_, i) => i + 7);
-      useEffect(() => {
+
+    useEffect(() => {
+        if (!successMessage) return;
+        const timer = setTimeout(() => {
+            setSuccessMessage("");
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [successMessage]);
+
+    useEffect(() => {
         const fetchEvents = async () => {
             try {
                 const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable`);
@@ -86,6 +95,7 @@ function Timetable() {
                         : event
                 )
             );
+            setSuccessMessage("Event updated successfully!");
         } else {
             const newEvent = {
                 id: null,
@@ -105,7 +115,7 @@ function Timetable() {
             const data = await res.json();
             newEvent.id = data.event.id;
             setEvents((prev) => [...prev, newEvent]);
-
+            setSuccessMessage("Event saved successfully!");
         }
         setEventName("");
         setEventDescription("");
@@ -126,7 +136,7 @@ function Timetable() {
         setEvents((prev) =>
             prev.filter((event) => event.id !== editingEvent.id)
         );
-
+        setSuccessMessage("Event deleted successfully!");
         setShowEventModal(false);
     };
     const openEditEvent = (event) => {
@@ -181,11 +191,23 @@ function Timetable() {
 
     return (
         <div className="timetable-container">
-            <h2>{currentFlat?.name}'s Timetable</h2>
-            <div className="timetable">
-                <div className="timetable-grid">
-                    <div className="cell header time">Time</div>
-                    <div className="cell header">Monday</div>
+{successMessage && (
+    <div className="success-banner">
+        <span>{successMessage}</span>
+
+        <button
+            className="success-close"
+            onClick={() => setSuccessMessage("")}
+        >
+            ×
+        </button>
+    </div>
+)}
+        <h2>{currentFlat?.name}'s Timetable</h2>
+        <div className="timetable">
+            <div className="timetable-grid">
+                <div className="cell header time">Time</div>
+                <div className="cell header">Monday</div>
                     <div className="cell header">Tuesday</div>
                     <div className="cell header">Wednesday</div>
                     <div className="cell header">Thursday</div>

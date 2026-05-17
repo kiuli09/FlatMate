@@ -110,6 +110,7 @@ function ShoppingList({ user }) {
             }
 
             setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+            setSuccessMessage("Item marked as purchased! Added to Inventory!");
         } catch (error) {
             console.error("Error purchasing item:", error);
         }
@@ -128,6 +129,7 @@ function ShoppingList({ user }) {
             }
 
             setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+            setSuccessMessage("Item removed from list!");
         } catch (error) {
             console.error("Error deleting item:", error);
         }
