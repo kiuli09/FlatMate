@@ -126,7 +126,7 @@ function Finance({ user }) {
     };
 
     const submitTransaction = async () => {
-        console.log("submittingTransaction" + user.id);
+        console.log("submittingTransaction" + flatmate);
 
         try {
             const res = await fetch(`${API}/api/finance/add-transaction`, {
@@ -136,7 +136,7 @@ function Finance({ user }) {
                 },
                 body: JSON.stringify({
                     flat_id: currentFlat.id,
-                    amount: currentAmount,
+                    amount: currentAmount/flatmate.length,
                     comment: comment,
                     split: paymentSplit,
                     members: flatmate,
