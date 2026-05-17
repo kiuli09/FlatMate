@@ -1,7 +1,6 @@
 import { useLayoutEffect, useEffect, useState } from "react";
 import { useRef } from "react";
 import "./Finance.css";
-import { NavLink } from "react-router-dom";
 
 
 function Finance({ user }) {
@@ -19,6 +18,9 @@ function Finance({ user }) {
     const [categories, setCategories] = useState([])
     const [summary, setSummary] = useState([])
     const [currentCategory, setCurrentCategory] = useState("")
+    const [members, setMembersList] = useState([]);
+    const [expenses, setExpenses] = useState([]);
+    const [filterType, setFilterType] = useState("All");
 
     const submitRef = useRef()
 
@@ -39,6 +41,7 @@ function Finance({ user }) {
                 console.log(filtered_members)
 
                 setFlatmates(filtered_members || []);
+                setMembersList(flatData.members || []);
 
                 updateOwes()
                 updateCategories()
@@ -50,7 +53,8 @@ function Finance({ user }) {
                 console.error("Error fetching Members:", err);
             }
         };
-        fetchMembers()
+        fetchMembers();
+        fetchExpenses();
     }, []);
 
     const updateOwes = async () => {
@@ -106,6 +110,84 @@ function Finance({ user }) {
         }
         updateOwes()
     }
+
+    const fetchExpenses = async () => {
+        try {
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/expenses`);
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error(data.message);
+                setExpenses([]);
+                return;
+            }
+
+            setExpenses(data.expenses || []);
+        } catch (err) {
+            console.error("Error fetching expenses:", err);
+            setExpenses([]);
+        }
+    };
+
+    const deleteExpense = async (expenseId) => {
+        try {
+            const res = await fetch(`${API}/expenses/${expenseId}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                setExpenses(expenses.filter((exp) => exp.id !== expenseId));
+            }
+        } catch (err) {
+            console.error("Error deleting expense:", err);
+        }
+    };
+
+    const handleReceiptUpload = async (expenseId, file) => {
+        if (!file) return;
+
+        try {
+            const formData = new FormData();
+            formData.append("receipt", file);
+
+            const res = await fetch(`${API}/expenses/${expenseId}/receipt`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error(data.message);
+                return;
+            }
+
+            setExpenses((prev) =>
+                prev.map((exp) =>
+                    exp.id === expenseId
+                        ? { ...exp, receipt_url: data.receipt_url }
+                        : exp
+                )
+            );
+        } catch (err) {
+            console.error("Error uploading receipt:", err);
+        }
+    };
+
+    const filterByType = async (type) => {
+        try {
+            if (type === "All") {
+                await fetchExpenses();
+                return;
+            }
+
+            const res = await fetch(`${API}/api/flats/${currentFlat.id}/expenses/${type}`);
+            const data = await res.json();
+            setExpenses(data.expenses || []);
+        } catch (err) {
+            console.error("Error filtering expenses:", err);
+        }
+    };
 
     const settleByCategory = async (event, flavour) => {
         console.log(event.target.name)
