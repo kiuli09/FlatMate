@@ -6,9 +6,12 @@ const PORT = 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
 const { nanoid } = require("nanoid");
+const multer = require("multer");
+const path = require("path");
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
     res.send("FlatMate server is running");
@@ -18,6 +21,19 @@ app.get("/api/test", (req, res) => {
     res.json({ message: "FlatMate backend working!" });
 });
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/receipts");
+    },
+    filename: (req, file, cb) => {
+        const uniqueName =
+            Date.now() + path.extname(file.originalname);
+
+        cb(null, uniqueName);
+    },
+});
+
+const upload = multer({ storage });
 app.get("/api/flats", async (req, res) => {
     try {
         const result = await pool.query(
@@ -34,6 +50,35 @@ app.get("/api/flats", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+app.post(
+    "/expenses/:id/receipt",
+    upload.single("receipt"),
+    async (req, res) => {
+        try {
+            const expenseId = req.params.id;
+
+            const receiptUrl = `/uploads/receipts/${req.file.filename}`;
+
+            // Save into database
+            await pool.query(
+                "UPDATE transactions SET receipt = $1 WHERE transaction_id = $2",
+                [receiptUrl, expenseId]
+            );
+
+            res.json({
+                message: "Receipt uploaded",
+                receipt_url: receiptUrl,
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: "Upload failed",
+            });
+        }
+    }
+);
+
 app.get("/items", async (req, res) => {
 
     try {
@@ -49,6 +94,7 @@ app.get("/items", async (req, res) => {
     }
 });
 
+/* EXPENSES ROUTES */
 app.post("/expenses", async (req, res) => {
     const { name, total, splits, flat_id, expense_type, created_by } = req.body;
     try {
@@ -63,6 +109,23 @@ app.post("/expenses", async (req, res) => {
             );
         }
         res.status(201).json({ expense: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+app.delete("/expenses/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query(
+            "DELETE FROM expense_split WHERE transaction_id = $1",
+            [id]
+        );
+        await pool.query(
+            "DELETE FROM transactions WHERE transaction_id = $1",
+            [id]
+        );
+        res.json({ message: "Expense deleted" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
@@ -152,11 +215,13 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
             });
 
             formattedExpenses.push({
+                id: tx.transaction_id,
                 name: tx.items_purchased,
                 total: tx.cost,
                 expense_type: tx.category,
                 splits: splits,
-                created_by: tx.created_by
+                created_by: tx.created_by,
+                receipt_url: tx.receipt
             });
         }
 
@@ -169,6 +234,77 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
         res.status(500).json({
             message: "Server error"
         });
+    }
+});
+
+
+/* TIMETABLE ROUTES */
+app.post("/api/flats/:id/timetable", async (req, res) => {
+    const { id } = req.params;
+    const { hour, day, duration, name, description } = req.body;
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO timetable (flat_id, hour, day, duration, name, description)
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [id, hour, day, duration, name, description]
+        );
+        res.status(201).json({ event: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+app.get("/api/flats/:id/timetable", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(
+            "SELECT * FROM timetable WHERE flat_id = $1",
+            [id]
+        );
+        res.json({ events: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
+    const { flatId, eventId } = req.params;
+    const { hour, day, duration, name, description } = req.body;
+    try {
+        const result = await pool.query(
+            `UPDATE timetable
+             SET hour = $1, day = $2, duration = $3, name = $4, description = $5
+             WHERE flat_id = $6 AND id = $7
+             RETURNING *`,
+            [hour, day, duration, name, description, flatId, eventId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+        res.json({ event: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
+    const { flatId, eventId } = req.params;
+    try {
+        const result = await pool.query(
+            "DELETE FROM timetable WHERE flat_id = $1 AND id = $2 RETURNING *",
+            [flatId, eventId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+        res.json({ message: "Event deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -287,6 +423,7 @@ app.put("/api/users/:id/password", async (req, res) => {
     }
 });
 
+/* FLAT CREATION / JOIN / LEAVE ROUTES */
 app.post("/api/auth/create-flat", async (req, res) => {
     const { name, members, created_by } = req.body;
     console.log("Create flat attempt:", name, members, created_by);
@@ -380,6 +517,7 @@ app.post("/items", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 app.get("/itemsCount", async (req, res) => {
     const { flat_id } = req.headers;
     try {
@@ -392,6 +530,20 @@ app.get("/itemsCount", async (req, res) => {
         res.status(201).json(newItem);
     } catch (err) {
         console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+app.get("/api/flats/:id/upcoming-bills", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const billsRes = await pool.query(
+            "SELECT * FROM transactions WHERE flat_id = $1 AND category IN ('Weekly', 'Monthly');",
+            [id]
+        );
+        res.json({ bills: billsRes.rows });
+    } catch (err) {
+        console.error("Error fetching upcoming bills:", err);
         res.status(500).json({ message: "Server error" });
     }
 });
@@ -769,6 +921,135 @@ app.put("/api/inventory/:id", async (req, res) => {
     } catch (err) {
         console.error("Error updating inventory item:", err);
         res.status(500).json({ message: "Error with updating inventory item" });
+    }
+});
+
+app.get("/api/flats/:flatId/details", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT f.id, f.name, f.created_by, f.join_code, f.current_people, f.num_people, COUNT(fm.user_id) AS member_count
+                FROM flat f LEFT JOIN flat_members fm ON f.id = fm.flat_id
+                WHERE f.id = $1 GROUP BY f.id, f.name, f.created_by, f.join_code, f.current_people, f.num_people
+            `,
+            [flatId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "Flat not found"
+            });
+        }
+
+        res.json({
+            flat: result.rows[0]
+        });
+
+    } catch (err) {
+        console.error("Error fetching flat details:", err);
+        res.status(500).json({
+            message: "Server error fetching flat details"
+        });
+    }
+});
+
+app.put("/api/flats/:flatId/update-name", async (req, res) => {
+    const {flatId} = req.params;
+    const {name} = req.body;
+
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ message: "Flat name cannot be empty" });
+    }
+
+    try {
+        const result = await pool.query(
+            "UPDATE flat SET name = $1 WHERE id = $2 RETURNING *",
+            [name.trim(), flatId]
+        );
+
+        // If flat doesnt exist
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Flat not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "Flat name updated successfully",
+            flat: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error updating flat name:", err);
+        res.status(500).json({ message: "Error with updating flat name" });
+    }
+});
+
+app.post("/api/flats/:id/add-member", async (req, res) => {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email || email.trim() === "") {
+        return res.status(400).json({message: "Email is required"});
+    }
+
+    try {
+        const result = await pool.query(
+            "SELECT id, name, email FROM users WHERE email = $1",
+            [email.trim()]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const user = result.rows[0];
+
+        const insertResult = await pool.query(
+            `
+            INSERT INTO flat_members (user_id, flat_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id, flat_id) DO NOTHING
+            RETURNING *
+            `,
+            [user.id, id]
+        );
+
+        if (insertResult.rowCount === 0) {
+            return res.status(400).json({ message: "Failed to add member to flat" });
+        }
+
+        res.json({
+            success: true,
+            message: "Member added successfully",
+            member: insertResult.rows[0]
+        });
+    } catch (err) {
+        console.error("Error adding member:", err);
+        res.status(500).json({ message: "Error with adding member" });
+    }
+});
+
+app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
+    const { flatId, userId } = req.params;
+
+    try {
+        const result = await pool.query(
+            "DELETE FROM flat_members WHERE flat_id = $1 AND user_id = $2 RETURNING *",
+            [flatId, userId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Member not found in the flat" });
+        }
+
+        res.json({
+            success: true,
+            message: "Member removed successfully",
+            member: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error removing member:", err);
+        res.status(500).json({ message: "Error with removing member" });
     }
 });
 

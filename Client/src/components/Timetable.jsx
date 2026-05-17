@@ -17,7 +17,22 @@ function Timetable() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const hours = Array.from({ length: 18 }, (_, i) => i + 7);
+      useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable`);
+                const data = await res.json();
+                setEvents(data.events);
+                console.log("Fetched events:", data.events.id);
+            } catch (err) {
+                console.error(err);
+            }
+        };
 
+        if (currentFlat?.id) {
+            fetchEvents();
+        }
+    }, [API, currentFlat?.id]);
     const getEventForCell = (hour, day) => {
         return events.find(
             (event) => event.hour === hour && event.day === day
@@ -46,6 +61,19 @@ function Timetable() {
         if (!eventName.trim()) return;
 
         if (isEditing) {
+            const res = fetch(`${API}/api/flats/${currentFlat.id}/timetable/${editingEvent.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    hour: selectedCell.hour,
+                    day: selectedCell.day,
+                    duration,
+                    name: eventName,
+                    description: eventDescription
+                })
+            });
             setEvents((prev) =>
                 prev.map((event) =>
                     event.id === editingEvent.id
@@ -67,7 +95,13 @@ function Timetable() {
                 name: eventName,
                 description: eventDescription,
             };
-
+            const res = fetch(`${API}/api/flats/${currentFlat.id}/timetable`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newEvent)
+            });
             setEvents((prev) => [...prev, newEvent]);
         }
         setEventName("");
@@ -76,9 +110,16 @@ function Timetable() {
         setShowEventModal(false);
     };
 
-    const deleteEvent = () => {
+    const deleteEvent = async () => {
         if (!editingEvent) return;
-
+        console.log(`Deleting event with id ${editingEvent.id}`);
+        const res = await fetch(`${API}/api/flats/${currentFlat.id}/timetable/${editingEvent.id}`, {
+            method: "DELETE",
+        }); 
+        if (!res.ok) {
+            console.error("Failed to delete event");
+            return;
+        }
         setEvents((prev) =>
             prev.filter((event) => event.id !== editingEvent.id)
         );
