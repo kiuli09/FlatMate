@@ -131,10 +131,10 @@ function Dashboard({ user }) {
             </section>
 
             <section className="content-grid">
-                <div className="content-panel">
+                {/* <div className="content-panel">
                     <h3>Recent Activity</h3>
                     <p>No recent activity yet.</p>
-                </div>
+                </div> */}
 
                 <div className="content-panel">
                     <h3>Quick Actions</h3>
