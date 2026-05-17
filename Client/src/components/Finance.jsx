@@ -82,14 +82,7 @@ function Finance({ user }) {
             return;
         }
 
-        const newExpense = {
-            name: expenseName,
-            total: total,
-            splits: splits,
-            expense_type: expenseType.trim(),
-            created_by: user?.username
-        };
-        console.log(newExpense);
+
         const res = await fetch(`${API}/expenses`, {
             method: "POST",
             headers: {
@@ -101,16 +94,71 @@ function Finance({ user }) {
                 splits: splits,
                 expense_type: expenseType,
                 flat_id: currentFlat.id,
-                created_by: user?.username
+                created_by: user?.username,
+                receipt_url: null
             }),
         });
-
+        const data = await res.json();
+        const newExpense = {
+            id: data.expense.transaction_id,
+            name: expenseName,
+            total: total,
+            splits: splits,
+            expense_type: expenseType.trim(),
+            created_by: user?.username,
+            receipt_url: null
+        };
         setExpenses([...expenses, newExpense]);
 
         //reset form
         setExpenseName("");
         setTotalCost("");
         setSplits({});
+    };
+    const deleteExpense = async (expenseId) => {
+        try {
+            const res = await fetch(`${API}/expenses/${expenseId}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                setExpenses(expenses.filter((exp) => exp.id !== expenseId));
+            } else {
+                console.error("Error deleting expense");
+            }
+        } catch (err) {
+            console.error("Error deleting expense:", err);
+        }
+    };
+    const handleReceiptUpload = async (expenseId, file) => {
+        if (!file) return;
+
+        try {
+            const formData = new FormData();
+            formData.append("receipt", file);
+
+            const res = await fetch(`${API}/expenses/${expenseId}/receipt`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error(data.message);
+                return;
+            }
+
+            // Update expense with receipt URL
+            setExpenses((prev) =>
+                prev.map((exp) =>
+                    exp.id === expenseId
+                        ? { ...exp, receipt_url: data.receipt_url }
+                        : exp
+                )
+            );
+        } catch (err) {
+            console.error("Error uploading receipt:", err);
+        }
     };
     const filterByType = async (type) => {
         try {
@@ -246,7 +294,47 @@ function Finance({ user }) {
                                 <span className="expense-type">Type: {exp.expense_type}</span>
                                 <span className="expense-created-by">Created by: {exp.created_by}</span>
                             </div>
+                           <div className="expense-bottom-row-buttons">
+    {exp.receipt_url ? (
+        <div className="receipt-actions">
+            <button
+                onClick={() =>
+                    window.open(`${API}${exp.receipt_url}`, "_blank")
+                }
+            >
+                View Receipt
+            </button>
 
+            <label className="receipt-upload-btn">
+                Change Receipt
+                <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={(e) =>
+                        handleReceiptUpload(exp.id, e.target.files[0])
+                    }
+                />
+            </label>
+        </div>
+    ) : (
+        <label className="receipt-upload-btn">
+            Add Receipt
+            <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) =>
+                    handleReceiptUpload(exp.id, e.target.files[0])
+                }
+            />
+        </label>
+    )}
+
+    <button onClick={() => deleteExpense(exp.id)}>
+        Delete
+    </button>
+</div>
                         </div>
                     ))}
                 </div>

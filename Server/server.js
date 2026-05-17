@@ -6,9 +6,12 @@ const PORT = 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
 const { nanoid } = require("nanoid");
+const multer = require("multer");
+const path = require("path");
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
     res.send("FlatMate server is running");
@@ -18,6 +21,19 @@ app.get("/api/test", (req, res) => {
     res.json({ message: "FlatMate backend working!" });
 });
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/receipts");
+    },
+    filename: (req, file, cb) => {
+        const uniqueName =
+            Date.now() + path.extname(file.originalname);
+
+        cb(null, uniqueName);
+    },
+});
+
+const upload = multer({ storage });
 app.get("/api/flats", async (req, res) => {
     try {
         const result = await pool.query(
@@ -34,6 +50,35 @@ app.get("/api/flats", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+app.post(
+    "/expenses/:id/receipt",
+    upload.single("receipt"),
+    async (req, res) => {
+        try {
+            const expenseId = req.params.id;
+
+            const receiptUrl = `/uploads/receipts/${req.file.filename}`;
+
+            // Save into database
+            await pool.query(
+                "UPDATE transactions SET receipt = $1 WHERE transaction_id = $2",
+                [receiptUrl, expenseId]
+            );
+
+            res.json({
+                message: "Receipt uploaded",
+                receipt_url: receiptUrl,
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: "Upload failed",
+            });
+        }
+    }
+);
+
 app.get("/items", async (req, res) => {
     
     try {
@@ -64,6 +109,23 @@ app.post("/expenses", async (req, res) => {
         );
     }        
         res.status(201).json({ expense: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+app.delete("/expenses/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query(
+            "DELETE FROM expense_split WHERE transaction_id = $1",
+            [id]
+        );
+        await pool.query(
+            "DELETE FROM transactions WHERE transaction_id = $1",
+            [id]
+        );
+        res.json({ message: "Expense deleted" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
@@ -153,11 +215,13 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
             });
 
             formattedExpenses.push({
+                id: tx.transaction_id,
                 name: tx.items_purchased,
                 total: tx.cost,
                 expense_type: tx.category,
                 splits: splits,
-                created_by: tx.created_by
+                created_by: tx.created_by,
+                receipt_url: tx.receipt
             });
         }
 
