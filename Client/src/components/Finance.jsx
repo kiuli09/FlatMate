@@ -399,6 +399,7 @@ function Finance({ user }) {
             });
             if (res.ok) {
                 setExpenses(expenses.filter((exp) => exp.id !== expenseId));
+                updateOwes()
             } else {
                 console.error("Error deleting expense");
             }
