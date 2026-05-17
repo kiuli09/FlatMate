@@ -40,12 +40,12 @@ const upload = multer({ storage });
 app.get("/api/flats", async (req, res) => {
     try {
         const result = await pool.query(
-  `SELECT f.*
+            `SELECT f.*
    FROM flat f
    JOIN flat_members fm ON f.id = fm.flat_id
    WHERE fm.user_id = $1`,
-    [req.headers.user]
-);
+            [req.headers.user]
+        );
         console.log(result.rows)
         res.json({ flats: result.rows });
     } catch (err) {
@@ -84,7 +84,7 @@ app.post(
 );
 // Get shopping list items for flat route
 app.get("/items", async (req, res) => {
-    
+
     try {
         const result = await pool.query(
             "SELECT * FROM shopping_list WHERE flat_id = $1",
@@ -102,7 +102,7 @@ app.get("/items", async (req, res) => {
 
 // Create expense route
 app.post("/expenses", async (req, res) => {
-    const { name, total, splits, flat_id,expense_type, created_by } = req.body;
+    const { name, total, splits, flat_id, expense_type, created_by } = req.body;
     try {
         const result = await pool.query(
             "INSERT INTO transactions(flat_id, cost, category, type, receipt,items_purchased,status,evidence,completed_on,created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
@@ -110,10 +110,10 @@ app.post("/expenses", async (req, res) => {
         );
         for (const member in splits) {
             const expenseResults = await pool.query(
-             "INSERT INTO expense_split(flat_id, transaction_id, user_id, amount) VALUES ($1, $2, $3, $4)",
+                "INSERT INTO expense_split(flat_id, transaction_id, user_id, amount) VALUES ($1, $2, $3, $4)",
                 [flat_id, result.rows[0].transaction_id, member, splits[member]]
-        );
-    }        
+            );
+        }
         res.status(201).json({ expense: result.rows[0] });
     } catch (err) {
         console.error(err);
@@ -142,8 +142,8 @@ app.delete("/expenses/:id", async (req, res) => {
 
 // Get expenses for flat route and filter by type
 app.get(`/api/flats/:currentFlat/expenses/:type`, async (req, res) => {
-    const { currentFlat, type} = req.params;
-     try {
+    const { currentFlat, type } = req.params;
+    try {
         const transactions = await pool.query(
             `
             SELECT *
@@ -394,34 +394,34 @@ app.post("/api/auth/signup", async (req, res) => {
 
 // Reset password route
 app.put("/api/users/:id/password", async (req, res) => {
-    const {id} = req.params;
-    const {currentPassword, newPassword} = req.body;
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
 
     // If theres no current password or new password
-    if(!currentPassword || !newPassword){
-        return res.status(400).json({message: "Current and new password are required"});
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current and new password are required" });
     }
 
     // If the new password is less than 6 characters
-    if(newPassword.length < 6){
-        return res.status(400).json({message: "New password must be at least 6 characters long"});
+    if (newPassword.length < 6) {
+        return res.status(400).json({ message: "New password must be at least 6 characters long" });
     }
 
-    try{
+    try {
         const result = await pool.query(
             "SELECT * FROM users where id = $1", [id]
         );
 
-        if (result.rows.length === 0){
-            return res.status(404).json({message: "User not found"});
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "User not found" });
         }
 
         const user = result.rows[0];
 
         const pswMatch = await argon2.verify(user.password, currentPassword);
 
-        if(!pswMatch){
-            return res.status(401).json({message: "Current password is incorrect"});
+        if (!pswMatch) {
+            return res.status(401).json({ message: "Current password is incorrect" });
         }
 
         const hashedPassword = await argon2.hash(newPassword);
@@ -430,10 +430,10 @@ app.put("/api/users/:id/password", async (req, res) => {
             "UPDATE users SET password = $1 WHERE id = $2",
             [hashedPassword, id]
         );
-        res.json({success: true, message: "Password updated successfully"});
-    }catch(err){
+        res.json({ success: true, message: "Password updated successfully" });
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message: "Server error with updating password"});
+        res.status(500).json({ message: "Server error with updating password" });
     }
 });
 
@@ -652,7 +652,7 @@ app.post("/api/inventory", async (req, res) => {
             [flat_id, item_name]
         );
 
-        if (existingItem.rows.length > 0){
+        if (existingItem.rows.length > 0) {
             const currentItem = existingItem.rows[0];
 
             const updatedItem = await pool.query(
@@ -733,16 +733,182 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
 // Delete inventory item route
 app.delete("/api/inventory/:id", async (req, res) => {
     const {id} = req.params;
+app.post("/api/finance/add-transaction", async (req, res) => {
+    console.log("Recieved Request")
+    const { flat_id, amount, comment, split, members, current_user, reoccuringType, category } = req.body
+    console.log(flat_id)
+    console.log(amount)
+    console.log(comment)
+    console.log(split)
+    console.log(members)
+    console.log(current_user)
+    try {
+        console.log("Runing Query")
+        const transactions_result = await pool.query(
+            "INSERT INTO transactions (flat_id, cost, created_by, comment,reoccurence_type,category) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
+            [flat_id, amount, current_user.id, comment, reoccuringType, category]
+        )
 
-    try{
+        console.log(transactions_result.rows[0].transaction_id)
+        // res.json({success: true})
+        res.status(201).json({ result: transactions_result })
+        for (const user in members) {
+            console.log(members[user].id)
+            const split_result = await pool.query(
+                `INSERT INTO expense_split (flat_id, transaction_id, user_id, amount) 
+                 VALUES ($1,$2,$3,$4)`,
+                [flat_id, transactions_result.rows[0].transaction_id, members[user].id, amount]
+            )
+        }
+
+        // res.json({transactions: split_result.rows})
+    } catch (err) {
+        console.error("Error fetching transactions:", err);
+        res.status(500).json({ message: "Error fetching transactions" });
+    }
+});
+
+app.post("/api/finance/settle-by-category", async (req, res) => {
+    console.log("Recieved Request")
+    const { category, flat_id, created_by, user_id } = req.body
+    console.log("category" + category)
+    console.log("faltid:" + flat_id)
+    console.log("createdby:" + created_by)
+    console.log("ID:" + user_id)
+    try {
+        console.log("Runing Query")
+        if (user_id == -1) {
+            console.log("SOL1")
+            const settlement_result = await pool.query(
+                `update expense_split es 
+             set settled = TRUE
+             where transaction_id in (select transaction_id from transactions
+                                      where category = $1 and flat_id = $2 and created_by = $3 );`,
+                [category, flat_id, created_by]
+            )
+            console.log(settlement_result)
+            res.status(201).json({ result: settlement_result })
+        } else {
+            console.log("SOL2")
+            const settlement_result = await pool.query(
+                `update expense_split es 
+             set settled = TRUE
+             where transaction_id in (select transaction_id from transactions
+                                      where category = $1 and flat_id = $2 and created_by = $3 )
+             and user_id = $4;`,
+                [category, flat_id, created_by, user_id]
+            )
+            console.log(settlement_result)
+            res.status(201).json({ result: settlement_result })
+        }
+
+
+        // console.log(settlement_result.rows[0].transaction_id)
+        // res.json({success: true})
+
+    } catch (err) {
+        console.error("Error fetching transactions:", err);
+        res.status(500).json({ message: "Error fetching transactions" });
+    }
+});
+
+app.get("/api/finance/get-owes/:flat_id/:user_id", async (req, res) => {
+    const { flat_id, user_id } = req.params;
+
+    try {
+        const result1 = await pool.query(
+            `SELECT u.name, es.user_id, sum(es.amount), t.created_by, t.category  
+             FROM expense_split es 
+             JOIN transactions t on t.transaction_id = es.transaction_id  
+             JOIN users u on u.id = es.user_id 
+             WHERE es.flat_id = $1 AND t.created_by = $2 AND settled = FALSE
+             GROUP BY u.name,es.user_id,t.created_by,t.category;`,
+            [flat_id, user_id]
+        );
+
+        const result2 = await pool.query(
+            `SELECT u.name, es.user_id, sum(es.amount), t.created_by, t.category  
+             FROM expense_split es 
+             JOIN transactions t on t.transaction_id = es.transaction_id  
+             JOIN users u on u.id = es.user_id 
+             WHERE es.flat_id = $1 AND es.user_id = $2 AND settled = FALSE
+             GROUP BY u.name,es.user_id,t.created_by,t.category;`,
+            [flat_id, user_id]
+        );
+
+        res.json({
+            owesYou: result1.rows,
+            youOwe: result2.rows
+        });
+    } catch (err) {
+        console.error("Error fetching flat members:", err);
+        res.status(500).json({ message: "Error fetching flat members" });
+    }
+
+});
+
+app.get("/api/finance/:flatId/categories", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `select distinct(category) from transactions
+             where flat_id = $1;`,
+            [flatId]
+        );
+
+        res.json({ categories: result.rows });
+    } catch (err) {
+        console.error("Error fetching categories:", err);
+        res.status(500).json({ message: "Error fetching categories" });
+    }
+});
+
+app.get("/api/finance/:flatId/monthly_summary", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT 
+                category,
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 1) AS "Jan",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 2) AS "Feb",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 3) AS "Mar",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 4) AS "Apr",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 5) AS "May",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 6) AS "Jun",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 7) AS "Jul",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 8) AS "Aug",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 9) AS "Sep",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 10) AS "Oct",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 11) AS "Nov",
+                SUM(cost) FILTER (WHERE EXTRACT(MONTH FROM completed_on) = 12) AS "Dec"
+             FROM transactions 
+             where flat_id = $1
+             GROUP BY category
+             ORDER BY category;`,
+            [flatId]
+        );
+
+        res.json({ summary: result.rows });
+    } catch (err) {
+        console.error("Error fetching summary:", err);
+        res.status(500).json({ message: "Error fetching summary" });
+    }
+});
+
+app.delete("/api/inventory/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
 
         const result = await pool.query(
-            "DELETE FROM inventory WHERE id = $1 RETURNING *", 
+            "DELETE FROM inventory WHERE id = $1 RETURNING *",
             [id]
         );
 
-        if(result.rowCount === 0){
-            return res.status(404).json({message: "Inventory item not found"})
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Inventory item not found" })
         }
 
         res.json({
@@ -751,7 +917,7 @@ app.delete("/api/inventory/:id", async (req, res) => {
             item: result.rows[0]
         });
 
-    }catch(err){
+    } catch (err) {
         console.error("Error deleting inventory item:", err);
         res.status(500).json({ message: "Error with deleting inventory item" });
     }
@@ -917,4 +1083,4 @@ app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-});
+}); 
