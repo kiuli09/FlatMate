@@ -138,6 +138,7 @@ section h4 {
   flex-direction: column;
   gap: 12px;
 }
+
 .expense-header {
   display: flex;
   justify-content: space-between;
@@ -160,12 +161,14 @@ section h4 {
   font-size: 0.95rem;
   color: #6b7280;
 }
+
 .expense-type-filter {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 1rem;
 }
+
 .expense-card {
   padding: 16px 18px;
   background: #f0fdf4;
@@ -199,11 +202,13 @@ section h4 {
   justify-content: space-between;
   margin-top: 8px;
 }
+
 .expense-type,
 .expense-created-by {
   font-size: 0.9rem;
   color: #6b7280;
 }
+
 .card-value {
   font-size: 2rem;
   font-weight: 700;
@@ -239,8 +244,9 @@ section h4 {
   border-radius: 16px;
   padding: 22px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  border: 1px solid  #4caf50;
+  border: 1px solid #4caf50;
 }
+
 .add-transaction {
   display: flex;
   gap: 12px;
@@ -249,7 +255,7 @@ section h4 {
 
 .expense-created-by {
   margin-left: 12px;
-  position: right;;
+  position: right;
 }
 
 /* Split breakdown */
@@ -260,7 +266,7 @@ section h4 {
 }
 
 .split-list li {
-  font-size: 0.9rem
+  font-size: 0.9rem;
 }
 
 /* Receipt container */
@@ -299,6 +305,7 @@ section h4 {
 .receipt-upload-btn:hover {
   background: #d1f2d9;
 }
+
 /* Delete button */
 .expense-delete-button {
   padding: 10px 14px;
@@ -317,6 +324,7 @@ section h4 {
   background: #fecaca;
   transform: translateY(-1px);
 }
+
 .expense-bottom-row-buttons {
   display: flex;
   justify-content: space-between;
@@ -381,10 +389,12 @@ body.dark-mode .expense-card {
 body.dark-mode .expense-total {
   color: rgba(255,255,255,0.85);
 }
+
 body.dark-mode .expense-bottom-row > span,
 body.dark-mode .split-list li {
   color: rgba(255,255,255,0.75);
 }
+
 body.dark-mode .section > button {
   padding: 10px 16px;
   border-radius: 10px;
@@ -453,4 +463,104 @@ body.dark-mode .expense-delete-button:hover {
   padding-left: 3px;
   padding-right: 3px;
   background-color: #4caf50;
+}
+
+/* Add Expense merged card styling */
+.finance-grid-element .add-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.finance-grid-element .add-item select {
+  grid-column: 1 / 2;
+}
+
+.finance-grid-element .add-item input,
+.finance-grid-element .add-item select,
+.finance-grid-element .add-transaction input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  outline: none;
+  background: white;
+  color: #111827;
+}
+
+.finance-grid-element .add-item input:focus,
+.finance-grid-element .add-item select:focus,
+.finance-grid-element .add-transaction input:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.finance-grid-element input[type="button"] {
+  margin-top: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #4caf50;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.finance-grid-element input[type="button"]:hover {
+  background: #43a047;
+}
+
+.finance-grid-element input[type="checkbox"] {
+  margin-right: 6px;
+  accent-color: #4caf50;
+}
+
+.finance-grid-element h4 {
+  margin-bottom: 12px;
+  margin-top: 12px;
+}
+
+.finance-grid-element .split-row {
+  margin-bottom: 12px;
+}
+
+/* DARK MODE */
+body.dark-mode .finance-grid-element {
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.16);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.22),
+    inset 0 1px 1px rgba(255,255,255,0.08);
+}
+
+body.dark-mode .finance-grid-element h2,
+body.dark-mode .finance-grid-element h3,
+body.dark-mode .finance-grid-element h4,
+body.dark-mode .finance-grid-element label,
+body.dark-mode .finance-grid-element p {
+  color: white;
+}
+
+body.dark-mode .finance-grid-element .add-item input,
+body.dark-mode .finance-grid-element .add-item select,
+body.dark-mode .finance-grid-element .add-transaction input,
+body.dark-mode .finance-grid-element .split-row input {
+  background: rgba(255,255,255,0.92);
+  color: #111827;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+body.dark-mode .finance-grid-element input[type="button"] {
+  background: rgba(76,175,80,0.8);
+  color: white;
+}
+
+body.dark-mode .finance-grid-element input[type="button"]:hover {
+  background: rgba(76,175,80,1);
 }
