@@ -518,48 +518,44 @@ function Finance({ user }) {
                 </div>
 
                 <div className="finance-grid-element">
-                    <h2>Add Transaction</h2>
+                    <h2>Add Expense</h2>
 
-                    <div className="add-transaction">
+                    <div className="add-item">
+                        <input
+                            type="text"
+                            name="TransactionComment"
+                            placeholder="Expense name"
+                            value={comment}
+                            onChange={updateComment}
+                        />
+
                         <input
                             type="number"
-                            placeholder="Enter Amount"
+                            placeholder="Total cost"
                             value={currentAmount}
                             onChange={updateCurrentAmount}
                             name="amountInput"
                         />
-                    </div>
 
-                    <div className="add-transaction">
-                        <input
-                            type="text"
-                            placeholder={"Chose Category: " + categories.join()}
-                            value={currentCategory}
-                            onChange={updateCurrentCategory}
-                        />
-                    </div>
-
-                    <div className="add-transaction">
-                        <input
-                            type="text"
-                            name="TransactionComment"
-                            placeholder="Add Comment"
-                            value={comment}
-                            onChange={updateComment}
-                        />
-                    </div>
-
-                    <div>
                         <select
                             id="reoccuringDropDown"
                             name="reoccuringDropDown"
                             value={reoccuringType}
                             onChange={updateReoccuringType}
                         >
-                            <option value="S"> Single Payment</option>
-                            <option value="W"> Reoccurs Weekly</option>
-                            <option value="M"> Reoccurs Monthly</option>
+                            <option value="S"> One time</option>
+                            <option value="W"> Weekly</option>
+                            <option value="M"> Monthly</option>
                         </select>
+                    </div>
+
+                    <div className="add-transaction">
+                        <input
+                            type="text"
+                            placeholder={"Choose Category: " + categories.join()}
+                            value={currentCategory}
+                            onChange={updateCurrentCategory}
+                        />
                     </div>
 
                     <div>
@@ -570,26 +566,30 @@ function Finance({ user }) {
                             checked={equalSplit}
                             onChange={updateEqualSplit}
                         />
-                        <label htmlFor="equalSplitCheck">Equal Payment Split</label>
+                        <label htmlFor="equalSplitCheck">Equal Split</label>
                     </div>
 
                     {equalSplit ? (
                         <p></p>
                     ) : (
                         <div>
+                            <h4>Custom Split</h4>
+
                             <p>{Number(getTotalPaymentSplit())}/{Number(currentAmount)}</p>
 
                             {flatmate.map((currentFlatmate, x) => (
-                                <div className="add-transaction" key={currentFlatmate.id}>
+                                <div className="split-row" key={currentFlatmate.id}>
+                                    <label>{currentFlatmate.name}</label>
+
                                     <input
                                         type="number"
                                         id={"box" + x}
                                         key={"box" + x}
+                                        placeholder="Amount"
                                         value={paymentSplit[x] || 0}
                                         name={x}
                                         onChange={(e) => updatePaymentSplit(e.target.value, x)}
                                     />
-                                    <label htmlFor={"box" + x}>{currentFlatmate.name}</label>
                                 </div>
                             ))}
                         </div>
@@ -599,21 +599,17 @@ function Finance({ user }) {
                         <p className="split-error">Split must equal the total amount.</p>
                     )}
 
-                    <p>Submit</p>
-
                     <input
                         type="button"
                         id="TansactionSubmitButton"
-                        value="Add Transaction"
+                        value="Add Expense"
                         ref={submitRef}
                         onClick={submitTransaction}
                     />
                 </div>
             </div>
 
-
-
-            <div className="section">
+            {/* <div className="section">
                 <h3>Add Expense</h3>
 
                 <div className="add-item">
@@ -658,7 +654,7 @@ function Finance({ user }) {
                 ))}
 
                 <button onClick={addExpense}>Add Expense</button>
-            </div>
+            </div> */}
 
             <div className="section">
                 <div className="expense-header">
