@@ -4,9 +4,19 @@ import { useState, useEffect } from "react";
 function ShoppingList({ user }) {
     const [items, setItems] = useState([]);
     const [newItem, setNewItem] = useState("");
-
+    const [successMessage, setSuccessMessage] = useState("");
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
+
+    useEffect(() => {
+    if (!successMessage) return;
+
+    const timer = setTimeout(() => {
+        setSuccessMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+}, [successMessage]);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -68,6 +78,7 @@ function ShoppingList({ user }) {
             const data = await res.json();
             setItems((prevItems) => [...prevItems, data]);
             setNewItem("");
+            setSuccessMessage(`${newItem} added to list!`);
         } catch (error) {
             console.error("Error adding item:", error);
         }
@@ -124,6 +135,18 @@ function ShoppingList({ user }) {
 
     return (
         <>
+        {successMessage && (
+    <div className="success-banner">
+        <span>{successMessage}</span>
+
+        <button
+            className="success-close"
+            onClick={() => setSuccessMessage("")}
+        >
+            ×
+        </button>
+    </div>
+)}
             <div className="welcome-section">
                 <h2>Shopping List</h2>
                 <p>Add and keep track of items your flat needs.</p>

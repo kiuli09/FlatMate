@@ -179,7 +179,7 @@ useEffect(() => {
         <span>{successMessage}</span>
 
         <button
-            className="close-btn"
+            className="success-close"
             onClick={() => setSuccessMessage("")}
         >
             ×
