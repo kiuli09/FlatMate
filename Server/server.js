@@ -730,9 +730,6 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
     }
 });
 
-// Delete inventory item route
-app.delete("/api/inventory/:id", async (req, res) => {
-    const {id} = req.params;
 app.post("/api/finance/add-transaction", async (req, res) => {
     console.log("Recieved Request")
     const { flat_id, amount, comment, split, members, current_user, reoccuringType, category } = req.body
@@ -897,8 +894,9 @@ app.get("/api/finance/:flatId/monthly_summary", async (req, res) => {
     }
 });
 
+// Delete inventory item route
 app.delete("/api/inventory/:id", async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
 
     try {
 
