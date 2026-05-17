@@ -487,14 +487,14 @@ function Finance({ user }) {
 
                         {owesYou.map((current, x) => (
                             <p key={x}>
-                                <input
+                                {/* <input
                                     type="button"
                                     id={"submitOweYouRow" + x}
                                     name={x}
                                     onClick={(event) => settleByCategory(event, "oweYou")}
                                 // flavour="oweYou"
-                                />
-                                {current.name}: ${current.sum} for {current.category}
+                                /> */}
+                                <b>{current.name}</b>: ${current.sum} for {current.category}
                             </p>
                         ))}
                     </div>
@@ -504,14 +504,14 @@ function Finance({ user }) {
 
                         {youOwe.map((current, x) => (
                             <p key={x}>
-                                <input
+                                {/* <input
                                     type="button"
                                     id={"submitYouOweRow" + x}
                                     name={x}
                                     onClick={(event) => settleByCategory(event, "youOwe")}
                                 // flavour="youOwe"
-                                />
-                                {current.name}: ${current.sum} for {current.category}
+                                /> */}
+                                <b>{current.name}</b>: ${current.sum} for {current.category}
                             </p>
                         ))}
                     </div>
