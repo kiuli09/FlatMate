@@ -466,6 +466,18 @@ function Finance({ user }) {
                 <p>Manage finances with your flatmates</p>
             </div>
 
+            <div className="section">
+                <h3>Flat Members</h3>
+
+                <div className="member-list">
+                    {members.map((m) => (
+                        <div key={m.id} className="member-chip">
+                            {m.name}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             <div className="finance-grid">
                 <div className="finance-grid-element">
                     <h2>Overview</h2>
@@ -599,17 +611,7 @@ function Finance({ user }) {
                 </div>
             </div>
 
-            <div className="section">
-                <h3>Flat Members</h3>
 
-                <div className="member-list">
-                    {members.map((m) => (
-                        <div key={m.id} className="member-chip">
-                            {m.name}
-                        </div>
-                    ))}
-                </div>
-            </div>
 
             <div className="section">
                 <h3>Add Expense</h3>
