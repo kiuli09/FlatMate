@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useLayoutEffect } from "react";
+import { useRef } from "react";
 import "./Finance.css";
+import { NavLink } from "react-router-dom";
 
 function Finance({ user }) {
     const [members, setMembersList] = useState([]);
+    const [flatmate, setFlatmates] = useState([]);
+
+    const [owesYou, setOwesYou] = useState([]);
+    const [youOwe, setYouOwe] = useState([]);
+    const [paymentSplit, setPaymentSplit] = useState([]);
+    const [equalSplit, setEqualSplit] = useState(true);
+    const [currentAmount, setCurrentAmount] = useState("");
+    const [splitIsValid, setSplitIsValid] = useState(true);
+    const [transactions, setTransactions] = useState([]);
+    const [comment, setComment] = useState("");
+    const [reoccuringType, setReoccuringType] = useState("S");
+    const [categories, setCategories] = useState([]);
+    const [summary, setSummary] = useState([]);
+    const [currentCategory, setCurrentCategory] = useState("");
 
     const [expenseName, setExpenseName] = useState("");
     const [totalCost, setTotalCost] = useState("");
@@ -10,6 +27,9 @@ function Finance({ user }) {
     const [expenses, setExpenses] = useState([]);
     const [expenseType, setExpenseType] = useState("One time");
     const [filterType, setFilterType] = useState("All");
+
+    const submitRef = useRef();
+
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
 
@@ -36,30 +56,285 @@ function Finance({ user }) {
     };
 
     useEffect(() => {
+        // console.log("usigeffect")
         const fetchMembers = async () => {
+            // console.log("FetchingMembers")
             try {
-                const res = await fetch(
-                    `${API}/api/flats/${currentFlat.id}/members`
-                );
+                // console.log("Pulling from db")
+                const flatRes = await fetch(`${API}/api/flats/${currentFlat.id}/members`);
+                const flatData = await flatRes.json();
 
-                const data = await res.json();
-
-                if (!res.ok) {
-                    console.error(data.message);
+                if (!flatRes.ok) {
+                    console.error(flatData.message);
                     setMembersList([]);
+                    setFlatmates([]);
                     return;
                 }
-                console.log("Fetched members:", data.members);
-                setMembersList(data.members || []);
+
+                console.log(flatData.members);
+                console.log(user.id);
+
+                setMembersList(flatData.members || []);
+
+                const filtered_members = flatData.members.filter(temp => temp.id !== user.id);
+                console.log(filtered_members);
+
+                setFlatmates(filtered_members || []);
+
+                updateOwes();
+                updateCategories();
+                updateSummary();
+                setPaymentSplit(new Array(filtered_members.length).fill(0));
+                // console.log("a")
+                // console.log(flatmate)
             } catch (err) {
-                console.error("Error fetching members:", err);
+                console.error("Error fetching Members:", err);
                 setMembersList([]);
+                setFlatmates([]);
             }
         };
 
         fetchMembers();
         fetchExpenses();
     }, [currentFlat?.id]);
+
+    const updateOwes = async () => {
+        const owesRes = await fetch(`${API}/api/finance/get-owes/${currentFlat.id}/${user.id}`);
+        const data = await owesRes.json();
+        console.log(data.owesYou);
+        console.log(data.youOwe);
+
+        setOwesYou(data.owesYou || []);
+        setYouOwe(data.youOwe || []);
+        updateSummary();
+    };
+
+    const updateCategories = async () => {
+        const owesRes = await fetch(`${API}/api/finance/${currentFlat.id}/categories`);
+        const data = await owesRes.json();
+        console.log(data.categories.map(a => a.category.trim()));
+
+        setCategories(data.categories.map(a => a.category.trim()));
+    };
+
+    const updateSummary = async () => {
+        const owesRes = await fetch(`${API}/api/finance/${currentFlat.id}/monthly_summary`);
+        const data = await owesRes.json();
+        console.log(data.summary);
+
+        setSummary(data.summary || []);
+    };
+
+    const submitTransaction = async () => {
+        console.log("submittingTransaction" + flatmate);
+
+        try {
+            const res = await fetch(`${API}/api/finance/add-transaction`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    flat_id: currentFlat.id,
+                    amount: currentAmount/flatmate.length,
+                    comment: comment,
+                    split: paymentSplit,
+                    members: flatmate,
+                    current_user: user,
+                    reoccuringType: reoccuringType,
+                    category: currentCategory
+                })
+            });
+
+            console.log("Transaction Submitted");
+        } catch (err) {
+            console.error("Error submitting transactions:", err);
+        }
+
+        updateOwes();
+        fetchExpenses();
+    };
+
+    const settleByCategory = async (event, flavour) => {
+        console.log(event.target.name);
+        console.log(owesYou[event.target.name]);
+        console.log(flavour);
+        console.log(owesYou);
+        console.log(youOwe);
+
+        if (flavour == "oweYou") {
+            try {
+                const res = await fetch(`${API}/api/finance/settle-by-category`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        flat_id: currentFlat.id,
+                        created_by: user.id,
+                        category: owesYou[event.target.name].category,
+                        user_id: owesYou[event.target.name].user_id
+                    })
+                });
+
+                console.log("Transaction Settled");
+            } catch (err) {
+                console.error("Error Settling transaction:", err);
+            }
+        } else {
+            console.log(youOwe[event.target.name]);
+
+            try {
+                const res = await fetch(`${API}/api/finance/settle-by-category`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        flat_id: currentFlat.id,
+                        created_by: youOwe[event.target.name].created_by,
+                        category: youOwe[event.target.name].category,
+                        user_id: user.id
+                    })
+                });
+
+                console.log("Transaction Settled");
+            } catch (err) {
+                console.error("Error Settling transaction:", err);
+            }
+        }
+
+        updateOwes();
+    };
+
+    const updateComment = (event) => {
+        setComment(event.target.value);
+        console.log(comment);
+    };
+
+    const updateCurrentCategory = (event) => {
+        setCurrentCategory(event.target.value);
+        console.log(currentCategory);
+    };
+
+    const updateCurrentAmount = (event) => {
+        const value = event.target.value;
+        setCurrentAmount(value);
+
+        if (equalSplit && flatmate.length > 0) {
+            const amountPerPerson = Number(value) / flatmate.length;
+            setPaymentSplit(new Array(flatmate.length).fill(amountPerPerson));
+        }
+
+        checkSplitValidity(value, paymentSplit);
+        console.log(currentAmount);
+    };
+
+    const updateEqualSplit = (event) => {
+        const checked = event.target.checked;
+        setEqualSplit(checked);
+
+        if (checked) {
+            setSplitEqually();
+            setSplitIsValid(true);
+
+            if (submitRef.current) {
+                submitRef.current.disabled = false;
+            }
+        } else {
+            checkSplitValidity(currentAmount, paymentSplit);
+        }
+
+        console.log(equalSplit);
+    };
+
+    const updatePaymentSplit = (event, index) => {
+        const newSplit = [
+            ...paymentSplit.slice(0, index),
+            Number(event),
+            ...paymentSplit.slice(index + 1)
+        ];
+
+        setPaymentSplit(newSplit);
+        checkSplitValidity(currentAmount, newSplit);
+    };
+
+    const updateReoccuringType = (event) => {
+        setReoccuringType(event.target.value);
+        console.log(reoccuringType);
+    };
+
+    const addTransaction = (event) => {
+        let temp = owesYou;
+
+        if (equalSplit) {
+            for (let i = 0; i < owesYou.length; i++) {
+                temp += currentAmount / 4;
+            }
+        } else {
+            for (let i = 0; i < owesYou.length; i++) {
+                temp += currentAmount / 4;
+            }
+        }
+
+        setOwesYou(temp);
+    };
+
+    const getTotalPaymentSplit = () => {
+        let temp = 0;
+
+        for (let i = 0; i < paymentSplit.length; i++) {
+            temp += Number(paymentSplit[i]);
+        }
+
+        return temp;
+    };
+
+    const setSplitEqually = () => {
+        console.log("Setting split equally");
+        console.log(transactions);
+
+        if (flatmate.length === 0) return;
+
+        const temp = new Array(flatmate.length).fill(Number(currentAmount) / flatmate.length);
+
+        setPaymentSplit(temp);
+        console.log(paymentSplit);
+    };
+
+    const checkSplitValidity = (amount = currentAmount, split = paymentSplit) => {
+        console.log("Checking Split Validity");
+
+        if (equalSplit) {
+            setSplitIsValid(true);
+
+            if (submitRef.current) {
+                submitRef.current.disabled = false;
+            }
+
+            console.log("Split is equal so true");
+        } else {
+            const totalSplit = split.reduce((a, b) => a + Number(b), 0);
+
+            if (Number(totalSplit) === Number(amount)) {
+                setSplitIsValid(true);
+
+                if (submitRef.current) {
+                    submitRef.current.disabled = false;
+                }
+
+                console.log("paymentsplit and currentamount is equal so true");
+            } else {
+                setSplitIsValid(false);
+
+                if (submitRef.current) {
+                    submitRef.current.disabled = true;
+                }
+
+                console.log("Neither is equal so false");
+            }
+        }
+    };
 
     const handleSplitChange = (member, value) => {
         setSplits({
@@ -82,7 +357,6 @@ function Finance({ user }) {
             return;
         }
 
-
         const res = await fetch(`${API}/expenses`, {
             method: "POST",
             headers: {
@@ -94,20 +368,23 @@ function Finance({ user }) {
                 splits: splits,
                 expense_type: expenseType,
                 flat_id: currentFlat.id,
-                created_by: user?.username,
+                created_by: user?.username || user?.name,
                 receipt_url: null
             }),
         });
+
         const data = await res.json();
+
         const newExpense = {
             id: data.expense.transaction_id,
             name: expenseName,
             total: total,
             splits: splits,
             expense_type: expenseType.trim(),
-            created_by: user?.username,
+            created_by: user?.username || user?.name,
             receipt_url: null
         };
+
         setExpenses([...expenses, newExpense]);
 
         //reset form
@@ -160,14 +437,15 @@ function Finance({ user }) {
             console.error("Error uploading receipt:", err);
         }
     };
+
     const filterByType = async (type) => {
         try {
             console.log("Filtering by type:", type);
+
             if (type === "All") {
                 await fetchExpenses();
                 return;
-            }
-            else {
+            } else {
                 const res = await fetch(
                     `${API}/api/flats/${currentFlat.id}/expenses/${type}`
                 );
@@ -182,10 +460,10 @@ function Finance({ user }) {
     };
 
     return (
-        <div>
+        <main>
             <div className="welcome-section">
                 <h2>Finance</h2>
-                <p>Track shared expenses in your flat</p>
+                <p>Manage finances with your flatmates</p>
             </div>
 
             <div className="section">
@@ -200,8 +478,140 @@ function Finance({ user }) {
                 </div>
             </div>
 
-            <div className="section">
+            <div className="finance-grid">
+                <div className="finance-grid-element">
+                    <h2>Overview</h2>
+
+                    <div className="finance-grid-element">
+                        <h3>These people owe you:</h3>
+
+                        {owesYou.map((current, x) => (
+                            <p key={x}>
+                                {/* <input
+                                    type="button"
+                                    id={"submitOweYouRow" + x}
+                                    name={x}
+                                    onClick={(event) => settleByCategory(event, "oweYou")}
+                                // flavour="oweYou"
+                                /> */}
+                                <b>{current.name}</b>: ${current.sum} for {current.category}
+                            </p>
+                        ))}
+                    </div>
+
+                    <div className="finance-grid-element">
+                        <h3>You owe these people:</h3>
+
+                        {youOwe.map((current, x) => (
+                            <p key={x}>
+                                {/* <input
+                                    type="button"
+                                    id={"submitYouOweRow" + x}
+                                    name={x}
+                                    onClick={(event) => settleByCategory(event, "youOwe")}
+                                // flavour="youOwe"
+                                /> */}
+                                <b>{current.name}</b>: ${current.sum} for {current.category}
+                            </p>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="finance-grid-element">
+                    <h2>Add Expense</h2>
+
+                    <div className="add-item">
+                        <input
+                            type="text"
+                            name="TransactionComment"
+                            placeholder="Expense name"
+                            value={comment}
+                            onChange={updateComment}
+                        />
+
+                        <input
+                            type="number"
+                            placeholder="Total cost"
+                            value={currentAmount}
+                            onChange={updateCurrentAmount}
+                            name="amountInput"
+                        />
+
+                        <select
+                            id="reoccuringDropDown"
+                            name="reoccuringDropDown"
+                            value={reoccuringType}
+                            onChange={updateReoccuringType}
+                        >
+                            <option value="S"> One time</option>
+                            <option value="W"> Weekly</option>
+                            <option value="M"> Monthly</option>
+                        </select>
+                    </div>
+
+                    <div className="add-transaction">
+                        <input
+                            type="text"
+                            placeholder={"Choose Category: " + categories.join()}
+                            value={currentCategory}
+                            onChange={updateCurrentCategory}
+                        />
+                    </div>
+
+                    <div>
+                        <input
+                            type="checkbox"
+                            name="isEqualSplit"
+                            id="equalSplitCheck"
+                            checked={equalSplit}
+                            onChange={updateEqualSplit}
+                        />
+                        <label htmlFor="equalSplitCheck">Equal Split</label>
+                    </div>
+
+                    {equalSplit ? (
+                        <p></p>
+                    ) : (
+                        <div>
+                            <h4>Custom Split</h4>
+
+                            <p>{Number(getTotalPaymentSplit())}/{Number(currentAmount)}</p>
+
+                            {flatmate.map((currentFlatmate, x) => (
+                                <div className="split-row" key={currentFlatmate.id}>
+                                    <label>{currentFlatmate.name}</label>
+
+                                    <input
+                                        type="number"
+                                        id={"box" + x}
+                                        key={"box" + x}
+                                        placeholder="Amount"
+                                        value={paymentSplit[x] || 0}
+                                        name={x}
+                                        onChange={(e) => updatePaymentSplit(e.target.value, x)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {!splitIsValid && (
+                        <p className="split-error">Split must equal the total amount.</p>
+                    )}
+
+                    <input
+                        type="button"
+                        id="TansactionSubmitButton"
+                        value="Add Expense"
+                        ref={submitRef}
+                        onClick={submitTransaction}
+                    />
+                </div>
+            </div>
+
+            {/* <div className="section">
                 <h3>Add Expense</h3>
+
                 <div className="add-item">
                     <input
                         type="text"
@@ -209,12 +619,14 @@ function Finance({ user }) {
                         value={expenseName}
                         onChange={(e) => setExpenseName(e.target.value)}
                     />
+
                     <input
                         type="number"
                         placeholder="Total cost"
                         value={totalCost}
                         onChange={(e) => setTotalCost(e.target.value)}
                     />
+
                     <select
                         value={expenseType}
                         onChange={(e) => setExpenseType(e.target.value)}
@@ -233,6 +645,7 @@ function Finance({ user }) {
                         <input
                             type="number"
                             placeholder="Amount"
+                            value={splits[member.id] || ""}
                             onChange={(e) =>
                                 handleSplitChange(member.id, e.target.value)
                             }
@@ -241,13 +654,15 @@ function Finance({ user }) {
                 ))}
 
                 <button onClick={addExpense}>Add Expense</button>
-            </div>
+            </div> */}
 
             <div className="section">
                 <div className="expense-header">
                     <h3>Expenses</h3>
+
                     <div className="filter-controls">
                         <p>filter by type:</p>
+
                         <select
                             className="expense-type-filter"
                             value={filterType}
@@ -257,27 +672,29 @@ function Finance({ user }) {
                                 filterByType(selectedType);
                             }}
                         >
-                            <option value="">All</option>
+                            <option value="All">All</option>
                             <option value="One time">One time</option>
                             <option value="Weekly">Weekly</option>
                             <option value="Monthly">Monthly</option>
                         </select>
                     </div>
                 </div>
+
                 <div className="expenses-list">
                     {expenses.map((exp, index) => (
-                        <div key={index} className="expense-card">
+                        <div key={exp.id || index} className="expense-card">
                             <div className="expense-row">
                                 <span className="expense-name">
                                     {exp.name}
                                 </span>
+
                                 <span className="expense-total">
                                     ${exp.total}
                                 </span>
                             </div>
 
                             <ul className="split-list">
-                                {Object.entries(exp.splits).map(([memberId, amount]) => {
+                                {Object.entries(exp.splits || {}).map(([memberId, amount]) => {
                                     const memberObj = members.find(
                                         m => String(m.id) === String(memberId)
                                     );
@@ -288,66 +705,109 @@ function Finance({ user }) {
                                         </li>
                                     );
                                 })}
-
                             </ul>
+
                             <div className="expense-bottom-row">
                                 <span className="expense-type">Type: {exp.expense_type}</span>
                                 <span className="expense-created-by">Created by: {exp.created_by}</span>
                             </div>
                             <div className="expense-bottom-row-buttons">
+                                <div className="receipt-actions">
+                                    {exp.receipt_url ? (
+                                        <>
+                                            <button
+                                                className="view-receipt-btn"
+                                                onClick={() =>
+                                                    window.open(`${API}${exp.receipt_url}`, "_blank")
+                                                }
+                                            >
+                                                View Receipt
+                                            </button>
 
-    <div className="receipt-actions">
-        {exp.receipt_url ? (
-            <>
-                <button
-                    className="view-receipt-btn"
-                    onClick={() =>
-                        window.open(`${API}${exp.receipt_url}`, "_blank")
-                    }
-                >
-                    View Receipt
-                </button>
+                                            <label className="receipt-upload-btn">
+                                                Change Receipt
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    hidden
+                                                    onChange={(e) =>
+                                                        handleReceiptUpload(exp.id, e.target.files[0])
+                                                    }
+                                                />
+                                            </label>
+                                        </>
+                                    ) : (
+                                        <label className="receipt-upload-btn">
+                                            Add Receipt
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                hidden
+                                                onChange={(e) =>
+                                                    handleReceiptUpload(exp.id, e.target.files[0])
+                                                }
+                                            />
+                                        </label>
+                                    )}
+                                </div>
 
-                <label className="receipt-upload-btn">
-                    Change Receipt
-                    <input
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        onChange={(e) =>
-                            handleReceiptUpload(exp.id, e.target.files[0])
-                        }
-                    />
-                </label>
-            </>
-        ) : (
-            <label className="receipt-upload-btn">
-                Add Receipt
-                <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={(e) =>
-                        handleReceiptUpload(exp.id, e.target.files[0])
-                    }
-                />
-            </label>
-        )}
-    </div>
-
-    <button
-        className="expense-delete-button"
-        onClick={() => deleteExpense(exp.id)}
-    >
-        Delete
-    </button>
-
-</div>
+                                <button
+                                    className="expense-delete-button"
+                                    onClick={() => deleteExpense(exp.id)}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
             </div>
-        </div>
+
+            <div className="finance-grid-element">
+                <h2>Summary:</h2>
+                <p>Total amount spent on flat related costs by month and category</p>
+
+                <table className="summary-table">
+                    <thead>
+                        <tr>
+                            <th className="summary-table-heading">Category</th>
+                            <th className="summary-table-heading">Jan</th>
+                            <th className="summary-table-heading">Feb</th>
+                            <th className="summary-table-heading">March</th>
+                            <th className="summary-table-heading">April</th>
+                            <th className="summary-table-heading">May</th>
+                            <th className="summary-table-heading">June</th>
+                            <th className="summary-table-heading">July</th>
+                            <th className="summary-table-heading">August</th>
+                            <th className="summary-table-heading">September</th>
+                            <th className="summary-table-heading">October</th>
+                            <th className="summary-table-heading">November</th>
+                            <th className="summary-table-heading">December</th>
+                        </tr>
+                    </thead>
+
+                    <tbody className="summary-table">
+                        {summary.map((data, x) => (
+                            <tr className="summary-table" key={x}>
+                                <td className="summary-table">{data.category}</td>
+                                <td className="summary-table">${data.Jan}</td>
+                                <td className="summary-table">${data.Feb}</td>
+                                <td className="summary-table">${data.Mar}</td>
+                                <td className="summary-table">${data.Apr}</td>
+                                <td className="summary-table">${data.May}</td>
+                                <td className="summary-table">${data.Jun}</td>
+                                <td className="summary-table">${data.Jul}</td>
+                                <td className="summary-table">${data.Aug}</td>
+                                <td className="summary-table">${data.Sep}</td>
+                                <td className="summary-table">${data.Oct}</td>
+                                <td className="summary-table">${data.Nov}</td>
+                                <td className="summary-table">${data.Dec}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </main>
     );
 }
 
