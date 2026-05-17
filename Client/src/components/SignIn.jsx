@@ -48,6 +48,8 @@ function SignIn({ setUser }) {
 
             localStorage.setItem("user", JSON.stringify(data.user));
             setUser(data.user);
+
+            localStorage.setItem("loginSuccess","Signed in successfully");
             navigate("/", { replace: true });
         } catch (err) {
             console.error(err);

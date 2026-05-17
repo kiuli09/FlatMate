@@ -13,13 +13,14 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   const [members, setMembers] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
-  
+  const [successMessage, setSuccessMessage] = useState("");
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const displayName =
     user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
 
   useEffect(() => {
+    
   const fetchFlats = async () => {
     try {
       const res = await fetch(`${API}/api/flats`, {
@@ -46,6 +47,21 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
     fetchFlats();
   }
 }, [user?.id]);
+
+useEffect(() => {
+  const message = localStorage.getItem("loginSuccess");
+
+  if (message) {
+    setSuccessMessage(message);
+    localStorage.removeItem("loginSuccess");
+
+    const timer = setTimeout(() => {
+      setSuccessMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }
+}, []);
 
   const handleSelectFlat = (flat) => {
     localStorage.setItem("currentFlat", JSON.stringify(flat));
@@ -129,6 +145,7 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   }
   
   return (
+    
     <div className="home-page">
       {/* <header className="home-header">
         <h1 className="app-title">FlatMate</h1>
@@ -157,7 +174,18 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
 
         </div>
       </header> */}
+{successMessage && (
+    <div className="success-banner">
+        <span>{successMessage}</span>
 
+        <button
+            className="close-btn"
+            onClick={() => setSuccessMessage("")}
+        >
+            ×
+        </button>
+    </div>
+)}
       <TopBar user={user} darkMode={darkMode} setDarkMode={setDarkMode}/>
 
       <main className="home-content">
