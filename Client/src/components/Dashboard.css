@@ -62,6 +62,16 @@
   margin: 0;
   color: #6b7280;
 }
+.bills-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.bill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 .quick-actions {
   display: grid;
@@ -104,6 +114,7 @@
     grid-template-columns: 1fr;
   }
 }
+
 
 .clickable-card {
     cursor: pointer;

@@ -4,7 +4,42 @@
   font-family: Arial, sans-serif;
   color: #1f2937;
 }
+.success-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 
+  background-color: #16a34a;
+  color: white;
+
+  padding: 10px 16px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-weight: 600;
+  z-index: 9999;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+
+  max-width: 300px;
+}
+.success-close {
+  background: transparent;
+  border: none;
+  color: rgb(231, 102, 102);
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.success-close:hover {
+  opacity: 0.7;
+}
 /* ===== HEADER ===== */
 .home-header {
   height: 80px;

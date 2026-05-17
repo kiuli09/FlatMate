@@ -6,10 +6,20 @@ function Inventory() {
     const [showForm, setShowForm] = useState(false);
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(1);
-
+    const [successMessage, setSuccessMessage] = useState("");
     const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
     const currentFlat = JSON.parse(localStorage.getItem("currentFlat"));
     const user = JSON.parse(localStorage.getItem("user"));
+
+    useEffect(() => {
+        if (!successMessage) return;
+
+        const timer = setTimeout(() => {
+            setSuccessMessage("");
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [successMessage]);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -50,6 +60,7 @@ function Inventory() {
                 setShowForm(false);
                 setName("");
                 setQuantity(1);
+                setSuccessMessage(`${name} added to inventory!`);
             } else {
                 console.error(data.message);
             }
@@ -137,6 +148,17 @@ function Inventory() {
 
     return (
         <div>
+            {successMessage && (
+                <div className="success-banner">
+                    <span>{successMessage}</span>
+                    <button
+                        className="success-close"
+                        onClick={() => setSuccessMessage("")}
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
             <div className="welcome-section">
                 <h2>Inventory</h2>
                 <p>Shared flat groceries, ingredients, and household items.</p>

@@ -6,9 +6,12 @@ const PORT = 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
 const { nanoid } = require("nanoid");
+const multer = require("multer");
+const path = require("path");
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
     res.send("FlatMate server is running");
@@ -18,6 +21,22 @@ app.get("/api/test", (req, res) => {
     res.json({ message: "FlatMate backend working!" });
 });
 
+//storage used for receipt uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/receipts");
+    },
+    filename: (req, file, cb) => {
+        const uniqueName =
+            Date.now() + path.extname(file.originalname);
+
+        cb(null, uniqueName);
+    },
+});
+
+const upload = multer({ storage });
+
+// Get flats for user route
 app.get("/api/flats", async (req, res) => {
     try {
         const result = await pool.query(
@@ -34,6 +53,36 @@ app.get("/api/flats", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+// Receipt upload route
+app.post(
+    "/expenses/:id/receipt",
+    upload.single("receipt"),
+    async (req, res) => {
+        try {
+            const expenseId = req.params.id;
+
+            const receiptUrl = `/uploads/receipts/${req.file.filename}`;
+
+            // Save into database
+            await pool.query(
+                "UPDATE transactions SET receipt = $1 WHERE transaction_id = $2",
+                [receiptUrl, expenseId]
+            );
+
+            res.json({
+                message: "Receipt uploaded",
+                receipt_url: receiptUrl,
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: "Upload failed",
+            });
+        }
+    }
+);
+// Get shopping list items for flat route
 app.get("/items", async (req, res) => {
     
     try {
@@ -49,6 +98,9 @@ app.get("/items", async (req, res) => {
     }
 });
 
+/* EXPENSES ROUTES */
+
+// Create expense route
 app.post("/expenses", async (req, res) => {
     const { name, total, splits, flat_id,expense_type, created_by } = req.body;
     try {
@@ -69,6 +121,26 @@ app.post("/expenses", async (req, res) => {
     }
 });
 
+// Delete expense route
+app.delete("/expenses/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query(
+            "DELETE FROM expense_split WHERE transaction_id = $1",
+            [id]
+        );
+        await pool.query(
+            "DELETE FROM transactions WHERE transaction_id = $1",
+            [id]
+        );
+        res.json({ message: "Expense deleted" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Get expenses for flat route and filter by type
 app.get(`/api/flats/:currentFlat/expenses/:type`, async (req, res) => {
     const { currentFlat, type} = req.params;
      try {
@@ -121,6 +193,7 @@ app.get(`/api/flats/:currentFlat/expenses/:type`, async (req, res) => {
     }
 });
 
+// Get all expenses for flat route and format for rendering
 app.get("/api/flats/:id/expenses", async (req, res) => {
     try {
         const transactions = await pool.query(
@@ -152,11 +225,13 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
             });
 
             formattedExpenses.push({
+                id: tx.transaction_id,
                 name: tx.items_purchased,
                 total: tx.cost,
                 expense_type: tx.category,
                 splits: splits,
-                created_by: tx.created_by
+                created_by: tx.created_by,
+                receipt_url: tx.receipt
             });
         }
 
@@ -171,6 +246,10 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
         });
     }
 });
+
+
+/* TIMETABLE ROUTES */
+// Create timetable event route
 app.post("/api/flats/:id/timetable", async (req, res) => {
     const { id } = req.params;
     const { hour, day, duration, name, description } = req.body;
@@ -187,6 +266,8 @@ app.post("/api/flats/:id/timetable", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+// Get timetable for flat route
 app.get("/api/flats/:id/timetable", async (req, res) => {
     const { id } = req.params;
     try {
@@ -200,6 +281,8 @@ app.get("/api/flats/:id/timetable", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+// Update timetable event route
 app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     const { flatId, eventId } = req.params;
     const { hour, day, duration, name, description } = req.body;
@@ -220,6 +303,8 @@ app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+// Delete timetable event route
 app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     const { flatId, eventId } = req.params;
     try {
@@ -236,6 +321,7 @@ app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 /* AUTHENTICATION ROUTES */
 
 // Login route
@@ -351,6 +437,7 @@ app.put("/api/users/:id/password", async (req, res) => {
     }
 });
 
+/* FLAT CREATION / JOIN / LEAVE ROUTES */
 app.post("/api/auth/create-flat", async (req, res) => {
     const { name, members, created_by } = req.body;
     console.log("Create flat attempt:", name, members, created_by);
@@ -430,6 +517,7 @@ app.post("/api/auth/leave-flat", async (req, res) => {
     }
 });
 
+// Shopping list insert routes
 app.post("/items", async (req, res) => {
     const { name, flat_id, added_by } = req.body;
     try {
@@ -444,6 +532,8 @@ app.post("/items", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+// Get shopping list item count for flat dashboard route
 app.get("/itemsCount", async (req, res) => {
     const { flat_id } = req.headers;
     try {
@@ -456,6 +546,21 @@ app.get("/itemsCount", async (req, res) => {
         res.status(201).json(newItem);
     } catch (err) {
         console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Get reoccuring bills for flat dashboard route
+app.get("/api/flats/:id/upcoming-bills", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const billsRes = await pool.query(
+            "SELECT * FROM transactions WHERE flat_id = $1 AND category IN ('Weekly', 'Monthly');",
+            [id]
+        );
+        res.json({ bills: billsRes.rows });
+    } catch (err) {
+        console.error("Error fetching upcoming bills:", err);
         res.status(500).json({ message: "Server error" });
     }
 });
@@ -512,6 +617,7 @@ app.post("/items/purchased/:id", async (req, res) => {
     }
 });
 
+// Delete shopping list item route
 app.delete("/items/remove/:id", async (req, res) => {
     const { id } = req.params;
     try {
@@ -534,6 +640,7 @@ app.delete("/items/remove/:id", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 app.post("/api/inventory", async (req, res) => {
 
@@ -585,6 +692,7 @@ app.post("/api/inventory/search", async (req, res) => {
     }
 });
 
+// Get inventory items for flat route
 app.get("/api/inventory/:flatId", async (req, res) => {
     const { flatId } = req.params;
 
@@ -601,6 +709,7 @@ app.get("/api/inventory/:flatId", async (req, res) => {
     }
 });
 
+// Get flat members route
 app.get("/api/flats/:flatId/members", async (req, res) => {
     const { flatId } = req.params;
 
@@ -621,6 +730,7 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
     }
 });
 
+// Delete inventory item route
 app.delete("/api/inventory/:id", async (req, res) => {
     const {id} = req.params;
 
@@ -647,6 +757,7 @@ app.delete("/api/inventory/:id", async (req, res) => {
     }
 })
 
+// Update inventory item route
 app.put("/api/inventory/:id", async (req, res) => {
     const { id } = req.params;
     const { item_name, quantity } = req.body;
@@ -669,6 +780,138 @@ app.put("/api/inventory/:id", async (req, res) => {
     } catch (err) {
         console.error("Error updating inventory item:", err);
         res.status(500).json({ message: "Error with updating inventory item" });
+    }
+});
+
+// Get flat details route for dashboard
+app.get("/api/flats/:flatId/details", async (req, res) => {
+    const { flatId } = req.params;
+
+    try {
+        const result = await pool.query(
+            `SELECT f.id, f.name, f.created_by, f.join_code, f.current_people, f.num_people, COUNT(fm.user_id) AS member_count
+                FROM flat f LEFT JOIN flat_members fm ON f.id = fm.flat_id
+                WHERE f.id = $1 GROUP BY f.id, f.name, f.created_by, f.join_code, f.current_people, f.num_people
+            `,
+            [flatId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "Flat not found"
+            });
+        }
+
+        res.json({
+            flat: result.rows[0]
+        });
+
+    } catch (err) {
+        console.error("Error fetching flat details:", err);
+        res.status(500).json({
+            message: "Server error fetching flat details"
+        });
+    }
+});
+
+// Update flat name route
+app.put("/api/flats/:flatId/update-name", async (req, res) => {
+    const {flatId} = req.params;
+    const {name} = req.body;
+
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ message: "Flat name cannot be empty" });
+    }
+
+    try {
+        const result = await pool.query(
+            "UPDATE flat SET name = $1 WHERE id = $2 RETURNING *",
+            [name.trim(), flatId]
+        );
+
+        // If flat doesnt exist
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Flat not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "Flat name updated successfully",
+            flat: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error updating flat name:", err);
+        res.status(500).json({ message: "Error with updating flat name" });
+    }
+});
+// Add member to flat route
+app.post("/api/flats/:id/add-member", async (req, res) => {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email || email.trim() === "") {
+        return res.status(400).json({message: "Email is required"});
+    }
+
+    try {
+        const result = await pool.query(
+            "SELECT id, name, email FROM users WHERE email = $1",
+            [email.trim()]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const user = result.rows[0];
+
+        const insertResult = await pool.query(
+            `
+            INSERT INTO flat_members (user_id, flat_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id, flat_id) DO NOTHING
+            RETURNING *
+            `,
+            [user.id, id]
+        );
+
+        if (insertResult.rowCount === 0) {
+            return res.status(400).json({ message: "Failed to add member to flat" });
+        }
+
+        res.json({
+            success: true,
+            message: "Member added successfully",
+            member: insertResult.rows[0]
+        });
+    } catch (err) {
+        console.error("Error adding member:", err);
+        res.status(500).json({ message: "Error with adding member" });
+    }
+});
+
+// Remove member from flat route
+app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
+    const { flatId, userId } = req.params;
+
+    try {
+        const result = await pool.query(
+            "DELETE FROM flat_members WHERE flat_id = $1 AND user_id = $2 RETURNING *",
+            [flatId, userId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Member not found in the flat" });
+        }
+
+        res.json({
+            success: true,
+            message: "Member removed successfully",
+            member: result.rows[0]
+        });
+    } catch (err) {
+        console.error("Error removing member:", err);
+        res.status(500).json({ message: "Error with removing member" });
     }
 });
 

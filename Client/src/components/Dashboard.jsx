@@ -11,6 +11,7 @@ function Dashboard({ user }) {
     const [membersList, setMembersList] = useState([]);
     const [loadingMembers, setLoadingMembers] = useState(false);
     const [shoppingItemCount, setShoppingItemCount] = useState(0);
+    const [upComingBills, setUpcomingBills] = useState([]);
 
     const displayName =
         user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
@@ -39,7 +40,17 @@ function Dashboard({ user }) {
                 console.error("Error fetching flat data:", err);
             }
         };
+        const fetchUpcomingBills = async () => {
+            if (!currentFlat?.id) return;
+            try {
+                const billsRes = await fetch(`${API}/api/flats/${currentFlat.id}/upcoming-bills`);
+                const billsData = await billsRes.json();
+                setUpcomingBills(billsData.bills || []);
+            } catch (err) {
+                console.error("Error fetching upcoming bills:", err);
+            } };        
         fetchFlatData();
+        fetchUpcomingBills();
     }, [currentFlat?.id]);
 
     const handleCopyCode = async () => {
@@ -137,7 +148,18 @@ function Dashboard({ user }) {
 
                 <div className="content-panel">
                     <h3>Upcoming Bills</h3>
-                    <p>No upcoming bills yet.</p>
+                    {upComingBills.length > 0 ? (
+                        <ul className="bills-list">
+                            {upComingBills.map((bill) => (
+                                <li key={bill.id} className="bill-item">
+                                    <span className="bill-name">{bill.items_purchased}</span>
+                                    <span className="bill-amount">${bill.cost.toFixed(2)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No upcoming bills yet.</p>
+                    )}
                 </div>
             </section>
 
