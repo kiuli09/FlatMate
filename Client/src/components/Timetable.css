@@ -271,6 +271,29 @@
         0 8px 18px rgba(76, 175, 80, 0.25);
 }
 
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap; /* keeps it responsive */
+}
+.delete-event-btn {
+    color: white;
+    background: rgba(215, 50, 50, 0.12);
+    border: 1px solid rgb(231, 102, 102);
+    padding: 12px 18px;
+    border-radius: 10px;
+}
+
+
+.delete-event-btn:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+}
+
 /* FOR DARK MODE*/
 body.dark-mode .timetable-container h2 {
     color: white;

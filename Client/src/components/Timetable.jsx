@@ -294,18 +294,21 @@ function Timetable() {
                                     <label htmlFor="event-description">Description</label>
                                     <textarea id="event-description" placeholder="Enter event description" value={eventDescription} onChange={(e) => setEventDescription(e.target.value)}></textarea>
                                 </div>
-                                <button type="button" onClick={saveEvent}  className="save-event-btn" >
-                                    {isEditing ? "Update Event" : "Save Event"}
-                                </button>
-                                {isEditing && (
-                                    <button
-                                        type="button"
-                                        onClick={deleteEvent}
-                                        className="delete-event-btn"
-                                    >
-                                        Remove Event
-                                    </button>
-                                )}
+                                <div className="modal-actions">
+    <button type="button" onClick={saveEvent} className="save-event-btn">
+        {isEditing ? "Update Event" : "Save Event"}
+    </button>
+
+    {isEditing && (
+        <button
+            type="button"
+            onClick={deleteEvent}
+            className="delete-event-btn"
+        >
+            Remove Event
+        </button>
+    )}
+</div>
                                 <div className="form-group">
                                     <label htmlFor="duration">Duration (hours)</label>
                                     <input
