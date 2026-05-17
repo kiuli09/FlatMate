@@ -21,6 +21,7 @@ app.get("/api/test", (req, res) => {
     res.json({ message: "FlatMate backend working!" });
 });
 
+//storage used for receipt uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/receipts");
@@ -34,6 +35,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+// Get flats for user route
 app.get("/api/flats", async (req, res) => {
     try {
         const result = await pool.query(
@@ -51,6 +54,7 @@ app.get("/api/flats", async (req, res) => {
     }
 });
 
+// Receipt upload route
 app.post(
     "/expenses/:id/receipt",
     upload.single("receipt"),
@@ -78,7 +82,7 @@ app.post(
         }
     }
 );
-
+// Get shopping list items for flat route
 app.get("/items", async (req, res) => {
     
     try {
@@ -95,6 +99,8 @@ app.get("/items", async (req, res) => {
 });
 
 /* EXPENSES ROUTES */
+
+// Create expense route
 app.post("/expenses", async (req, res) => {
     const { name, total, splits, flat_id,expense_type, created_by } = req.body;
     try {
@@ -114,6 +120,8 @@ app.post("/expenses", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+// Delete expense route
 app.delete("/expenses/:id", async (req, res) => {
     const { id } = req.params;
     try {
@@ -132,6 +140,7 @@ app.delete("/expenses/:id", async (req, res) => {
     }
 });
 
+// Get expenses for flat route and filter by type
 app.get(`/api/flats/:currentFlat/expenses/:type`, async (req, res) => {
     const { currentFlat, type} = req.params;
      try {
@@ -184,6 +193,7 @@ app.get(`/api/flats/:currentFlat/expenses/:type`, async (req, res) => {
     }
 });
 
+// Get all expenses for flat route and format for rendering
 app.get("/api/flats/:id/expenses", async (req, res) => {
     try {
         const transactions = await pool.query(
@@ -239,6 +249,7 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
 
 
 /* TIMETABLE ROUTES */
+// Create timetable event route
 app.post("/api/flats/:id/timetable", async (req, res) => {
     const { id } = req.params;
     const { hour, day, duration, name, description } = req.body;
@@ -256,6 +267,7 @@ app.post("/api/flats/:id/timetable", async (req, res) => {
     }
 });
 
+// Get timetable for flat route
 app.get("/api/flats/:id/timetable", async (req, res) => {
     const { id } = req.params;
     try {
@@ -270,6 +282,7 @@ app.get("/api/flats/:id/timetable", async (req, res) => {
     }
 });
 
+// Update timetable event route
 app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     const { flatId, eventId } = req.params;
     const { hour, day, duration, name, description } = req.body;
@@ -291,6 +304,7 @@ app.put("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     }
 });
 
+// Delete timetable event route
 app.delete("/api/flats/:flatId/timetable/:eventId", async (req, res) => {
     const { flatId, eventId } = req.params;
     try {
@@ -503,6 +517,7 @@ app.post("/api/auth/leave-flat", async (req, res) => {
     }
 });
 
+// Shopping list insert routes
 app.post("/items", async (req, res) => {
     const { name, flat_id, added_by } = req.body;
     try {
@@ -518,6 +533,7 @@ app.post("/items", async (req, res) => {
     }
 });
 
+// Get shopping list item count for flat dashboard route
 app.get("/itemsCount", async (req, res) => {
     const { flat_id } = req.headers;
     try {
@@ -534,6 +550,7 @@ app.get("/itemsCount", async (req, res) => {
     }
 });
 
+// Get reoccuring bills for flat dashboard route
 app.get("/api/flats/:id/upcoming-bills", async (req, res) => {
     const { id } = req.params;
     try {
@@ -600,6 +617,7 @@ app.post("/items/purchased/:id", async (req, res) => {
     }
 });
 
+// Delete shopping list item route
 app.delete("/items/remove/:id", async (req, res) => {
     const { id } = req.params;
     try {
@@ -622,6 +640,7 @@ app.delete("/items/remove/:id", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 app.post("/api/inventory", async (req, res) => {
 
@@ -673,6 +692,7 @@ app.post("/api/inventory/search", async (req, res) => {
     }
 });
 
+// Get inventory items for flat route
 app.get("/api/inventory/:flatId", async (req, res) => {
     const { flatId } = req.params;
 
@@ -689,6 +709,7 @@ app.get("/api/inventory/:flatId", async (req, res) => {
     }
 });
 
+// Get flat members route
 app.get("/api/flats/:flatId/members", async (req, res) => {
     const { flatId } = req.params;
 
@@ -709,6 +730,7 @@ app.get("/api/flats/:flatId/members", async (req, res) => {
     }
 });
 
+// Delete inventory item route
 app.delete("/api/inventory/:id", async (req, res) => {
     const {id} = req.params;
 
@@ -735,6 +757,7 @@ app.delete("/api/inventory/:id", async (req, res) => {
     }
 })
 
+// Update inventory item route
 app.put("/api/inventory/:id", async (req, res) => {
     const { id } = req.params;
     const { item_name, quantity } = req.body;
@@ -760,6 +783,7 @@ app.put("/api/inventory/:id", async (req, res) => {
     }
 });
 
+// Get flat details route for dashboard
 app.get("/api/flats/:flatId/details", async (req, res) => {
     const { flatId } = req.params;
 
@@ -790,6 +814,7 @@ app.get("/api/flats/:flatId/details", async (req, res) => {
     }
 });
 
+// Update flat name route
 app.put("/api/flats/:flatId/update-name", async (req, res) => {
     const {flatId} = req.params;
     const {name} = req.body;
@@ -819,7 +844,7 @@ app.put("/api/flats/:flatId/update-name", async (req, res) => {
         res.status(500).json({ message: "Error with updating flat name" });
     }
 });
-
+// Add member to flat route
 app.post("/api/flats/:id/add-member", async (req, res) => {
     const { id } = req.params;
     const { email } = req.body;
@@ -865,6 +890,7 @@ app.post("/api/flats/:id/add-member", async (req, res) => {
     }
 });
 
+// Remove member from flat route
 app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
     const { flatId, userId } = req.params;
 

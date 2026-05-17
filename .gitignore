@@ -2,7 +2,7 @@
 node_modules/
 Server/node_modules/
 Client/node_modules/
-Server/uploads/receipts/
+
 # Logs
 logs
 *.log
@@ -61,4 +61,4 @@ dist-ssr
 *.sln
 *.sw?
 
-
+.png
