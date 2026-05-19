@@ -66,6 +66,7 @@ function App() {
                     user ? (
                         <UserSettings
                             user={user}
+                            setUser={setUser}
                             darkMode={darkMode}
                             setDarkMode={setDarkMode}
                         />

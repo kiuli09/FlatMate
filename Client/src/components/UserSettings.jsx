@@ -2,9 +2,7 @@ import "./UserSettings.css";
 import { useState } from "react";
 import TopBar from "./TopBar";
 
-function UserSettings({ darkMode, setDarkMode }) {
-  const user = JSON.parse(localStorage.getItem("user"));
-
+function UserSettings({ darkMode, setDarkMode, user, setUser }) {
   // For name  updates
   const [name, setName] = useState(user?.name || "");
   const [showNameForm, setShowNameForm] = useState(false);
@@ -27,6 +25,7 @@ function UserSettings({ darkMode, setDarkMode }) {
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
     setShowNameForm(false);
     alert("Display Name Updated Successfully!");
 
