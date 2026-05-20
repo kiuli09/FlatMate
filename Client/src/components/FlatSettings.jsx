@@ -83,6 +83,14 @@ function FlatSettings() {
 
   const handleAddMember = async () => {
     try {
+
+      // Check if flat is already full before attempting to add member
+      if (members.length >= flat.num_people) {
+        setMessage("Cannot add member: flat is already full.");
+        alert("Cannot add member: flat is already full.");
+        return;
+      }
+
       const res = await fetch(`${API}/api/flats/${currentFlat.id}/add-member`, {
         method: "POST",
         headers: {
@@ -92,12 +100,13 @@ function FlatSettings() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setMessage("Failed to add member.");
+        setMessage(data.message || "Failed to add member.");
         return;
       }
       setMessage("Member added successfully.");
       setMemberEmail("");
       fetchMembers();
+      fetchFlatDetails();
     } catch (error) {
       console.error("Error adding member:", error);
       setMessage("Failed to add member.");
@@ -120,6 +129,7 @@ function FlatSettings() {
       }
       setMessage("Member removed successfully.");
       fetchMembers();
+      fetchFlatDetails();
     } catch (error) {
       console.error("Error removing member:", error);
       setMessage("Failed to remove member.");

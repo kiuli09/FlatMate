@@ -480,10 +480,20 @@ app.post("/api/auth/join-flat", async (req, res) => {
 
         const flat = result.rows[0];
 
+        //check if the flat is already full
+        if (flat.current_people >= flat.num_people) {
+            return res.status(400).json({ message: "Flat is already full" });
+        }
+
         await pool.query(
             `INSERT INTO flat_members (user_id, flat_id)
             VALUES ($1, $2)`,
             [user_id, flat.id]
+        );
+
+        await pool.query(
+            "UPDATE flat SET current_people = current_people + 1 WHERE id = $1",
+            [flat.id]
         );
 
         res.json({
@@ -505,6 +515,11 @@ app.post("/api/auth/leave-flat", async (req, res) => {
         await pool.query(
             "DELETE FROM flat_members WHERE flat_id = $1 AND user_id = $2",
             [flat_id, user_id]
+        );
+
+        await pool.query(
+            "UPDATE flat SET current_people = current_people - 1 WHERE id = $1",
+            [flat_id]
         );
 
         res.json({
@@ -1055,6 +1070,18 @@ app.post("/api/flats/:id/add-member", async (req, res) => {
 
         const user = result.rows[0];
 
+        const flatRes = await pool.query(
+            "SELECT current_people, num_people FROM flat WHERE id = $1",
+            [id]
+        );
+
+        const flat = flatRes.rows[0];
+
+        //check if flat is already at max capacity
+        if (flat.current_people >= flat.num_people) {
+            return res.status(400).json({ message: "Flat is already at maximum capacity" });
+        }
+
         const insertResult = await pool.query(
             `
             INSERT INTO flat_members (user_id, flat_id)
@@ -1069,11 +1096,17 @@ app.post("/api/flats/:id/add-member", async (req, res) => {
             return res.status(400).json({ message: "Failed to add member to flat" });
         }
 
+        await pool.query(
+            "UPDATE flat SET current_people = current_people + 1 WHERE id = $1",
+            [id]
+        );
+
         res.json({
             success: true,
             message: "Member added successfully",
             member: insertResult.rows[0]
         });
+
     } catch (err) {
         console.error("Error adding member:", err);
         res.status(500).json({ message: "Error with adding member" });
@@ -1094,6 +1127,10 @@ app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
             return res.status(404).json({ message: "Member not found in the flat" });
         }
 
+        await pool.query(
+            "UPDATE flat SET current_people = current_people - 1 WHERE id = $1",
+            [flatId]
+        );
         res.json({
             success: true,
             message: "Member removed successfully",
