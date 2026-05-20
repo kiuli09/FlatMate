@@ -14,13 +14,18 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   const [joinCode, setJoinCode] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [isNewUser, setIsNewUser] = useState(false);
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const displayName =
     user?.name || user?.username || user?.email?.split("@")[0] || "Flatmate";
 
   useEffect(() => {
-    
+    const isNew = localStorage.getItem("isNewUser");
+    if (isNew === "true") {
+      setIsNewUser(true);
+      localStorage.removeItem("isNewUser");
+    }    
   const fetchFlats = async () => {
     try {
       const res = await fetch(`${API}/api/flats`, {
@@ -165,7 +170,7 @@ useEffect(() => {
 
       <main className="home-content">
         <section className="welcome-section">
-          <h2>Welcome back, {displayName}</h2>
+          <h2>{isNewUser ? "Welcome to Flatmate " : "Welcome back, "} {displayName}!</h2>
           <p>Select a flat to continue or get started below.</p>
         </section>
 

@@ -47,6 +47,7 @@ function SignIn({ setUser }) {
             }
 
             localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("isNewUser", "false");
             setUser(data.user);
 
             localStorage.setItem("loginSuccess","Signed in successfully");

@@ -54,6 +54,7 @@ function SignUp({ setUser }) {
             }
 
             localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("isNewUser", "true");
             setUser(data.user);
             navigate("/", { replace: true });
         } catch (err) {

@@ -94,7 +94,7 @@ function Dashboard({ user }) {
     return (
         <>
             <section className="welcome-banner">
-                <h2>Welcome back, {displayName}</h2>
+                <h2>Welcome to your flat, {displayName}</h2>
                 <p>Here’s what’s happening in your flat today.</p>
             </section>
 
