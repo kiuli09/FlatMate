@@ -9,16 +9,7 @@ const { nanoid } = require("nanoid");
 const multer = require("multer");
 const path = require("path");
 
-app.use(cors({
-    origin: "https://flatmate-1-a8t9.onrender.com",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "user", "flat", "flat_id"],
-    credentials: true
-}));
-
-app.options("*", cors());
-
-app.use(express.json());
+app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
