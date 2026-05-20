@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
 const { nanoid } = require("nanoid");
@@ -1143,5 +1143,5 @@ app.delete("/api/flats/:flatId/remove-member/:userId", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+console.log(`Server running on port ${PORT}`);
 }); 
