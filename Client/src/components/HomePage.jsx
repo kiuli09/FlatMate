@@ -70,11 +70,13 @@ useEffect(() => {
 
   const handleCreateFlat = () => {
     setShowCreateForm(true);
+    setShowJoinForm(false);
     //console.log("Create flat clicked");
   };
 
   const handleJoinFlat = () => {
     setShowJoinForm(true);
+    setShowCreateForm(false);
     //console.log("Join flat clicked");
   };
 
@@ -147,45 +149,18 @@ useEffect(() => {
   return (
     
     <div className="home-page">
-      {/* <header className="home-header">
-        <h1 className="app-title">FlatMate</h1>
+      {successMessage && (
+          <div className="success-banner">
+              <span>{successMessage}</span>
 
-        <div className="user-section">
-          
-          <span className="user-name">{displayName}</span>
-          
-          <button type="button" className="avatar-placeholder" onClick={() => setShowUserMenu(!showUserMenu)}>
-            {displayName.charAt(0).toUpperCase()}
-          </button>
-
-          {showUserMenu && (
-            <div className="user-menu">
-              
-              <button onClick={() => navigate("/UserSettings")}>
-                Settings
+              <button
+                  className="success-close"
+                  onClick={() => setSuccessMessage("")}
+              >
+                  ×
               </button>
-
-              <button onClick={handleLogout}>
-                Logout
-              </button>
-
-            </div>
-          )}
-
-        </div>
-      </header> */}
-{successMessage && (
-    <div className="success-banner">
-        <span>{successMessage}</span>
-
-        <button
-            className="success-close"
-            onClick={() => setSuccessMessage("")}
-        >
-            ×
-        </button>
-    </div>
-)}
+          </div>
+      )}
       <TopBar user={user} darkMode={darkMode} setDarkMode={setDarkMode}/>
 
       <main className="home-content">
@@ -291,7 +266,7 @@ useEffect(() => {
               </p>
             )}
 
-            <div className="action-card" onClick={handleCreateFlat}>
+            <div className="action-card" onClick={handleCreateFlat} >
               <h4>+ Create Flat</h4>
               <p>Start your own flat group</p>
             </div>
