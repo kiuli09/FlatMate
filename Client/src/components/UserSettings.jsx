@@ -15,13 +15,38 @@ function UserSettings({ darkMode, setDarkMode, user, setUser }) {
 
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-
-  const handleSave = (e) => {
+  /*Method to handle saving updated display name for user */
+  const handleSave = async (e) => {
     e.preventDefault();
+
+    try {
+      const res = await fetch(`${API}/api/users/${user.id}/name`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Error updating display name.");
+        return;
+      }
+
+      const updatedUser = {
+        ...user,
+        name: data.user.name,
+      };
+    } catch (error) {
+      console.error("Error updating display name:", error);
+      alert("An error occurred while updating the display name. Please try again.");
+    }
 
     const updatedUser = {
       ...user,
-      name,
+      name: name || user.name,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -31,6 +56,7 @@ function UserSettings({ darkMode, setDarkMode, user, setUser }) {
 
   };
 
+  /* Method to handle password reset for user */
   const handleResetPassword = async(e) => {
     e.preventDefault();
 

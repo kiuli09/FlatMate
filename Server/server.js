@@ -82,6 +82,7 @@ app.post(
         }
     }
 );
+
 // Get shopping list items for flat route
 app.get("/items", async (req, res) => {
 
@@ -246,7 +247,6 @@ app.get("/api/flats/:id/expenses", async (req, res) => {
         });
     }
 });
-
 
 /* TIMETABLE ROUTES */
 // Create timetable event route
@@ -1008,6 +1008,32 @@ app.put("/api/flats/:flatId/update-name", async (req, res) => {
         res.status(500).json({ message: "Error with updating flat name" });
     }
 });
+
+app.put("/api/users/:userId/name", async (req, res) => {
+    const { userId } = req.params;
+    const { name } = req.body;
+
+    try {
+        const result = await pool.query(
+            "UPDATE users SET name = $1 WHERE id = $2 RETURNING id, email, name",
+            [name, userId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "Display name updated successfully",
+            user: result.rows[0]
+        });
+    } catch (error) {
+        console.error("Error updating display name:", error);
+        res.status(500).json({ message: "Error with updating display name" });
+    }
+})
+
 // Add member to flat route
 app.post("/api/flats/:id/add-member", async (req, res) => {
     const { id } = req.params;
