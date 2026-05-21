@@ -46,3 +46,43 @@ These resources are sufficient to support the development, collaboration, and de
 We are using Taiga to keep track of our user stories and tasks for implementations. The following link will direct you to our Taiga Page. 
 
 https://tree.taiga.io/project/judithainuu-flatmate/taskboard/sprint-1-26374
+
+
+## Software Delivery
+We are using render to host and deploy FlatMate
+https://flatmate-1-a8t9.onrender.com/
+
+# Scope of Project
+
+1. Login and Logout functionalities
+2. Create a flat 
+3. Join a flat
+4. Add a shopping item into the shopping list
+5. Delete a shopping item from the shopping list
+6. Mark an item as purchased and move it into the flat inventory
+7. Add an Item into the inventory
+8. Update an items quantity in the inventory
+9. Remove an item from the inventory
+10. Add a receipt to an expense in the finance page
+11. Change receipt for an expense
+12. view receipt for an expense
+12. Delete expense.
+13. Add an event to the timetable
+14. Edit an event in the timetable
+15. Remove an event from the timetable
+16. Change from light mode to dark mode by clicking the moon emoji next to the user icon on the right of the site header.
+17. change from dark to light mode by clicking the sun emoji next to user icon.
+18. In flat settings, Update the flat name
+19. In flat settings remove a member from the flat
+20. Go to user settings by clicking on the user icon on the top right. Then update the users display name
+21. Reset user password
+22. In the dashboard, click the members block to get a list of current flat members.
+23. In the dashboard. Use the quick action buttons to redirect.
+
+# Known Issues
+- Creating a flat with a large number for members throws a server error.
+- Expenses are displayed wrong, the name isnt rendered and the created by tag doesnt display the users name, but their id. (not intended)
+- Expense filter by type also doesn't work as intended, as type is pulled from the category input rather than the selection box (One-time, weekly, monthly)
+- Timetable UI may break when more than 2 events overlap the same cell.
+- When a User is removed from a flat, expenses do not properly deal with the removed user.
+- Because expense type is broken, it cannot be properly fetched onto the dashboard upcoming bills block.
