@@ -1,7 +1,3 @@
-const express = require("express");
-const cors = require("cors");
-
-const app = express();
 const PORT = process.env.PORT || 5000;
 const pool = require("./db");
 const argon2 = require('argon2');
