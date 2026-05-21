@@ -26,10 +26,7 @@ function App() {
         localStorage.setItem("darkMode", darkMode);
     }, [darkMode]);
 
-    const [flats, setFlats] = useState([
-        { id: 1, name: "Castle Street Flat", members: 5 },
-        { id: 2, name: "George Street Flat", members: 4 },
-    ]);
+    const [flats, setFlats] = useState([]);
 
     return (
         <Routes>
