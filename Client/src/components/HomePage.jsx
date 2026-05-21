@@ -13,7 +13,9 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   const [members, setMembers] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+
+  // Success message
+  const [message, setMessage] = useState({Text: "", type: ""});
   const [isNewUser, setIsNewUser] = useState(false);
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -54,18 +56,26 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
 }, [user?.id]);
 
 useEffect(() => {
-  const message = localStorage.getItem("loginSuccess");
+  const loginMessage = localStorage.getItem("loginSuccess");
+  const signupMessage = localStorage.getItem("signupSuccess");
 
-  if (message) {
-    setSuccessMessage(message);
+  // Successful login
+  if (loginMessage) {
+    setMessage({ Text: loginMessage, type: "success" });
     localStorage.removeItem("loginSuccess");
-
-    const timer = setTimeout(() => {
-      setSuccessMessage("");
-    }, 3000);
-
-    return () => clearTimeout(timer);
   }
+  
+  // Successful signup
+  if (signupMessage) {
+    setSuccessMessage({ Text: signupMessage, type: "success" });
+    localStorage.removeItem("signupSuccess");
+  }
+
+  const timer = setTimeout(() => {
+    setSuccessMessage({ Text: "", type: "" });
+  }, 5000);
+
+  return () => clearTimeout(timer);
 }, []);
 
   const handleSelectFlat = (flat) => {
@@ -105,7 +115,7 @@ useEffect(() => {
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("Backend error:", data.message);
+        setMessage({ Text: data.message || "Error creating flat", type: "error" });
         return;
       }
 
@@ -116,6 +126,7 @@ useEffect(() => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating flat:", error);
+      setMessage({ Text: "Error creating flat", type: "error" });
     }
   };
 
@@ -138,7 +149,7 @@ useEffect(() => {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error("Backend error:", data.message);
+      setMessage({ Text: data.message || "Error joining flat", type: "error" });
       return;
     }
 
@@ -154,13 +165,13 @@ useEffect(() => {
   return (
     
     <div className="home-page">
-      {successMessage && (
-          <div className="success-banner">
-              <span>{successMessage}</span>
+      {message.Text && (
+          <div className={`message-banner ${message.type}`}>
+              <span>{message.Text}</span>
 
               <button
-                  className="success-close"
-                  onClick={() => setSuccessMessage("")}
+                  className="message-close"
+                  onClick={() => setMessage({Text: "", type: ""})}
               >
                   ×
               </button>

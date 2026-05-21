@@ -4,15 +4,13 @@
   font-family: Arial, sans-serif;
   color: #1f2937;
 }
-.success-banner {
+.message-banner {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
 
-  background-color: #16a34a;
   color: white;
-
   padding: 10px 16px;
   border-radius: 10px;
 
@@ -25,19 +23,28 @@
 
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 
-  max-width: 300px;
+  max-width: 320px;
 }
-.success-close {
+
+.message-banner.success {
+  background-color: #16a34a;
+}
+
+.message-banner.error {
+  background-color: #dc2626;
+}
+
+.message-close {
   background: transparent;
   border: none;
-  color: rgb(231, 102, 102);
+  color: white;
   font-size: 20px;
   cursor: pointer;
   font-weight: bold;
   line-height: 1;
 }
 
-.success-close:hover {
+.message-close:hover {
   opacity: 0.7;
 }
 /* ===== HEADER ===== */
