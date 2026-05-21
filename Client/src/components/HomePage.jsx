@@ -15,7 +15,7 @@ function HomePage({ user, flats, setFlats, darkMode, setDarkMode }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   // Success message
-  const [message, setMessage] = useState({Text: "", type: ""});
+  const [message, setMessage] = useState({text: "", type: ""});
   const [isNewUser, setIsNewUser] = useState(false);
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -61,18 +61,18 @@ useEffect(() => {
 
   // Successful login
   if (loginMessage) {
-    setMessage({ Text: loginMessage, type: "success" });
+    setMessage({ text: loginMessage, type: "success" });
     localStorage.removeItem("loginSuccess");
   }
   
   // Successful signup
   if (signupMessage) {
-    setSuccessMessage({ Text: signupMessage, type: "success" });
+    setMessage({ text: signupMessage, type: "success" });
     localStorage.removeItem("signupSuccess");
   }
 
   const timer = setTimeout(() => {
-    setSuccessMessage({ Text: "", type: "" });
+    setMessage({ text: "", type: "" });
   }, 5000);
 
   return () => clearTimeout(timer);
@@ -115,7 +115,7 @@ useEffect(() => {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage({ Text: data.message || "Error creating flat", type: "error" });
+        setMessage({ text: data.message || "Error creating flat", type: "error" });
         return;
       }
 
@@ -126,7 +126,7 @@ useEffect(() => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating flat:", error);
-      setMessage({ Text: "Error creating flat", type: "error" });
+      setMessage({ text: "Error creating flat", type: "error" });
     }
   };
 
@@ -149,7 +149,7 @@ useEffect(() => {
     const data = await res.json();
 
     if (!res.ok) {
-      setMessage({ Text: data.message || "Error joining flat", type: "error" });
+      setMessage({ text: data.message || "Error joining flat", type: "error" });
       return;
     }
 
@@ -165,13 +165,13 @@ useEffect(() => {
   return (
     
     <div className="home-page">
-      {message.Text && (
+      {message.text && (
           <div className={`message-banner ${message.type}`}>
-              <span>{message.Text}</span>
+              <span>{message.text}</span>
 
               <button
                   className="message-close"
-                  onClick={() => setMessage({Text: "", type: ""})}
+                  onClick={() => setMessage({text: "", type: ""})}
               >
                   ×
               </button>
