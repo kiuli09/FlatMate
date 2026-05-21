@@ -13,12 +13,18 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+const allowedOrigins = [
+    "https://flatmate-1-a8t9.onrender.com"
+];
+
 app.use(cors({
-  origin: 'https://flatmate-1-a8t9.onrender.com', // Allow only your frontend origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],      // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "user", "flat", "flat_id"],
 }));
-app.use("/uploads", express.static("uploads"));
+
+app.options(/.*/, cors());
+app.use(express.json());app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
     res.send("FlatMate server is running");
