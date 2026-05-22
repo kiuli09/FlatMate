@@ -115,12 +115,13 @@ https://flatmate-1-a8t9.onrender.com/
 
 ## Finance Management
 - Expenses are displayed incorrectly:
-    - The expense name isnt rendered properly
+    - The expense name isn't rendered properly
     - The "Created by" tag doesnt display the users name, but their id(not intended)
 - Expense filter by type also doesn't work as intended, as type is pulled from the category input rather than the selection box (One-time, weekly, monthly)
 - When a User is removed from a flat, expenses do not properly deal with the removed user.
 - Because expense type is broken, it cannot be properly fetched onto the dashboard upcoming bills block.
 - When adding an expense, the split does not include the user themselves when adding expenses as it was intended that when expense was added, the user has presumably paid their end of the expense. 
+- Once a transaction is deleted it is no longer represented in the stats page
 
 ## Inventory and Shopping List
 - When adding items to inventory or shopping list, theres no confirmation message that indicates that new item has been added, item will just appear. 
