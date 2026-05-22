@@ -132,3 +132,4 @@ https://flatmate-1-a8t9.onrender.com/
 
 ## Timetable
 - Timetable UI may break when more than 2 events overlap the same cell.
+- Input fields aren't cleared after removing an event.
