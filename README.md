@@ -54,35 +54,81 @@ https://flatmate-1-a8t9.onrender.com/
 
 # Scope of Project
 
-1. Login and Logout functionalities
-2. Create a flat 
-3. Join a flat
-4. Add a shopping item into the shopping list
-5. Delete a shopping item from the shopping list
-6. Mark an item as purchased and move it into the flat inventory
-7. Add an Item into the inventory
-8. Update an items quantity in the inventory
-9. Remove an item from the inventory
-10. Add a receipt to an expense in the finance page
-11. Change receipt for an expense
-12. view receipt for an expense
-12. Delete expense.
-13. Add an event to the timetable
-14. Edit an event in the timetable
-15. Remove an event from the timetable
-16. Change from light mode to dark mode by clicking the moon emoji next to the user icon on the right of the site header.
-17. change from dark to light mode by clicking the sun emoji next to user icon.
-18. In flat settings, Update the flat name
-19. In flat settings remove a member from the flat
-20. Go to user settings by clicking on the user icon on the top right. Then update the users display name
-21. Reset user password
-22. In the dashboard, click the members block to get a list of current flat members.
-23. In the dashboard. Use the quick action buttons to redirect.
+## User Authentication and Settings
+1. Users can sign up for a new account
+2. Users can log into their account
+3. Users can log out of their account
+4. Users can reset their password through User Settings
+5. Users can update their display name through User Settings 
+
+## Flat Management
+6. Users can create a flat
+7. Users can join a flat using join code
+8. Users can update the flat name in Flat Settings
+9. Users can add a member to the flat in Flat Settings (has to be an already existing user)
+10. Users can remove a member from the flat in Flat Settings
+11. Users can view current flat members from the dashboard members card.
+12. 
+
+## Shopping List
+13. Users can add shopping items to the shopping list
+14. Users can delete shopping items from the shopping list
+15. Users can mark shopping list items as purchased which then moves the item into the flat inventory
+
+## Inventory Management
+16. Users can add items to the inventory
+17. Users can update item quantities in the inventory
+18. Users can remove items from the inventory
+19. Users can add low stocked items in inventory to shopping list by clicking "Add to Shopping List" button that becomes available when item is low in stock
+
+## Finance Management 
+20. Users can add expenses to the Finance Page
+21. Users can add receipts to each expense 
+22. Users can view receipts attached to each expense 
+23. Users can update/change receipt attached to each expense
+24. Users can delete expenses. 
+25. Users can view total amounts paid by the flat per category over the months trough the Summary Page
+26. Users can filter the expenses by type
+27. Users can see what people in their flat owe them and what they owe others
+
+## Timetable Management
+28. Users can add events to the timetable
+29. Users can edit timetable events (add the change and then select update button)
+30. Users can remove timetable events
+
+## Dashboard and Navigation
+31. Users can use dashboard quick-action buttons for navigation and redirection to the appropriate pages
+32. Users can view and copy join code in dashboard
+33. Users can see the number of items in the shopping list in the dashboard
+
+## Appearance and Theme
+34. Users can switch from light mode to dark mode by clicking moon icon in the site header
+35. Users can switch from dark mode to light mode by clicking the sun icon in the site header
 
 # Known Issues
-- Creating a flat with a large number for members throws a server error.
-- Expenses are displayed wrong, the name isnt rendered and the created by tag doesnt display the users name, but their id. (not intended)
+
+## Flat Management
+- Creating a flat with a very large member limit may cause a server error (numbers like 293837393739383937393839383938)
+- There is currently no oprtion for a user to leave a flat group themselves. They hace to be removed from the flat settings page
+- If a user removes their own email from the flat settings, it will only reflect once they exit the flat group
+- When adding another user to a flat using their email, there is no confirmation message or alert displayed. The only indication is that their email appears in the members list
+
+## Finance Management
+- Expenses are displayed incorrectly:
+    - The expense name isnt rendered properly
+    - The "Created by" tag doesnt display the users name, but their id(not intended)
 - Expense filter by type also doesn't work as intended, as type is pulled from the category input rather than the selection box (One-time, weekly, monthly)
-- Timetable UI may break when more than 2 events overlap the same cell.
 - When a User is removed from a flat, expenses do not properly deal with the removed user.
 - Because expense type is broken, it cannot be properly fetched onto the dashboard upcoming bills block.
+- When adding an expense, the split does not include the user themselves when adding expenses as it was intended that when expense was added, the user has presumably paid their end of the expense. 
+
+## Inventory and Shopping List
+- When adding items to inventory or shopping list, theres no confirmation message that indicates that new item has been added, item will just appear. 
+- When adding item to shopping list from the inventory page, there is no confirmation message displayed that indicates that item has successfully been added to the shopping list, youll need to check in the shopping list if the item is there
+- When selecting purchased for items in the shopping list (moves it back to the inventory page), theres also no confirmation message displayed that indicates this has been done, youll need to check in the inventory page
+
+## Dashboard
+- The Upcoming Bills card in the dashboard does not reflect the expenses in the finance page properly. 
+
+## Timetable
+- Timetable UI may break when more than 2 events overlap the same cell.
