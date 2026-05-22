@@ -109,7 +109,7 @@ https://flatmate-1-a8t9.onrender.com/
 
 ## Flat Management
 - Creating a flat with a very large member limit may cause a server error (numbers like 293837393739383937393839383938)
-- There is currently no oprtion for a user to leave a flat group themselves. They hace to be removed from the flat settings page
+- There is currently no option for a user to leave a flat group themselves. They have to be removed from the flat settings page
 - If a user removes their own email from the flat settings, it will only reflect once they exit the flat group
 - When adding another user to a flat using their email, there is no confirmation message or alert displayed. The only indication is that their email appears in the members list
 
