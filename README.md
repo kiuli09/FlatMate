@@ -68,42 +68,42 @@ https://flatmate-1-a8t9.onrender.com/
 9. Users can add a member to the flat in Flat Settings (has to be an already existing user)
 10. Users can remove a member from the flat in Flat Settings
 11. Users can view current flat members from the dashboard members card.
-12. 
+
 
 ## Shopping List
-13. Users can add shopping items to the shopping list
-14. Users can delete shopping items from the shopping list
-15. Users can mark shopping list items as purchased which then moves the item into the flat inventory
+12. Users can add shopping items to the shopping list
+13. Users can delete shopping items from the shopping list
+14. Users can mark shopping list items as purchased which then moves the item into the flat inventory
 
 ## Inventory Management
-16. Users can add items to the inventory
-17. Users can update item quantities in the inventory
-18. Users can remove items from the inventory
-19. Users can add low stocked items in inventory to shopping list by clicking "Add to Shopping List" button that becomes available when item is low in stock
+15. Users can add items to the inventory
+16. Users can update item quantities in the inventory
+17. Users can remove items from the inventory
+18. Users can add low stocked items in inventory to shopping list by clicking "Add to Shopping List" button that becomes available when item is low in stock
 
 ## Finance Management 
-20. Users can add expenses to the Finance Page
-21. Users can add receipts to each expense 
-22. Users can view receipts attached to each expense 
-23. Users can update/change receipt attached to each expense
-24. Users can delete expenses. 
-25. Users can view total amounts paid by the flat per category over the months trough the Summary Page
-26. Users can filter the expenses by type
-27. Users can see what people in their flat owe them and what they owe others
+19. Users can add expenses to the Finance Page
+20. Users can add receipts to each expense 
+21. Users can view receipts attached to each expense 
+22. Users can update/change receipt attached to each expense
+23. Users can delete expenses. 
+24. Users can view total amounts paid by the flat per category over the months trough the Summary Page
+25. Users can filter the expenses by type
+26. Users can see what people in their flat owe them and what they owe others
 
 ## Timetable Management
-28. Users can add events to the timetable
-29. Users can edit timetable events (add the change and then select update button)
-30. Users can remove timetable events
+27. Users can add events to the timetable
+28. Users can edit timetable events (add the change and then select update button)
+29. Users can remove timetable events
 
 ## Dashboard and Navigation
-31. Users can use dashboard quick-action buttons for navigation and redirection to the appropriate pages
-32. Users can view and copy join code in dashboard
-33. Users can see the number of items in the shopping list in the dashboard
+30. Users can use dashboard quick-action buttons for navigation and redirection to the appropriate pages
+31. Users can view and copy join code in dashboard
+32. Users can see the number of items in the shopping list in the dashboard
 
 ## Appearance and Theme
-34. Users can switch from light mode to dark mode by clicking moon icon in the site header
-35. Users can switch from dark mode to light mode by clicking the sun icon in the site header
+33. Users can switch from light mode to dark mode by clicking moon icon in the site header
+34. Users can switch from dark mode to light mode by clicking the sun icon in the site header
 
 # Known Issues
 
